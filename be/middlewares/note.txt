@@ -1,0 +1,3 @@
+code xử lý token, verify admin hay user
+
+có thể cho thêm isPrime của user vào check thời gian còn hiệu lực

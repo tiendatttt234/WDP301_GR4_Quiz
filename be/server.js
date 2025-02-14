@@ -5,6 +5,7 @@ const { json } = require("body-parser");
 const morgan = require("morgan");
 const cors = require("cors");
 const Db = require("./dbConnect/dbConnect");
+const { quizRouter} = require("./routes");
 require("dotenv").config();
 
 
@@ -21,6 +22,7 @@ app.use(express.urlencoded({ extended: true }));
 
 
 //Cấu hình các Routes example
+app.use("/quiz", quizRouter);
 // app.use("/quiz", QuizRouter);
 // app.use("/quizSubmit", QuizSubmitRouter);
 // app.use("/account", AccountRouter);

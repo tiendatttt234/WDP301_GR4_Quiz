@@ -3,7 +3,7 @@ const {
  }  = require("../models");
 
 async function findAllQuiz(){
-    return await Quiz.findAll();
+    return await Quiz.find();
 }
 
 async function findQuizById(id) {
@@ -19,11 +19,16 @@ async function createQuiz(quizData) {
     return await Quiz.create(quizData);
 }
 
+async function getQuizByUserId(userId) {
+    return await Quiz.find({createdBy: userId});
+}
+
 
 const quizRepository = {
     findAllQuiz,
     findQuizById,
     createQuiz,
+    getQuizByUserId
 };
 module.exports = quizRepository;
 

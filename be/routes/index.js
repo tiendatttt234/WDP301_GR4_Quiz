@@ -1,5 +1,5 @@
-const questionFileRouter = require('./questionFile.route');
+const questionBankRouter = require('./questionFile.route');
 
 module.exports={
-    questionFileRouter,
+    questionBankRouter
 }

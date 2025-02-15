@@ -27,43 +27,22 @@ const questionFileService = require('../services/questionFile.service');
 
 
 
-// async function getQuestionFileById(req, res, next) {
-//   try {
-//     const { id } = req.params;
-    
-
-
-//     // Tìm questionFile theo id và userId
-//     const questionFile = await QuestionFile.findOne({
-//       _id: id,
+  async function getQuestionFileById(req, res, next) {
+    try {
+      const { id } = req.params;
       
-//     });
-//     if (!questionFile) {
-//       return res.status(404).json({ message: "Question file not found or unauthorized access" });
-//     }
-
-//     // Định dạng dữ liệu trả về
-//     const formattedResult = {
-//       name: questionFile.name,
-//       description: questionFile.description,
-//       isPrivate: questionFile.isPrivate,
-//       arrayQuestion: questionFile.arrayQuestion.map((question) => ({
-//         questionId: question._id,
-//         content: question.content,
-//         type: question.type,
-//         answers: question.answers.map((answer) => ({
-//           answerId: answer._id,
-//           answerContent: answer.answerContent,
-//           isCorrect: answer.isCorrect,
-//         })),
-//       })),
-//     };
-
-//     return res.status(200).json({ questionFile: formattedResult });
-//   } catch (error) {
-//     next(error);
-//   }
-// }
+      // Gọi service để lấy dữ liệu
+      const questionFile = await questionFileService.getQuestionFileById(id);
+  
+      if (!questionFile) {
+        return res.status(404).json({ message: "Question file not found or unauthorized access" });
+      }
+  
+      return res.status(200).json({ questionFile });
+    } catch (error) {
+      next(error);
+    }
+  }
 // async function createQuestionFile(req, res, next) {
 //   try {
 //     const newQuestionFile = await QuestionFile.create(req.body);
@@ -112,9 +91,9 @@ const questionFileService = require('../services/questionFile.service');
 const QuestionFileController = {
   getAllQuestionFile,
   getQuestionFileById,
-  createQuestionFile,
-  updateQuestionFile,
-  deleteQuestionFile,
+  // createQuestionFile,
+  // updateQuestionFile,
+  // deleteQuestionFile,
 };
 
 module.exports = QuestionFileController;

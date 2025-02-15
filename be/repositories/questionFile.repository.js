@@ -23,6 +23,10 @@ async function getAllByUserId(userId) {
       .sort({ createdAt: 1 })
       .select('name description arrayQuestion createdAt isPrivate');
 }
+async function findQuestionFileById(id) {
+    return await QuestionFile.findById(id);
+}
+
 
 
 const questionFileRepository = {

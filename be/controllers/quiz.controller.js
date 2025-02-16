@@ -32,9 +32,22 @@ async function getQuizByUser(req, res, next) {
 
 }
 
+async function getQuiz(req, res, next) {
+  try {
+      const { id } = req.params;
+      console.log("id", id);
+      
+      const result = await QuizService.getQuizById(id);
+      return res.status(result.statusCode).json(result);
+  } catch (error) {
+      next(error);
+  }
+};
+
 const QuizController ={
     getAllQuiz,
-    getQuizByUser
+    getQuizByUser,
+    getQuiz
 }
 
 module.exports = QuizController;

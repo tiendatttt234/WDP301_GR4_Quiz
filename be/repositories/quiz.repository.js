@@ -6,12 +6,12 @@ async function findAllQuiz(){
     return await Quiz.find();
 }
 
-async function findQuizById(id) {
+async function findQuizByIdFilter(id) {
     return await Quiz.findById(id)
-        .populate({
-            path: " questionFile",
-            select:"_id name arrayQuestion"
-        })
+    .populate({
+        path: "questionFile",
+        select:"_id name arrayQuestion"
+    })
         .lean();
 }
 
@@ -26,7 +26,7 @@ async function getQuizByUserId(userId) {
 
 const quizRepository = {
     findAllQuiz,
-    findQuizById,
+    findQuizByIdFilter,
     createQuiz,
     getQuizByUserId
 };

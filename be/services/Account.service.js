@@ -5,10 +5,38 @@ const {
   signRefreshToken,
 } = require("../middlewares/jwt_helper");
 
+async function registerService(email, password, userName) {
+  try {
+    const existingAccount = await AccountRepository.getAccountByUserName(
+      userName
+    );
+    if (existingAccount) {
+      throw createError.Conflict("User already exists");
+    }
+
+    const hashPass = await AccountRepository.hashPassword(password);
+    const roles = await AccountRepository.getUserRole();
+
+    const savedAccount = await AccountRepository.createAccount(
+      email,
+      userName,
+      hashPass,
+      roles
+    );
+    const accessToken = await signAccessToken(savedAccount._id);
+
+    return { accessToken, user: savedAccount };
+  } catch (error) {
+    throw error;
+  }
+}
+
 async function loginService(email, password) {
   try {
     const account = await AccountRepository.getAccountByEmail(email);
-    console.log("account: " + account);
+    if (!account) {
+      throw createError.NotFound("Tài khoản không tồn tại");
+    }
 
     const isMatch = await AccountRepository.validatePassword(
       password,
@@ -39,5 +67,6 @@ async function loginService(email, password) {
 }
 
 module.exports = {
+  registerService,
   loginService,
 };

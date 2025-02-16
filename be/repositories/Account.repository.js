@@ -1,6 +1,41 @@
 const Account = require("../models/Account");
+const Role = require("../models/Role");
 const bcrypt = require("bcrypt");
 const createError = require("http-errors");
+
+async function getAccountByUserName(userName) {
+  try {
+    return await Account.findOne({ userName }).populate("roles").exec();
+  } catch (error) {
+    throw error;
+  }
+}
+
+async function hashPassword(password) {
+  try {
+    return await bcrypt.hash(password, parseInt(process.env.PASSWORD_SECRET));
+  } catch (error) {
+    throw error;
+  }
+}
+
+async function getUserRole() {
+  try {
+    const userRole = await Role.findOne({ name: "user" });
+    return userRole ? [userRole._id] : [];
+  } catch (error) {
+    throw error;
+  }
+}
+
+async function createAccount(email, userName, password, roles) {
+  try {
+    const newAccount = new Account({ email, userName, password, roles });
+    return await newAccount.save();
+  } catch (error) {
+    throw error;
+  }
+}
 
 async function getAccountByEmail(email) {
   try {
@@ -16,15 +51,17 @@ async function getAccountByEmail(email) {
 
 async function validatePassword(inputPassword, accountPassword) {
   try {
-    if (inputPassword === accountPassword) {
-      return true;
-    }
+    return await bcrypt.compare(inputPassword, accountPassword);
   } catch (error) {
     throw error;
   }
 }
 
 module.exports = {
+  getAccountByUserName,
+  hashPassword,
+  getUserRole,
+  createAccount,
   getAccountByEmail,
   validatePassword,
 };

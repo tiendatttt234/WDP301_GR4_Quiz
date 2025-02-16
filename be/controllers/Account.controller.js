@@ -1,5 +1,32 @@
 const AccountService = require("../services/Account.service");
 
+async function registerController(req, res, next) {
+  try {
+    const { email, password, userName } = req.body;
+
+    if (!email || !password || !userName) {
+      return res.status(400).json({
+        success: false,
+        message: "Username and password are required",
+      });
+    }
+
+    const result = await AccountService.registerService(
+      email,
+      password,
+      userName
+    );
+
+    return res.status(201).json({
+      success: true,
+      data: result,
+    });
+  } catch (error) {
+    console.error("Error in register:", error.message);
+    next(error);
+  }
+}
+
 async function loginController(req, res, next) {
   try {
     const { email, password } = req.body;
@@ -24,5 +51,6 @@ async function loginController(req, res, next) {
 }
 
 module.exports = {
+  registerController,
   loginController,
 };

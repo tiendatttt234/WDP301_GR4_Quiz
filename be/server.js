@@ -6,7 +6,7 @@ const morgan = require("morgan");
 const cors = require("cors");
 const Db = require("./dbConnect/dbConnect");
 require("dotenv").config();
-const { LoginRouter } = require("./routes");
+const accountRouter = require("./routes/account.router");
 
 //Import các Routes
 // const {
@@ -27,7 +27,7 @@ app.use(express.urlencoded({ extended: true }));
 // app.use("/questionFile", QuestionFileRouter);
 // app.use("/quizSubmit", QuizSubmitRouter);
 // app.use("/blog", BlogRouter);
-app.use("/auth", LoginRouter);
+app.use("/auth", accountRouter);
 
 //Kiểm soát lỗi xảy ra trên controller, router và model
 app.use((err, req, res, next) => {

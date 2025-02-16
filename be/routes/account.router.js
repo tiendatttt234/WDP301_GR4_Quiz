@@ -1,7 +1,12 @@
 const express = require("express");
-const LoginRouter = express.Router();
-const { loginController } = require("../controllers/Account.controller");
+const accountRouter = express.Router();
+const {
+  loginController,
+  registerController,
+} = require("../controllers/Account.controller");
 
-LoginRouter.post("/login", loginController);
+// Định tuyến cho đăng ký và đăng nhập
+accountRouter.post("/register", registerController);
+accountRouter.post("/login", loginController);
 
-module.exports = LoginRouter;
+module.exports = accountRouter;

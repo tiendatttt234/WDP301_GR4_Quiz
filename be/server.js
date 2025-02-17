@@ -6,7 +6,8 @@ const morgan = require("morgan");
 const cors = require("cors");
 const Db = require("./dbConnect/dbConnect");
 require("dotenv").config();
-
+const accountRoutes = require('./routes/accountRoutes');
+const reportRoutes = require('./routes/reportRoutes');
 
 //Import các Routes 
 // const {
@@ -27,8 +28,8 @@ app.use(express.urlencoded({ extended: true }));
 // app.use("/questionFile", QuestionFileRouter);
 // app.use("/quizSubmit", QuizSubmitRouter);
 // app.use("/blog", BlogRouter);
-
-
+app.use('/api/accounts', accountRoutes);
+app.use('/api/reports', reportRoutes);
 //Kiểm soát lỗi xảy ra trên controller, router và model
 app.use((err, req, res, next) => {
     console.error(err.stack);

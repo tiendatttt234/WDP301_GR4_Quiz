@@ -49,8 +49,23 @@ async function loginController(req, res, next) {
     next(error);
   }
 }
+async function getAccountController(req, res, next) {
+  try {
+    const { userName } = req.params;
+    const account = await AccountService.getAccountService(userName);
+
+    return res.status(200).json({
+      success: true,
+      data: account,
+    });
+  } catch (error) {
+    console.error("Error in getAccount:", error.message);
+    next(error);
+  }
+}
 
 module.exports = {
   registerController,
   loginController,
+  getAccountController,
 };

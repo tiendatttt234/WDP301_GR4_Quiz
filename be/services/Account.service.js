@@ -66,7 +66,21 @@ async function loginService(email, password) {
   }
 }
 
+//profile
+async function getAccountService(userName) {
+  try {
+    const account = await AccountRepository.getAccountByUserName(userName);
+    if (!account) {
+      throw createError.NotFound("Người dùng không tồn tại");
+    }
+    return account;
+  } catch (error) {
+    throw error;
+  }
+}
+
 module.exports = {
   registerService,
   loginService,
+  getAccountService,
 };

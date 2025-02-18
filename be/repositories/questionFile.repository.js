@@ -5,9 +5,9 @@ async function findQuestionFileById(id){
     return await QuestionFile.findById(id);
 }
 
-async function findAllQFByUserId(userId){
-    return await QuestionFile.find({createdBy: userId});
-}
+// async function findAllQFByUserId(userId){
+//     return await QuestionFile.find({createdBy: userId});
+// }
 //Cần lấy ra những trường gì trong collection thì dùng .select + tên trường
 //ex: .select("name description arrayQuestion createdAt isPrivate")
 
@@ -18,12 +18,31 @@ async function findByIdAndUserId(id, userId){
 async function createQF(data){
     return await QuestionFile.create(data);
 }
+async function getAllByUserId(userId) {
+    return await QuestionFile.find({ createdBy: userId })
+      .sort({ createdAt: 1 })
+      .select('name description arrayQuestion createdAt isPrivate');
+}
+async function createQF(data) {
+    return await QuestionFile.create(data);
+  }
+  
+  async function updateQF(id, updateData) {
+    return await QuestionFile.findByIdAndUpdate(id, updateData, { new: true });
+  }
+  
+  async function deleteQF(id) {
+    return await QuestionFile.findByIdAndDelete(id);
+  }
+
+
 
 const questionFileRepository = {
     findQuestionFileById,
-    findAllQFByUserId,
+    getAllByUserId,
     findByIdAndUserId,
-    createQF
+    createQF,updateQF,
+    deleteQF
 };
 
 module.exports = questionFileRepository;

@@ -5,7 +5,7 @@ const { json } = require("body-parser");
 const morgan = require("morgan");
 const cors = require("cors");
 const Db = require("./dbConnect/dbConnect");
-const { quizRouter} = require("./routes");
+const { quizRouter, questionBankRouter} = require("./routes");
 require("dotenv").config();
 const accountRouter = require("./routes/account.router");
 
@@ -23,11 +23,9 @@ app.use(express.urlencoded({ extended: true }));
 //Cấu hình các Routes example
 
 app.use("/quiz", quizRouter);
-// app.use("/quizSubmit", QuizSubmitRouter);
-// app.use("/account", AccountRouter);
-// app.use("/questionFile", QuestionFileRouter);
-// app.use("/quizSubmit", QuizSubmitRouter);
-// app.use("/blog", BlogRouter);
+app.use("/questionbank", questionBankRouter);
+app.use("/questionbank/:id", questionBankRouter);
+//Đặt lại tên root cho questionfile cả ở server với route 
 app.use("/auth", accountRouter);
 
 //Kiểm soát lỗi xảy ra trên controller, router và model

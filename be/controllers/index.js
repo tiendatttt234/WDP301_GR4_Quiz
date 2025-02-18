@@ -2,7 +2,7 @@ const loginController = require("./Account.controller");
 const registerController = require("./Account.controller");
 const getAccountController = require("./Account.controller");
 const QuizController = require("./quiz.controller");
-
+const QuestionFileController = require("./questionFile.controller");
 module.exports = {
   registerController,
   loginController,

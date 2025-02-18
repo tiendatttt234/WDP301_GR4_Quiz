@@ -5,13 +5,9 @@ const questionFileService = require('../services/questionFile.service');
 
   async function getAllQuestionFile(req, res, next) {
     try {
-      const userId = req.query.userId;
+      
 
-      if (!userId) {
-        return res.status(400).json({ success: false, message: "userId is required" });
-      }
-
-      const listQuestionFile = await questionFileService.getAllQuestionFiles(userId);
+      const listQuestionFile = await questionFileService.getAllQuestionFiles();
 
       return res.status(200).json({ 
         success: true, 

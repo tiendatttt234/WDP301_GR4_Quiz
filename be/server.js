@@ -23,8 +23,7 @@ app.use(express.urlencoded({ extended: true }));
 // app.use("/quiz", QuizRouter);
 // app.use("/quizSubmit", QuizSubmitRouter);
 // app.use("/account", AccountRouter);
-app.use("/questionbank", questionBankRouter);
-app.use("/questionbank/:id", questionBankRouter);
+app.use("/questionFile", questionBankRouter);
 // app.use("/quizSubmit", QuizSubmitRouter);
 // app.use("/blog", BlogRouter);
 

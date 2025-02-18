@@ -15,17 +15,24 @@ async function findByIdAndUserId(id, userId){
     return await QuestionFile.findOne({_id: id, createdBy: userId});    
 }
 
-async function createQF(data){
-    return await QuestionFile.create(data);
+async function getAll() {
+  return await QuestionFile.find({})
+    .sort({ createdAt: 1 })
+    .select('name description arrayQuestion createdAt isPrivate');
 }
+
 async function getAllByUserId(userId) {
     return await QuestionFile.find({ createdBy: userId })
       .sort({ createdAt: 1 })
       .select('name description arrayQuestion createdAt isPrivate');
 }
 async function createQF(data) {
-    return await QuestionFile.create(data);
-  }
+  return await QuestionFile.create({
+    ...data,
+    reportedCount: 0,
+    isReported: false
+  });
+}
   
   async function updateQF(id, updateData) {
     return await QuestionFile.findByIdAndUpdate(id, updateData, { new: true });
@@ -42,7 +49,8 @@ const questionFileRepository = {
     getAllByUserId,
     findByIdAndUserId,
     createQF,updateQF,
-    deleteQF
+    deleteQF,
+    getAll
 };
 
 module.exports = questionFileRepository;

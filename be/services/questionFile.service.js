@@ -1,9 +1,6 @@
 const questionRepository = require("../repositories/questionFile.repository");
-async function getAllQuestionFiles(userId) {
-  if (!userId) {
-    throw new Error("userId is required");
-  }
-  return await questionRepository.getAllByUserId(userId);
+async function getAllQuestionFiles() {
+  return await questionRepository.getAll();
 }
 
 async function getQuestionFileById(id) {
@@ -28,15 +25,20 @@ async function getQuestionFileById(id) {
   };
 }
 async function createQuestionFile(data) {
-  return await questionFileRepository.createQF(data);
+  const newData = {
+    ...data,
+    reportedCount: 0,
+    isReported: false
+  };
+  return await questionRepository.createQF(newData);
 }
 
 async function updateQuestionFile(id, updateData) {
-  return await questionFileRepository.updateQF(id, updateData);
+  return await questionRepository.updateQF(id, updateData);
 }
 
 async function deleteQuestionFile(id) {
-  return await questionFileRepository.deleteQF(id);
+  return await questionRepository.deleteQF(id);
 }
 module.exports = {
   getAllQuestionFiles,

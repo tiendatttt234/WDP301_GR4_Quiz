@@ -44,10 +44,45 @@ async function getQuiz(req, res, next) {
   }
 };
 
+async function createQuiz(req, res, next) {
+  try {
+      const { quizName, userId, questionFileId, questionCount } = req.body;
+      const newQuiz = await QuizService.createQuiz({ quizName, userId, questionFileId, questionCount });
+
+      return res.status(201).json({ message: "Quiz created successfully", quiz: newQuiz });
+  } catch (error) {
+      return res.status(400).json({ message: error.message });
+  }
+}
+
+async function submitQuiz(req, res, next) {
+  try {
+      const quizResult = await QuizService.submitQuiz(req.body);
+      res.status(200).json({ quizResult });
+  } catch (error) {
+      next(error);
+  }
+}
+
+async function getAllQuizResultByUserId(req, res, next) {
+  try {
+      const { userId } = req.body;
+      console.log("Received data from client:", userId);
+
+      const results = await QuizService.getAllQuizResultByUserId(userId);
+      res.status(200).json(results);
+  } catch (error) {
+      res.status(400).json({ message: error.message });
+  }
+}
+
 const QuizController ={
     getAllQuiz,
     getQuizByUser,
-    getQuiz
+    getQuiz,
+    createQuiz,
+    submitQuiz,
+    getAllQuizResultByUserId
 }
 
 module.exports = QuizController;

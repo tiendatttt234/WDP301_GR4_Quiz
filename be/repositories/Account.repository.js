@@ -57,6 +57,16 @@ async function validatePassword(inputPassword, accountPassword) {
   }
 }
 
+async function updateAccountField(userName, updateFields) {
+  try {
+    return await Account.findOneAndUpdate({ userName }, updateFields, {
+      new: true,
+    });
+  } catch (error) {
+    throw error;
+  }
+}
+
 module.exports = {
   getAccountByUserName,
   hashPassword,
@@ -64,4 +74,5 @@ module.exports = {
   createAccount,
   getAccountByEmail,
   validatePassword,
+  updateAccountField,
 };

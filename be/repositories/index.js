@@ -7,6 +7,7 @@ const getAccountByUserName = require("./Account.repository");
 const hashPassword = require("./Account.repository");
 const getUserRole = require("./Account.repository");
 const createAccount = require("./Account.repository");
+const updateAccountField = require("./Account.repository");
 module.exports = {
   quizRepository,
   quizResultRepository,
@@ -17,4 +18,5 @@ module.exports = {
   createAccount,
   getAccountByEmail,
   validatePassword,
+  updateAccountField,
 };

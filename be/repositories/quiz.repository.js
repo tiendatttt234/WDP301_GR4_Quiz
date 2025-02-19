@@ -1,5 +1,6 @@
 const { 
     Quiz,
+    QuizResult
  }  = require("../models");
 
 async function findAllQuiz(){
@@ -23,12 +24,31 @@ async function getQuizByUserId(userId) {
     return await Quiz.find({createdBy: userId});
 }
 
+async function saveQuizResult(quizResultData) {
+    const quizResult = new QuizResult(quizResultData);
+    return await quizResult.save();
+}
+
+async function findQuizResultsByUserId(userId) {
+    return await QuizResult.find({ user: userId })
+        .populate({
+            path: 'quiz',
+            select: 'quizName duration'
+        })
+        .populate({
+            path: 'questionFile',
+            select: 'name arrayQuestion'
+        })
+        .exec();
+  };
 
 const quizRepository = {
     findAllQuiz,
     findQuizByIdFilter,
     createQuiz,
-    getQuizByUserId
+    getQuizByUserId,
+    saveQuizResult,
+    findQuizResultsByUserId
 };
 module.exports = quizRepository;
 

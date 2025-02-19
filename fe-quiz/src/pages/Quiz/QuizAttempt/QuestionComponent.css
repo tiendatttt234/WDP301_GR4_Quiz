@@ -1,0 +1,42 @@
+.answer-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 20px; /* Space between the answer boxes */
+    margin-bottom: 20px;
+  }
+  
+  /* Styles for each answer box */
+  .answer-style {
+    flex: 1 1 calc(50% - 10px); /* Two answers per row */
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    text-align: right;
+    border: 2px solid transparent;
+    border-radius: 10px;
+    background-color: #f9f9f9;
+    transition: all 0.3s;
+    min-height: 100px; /* Ensure consistent box height */
+    cursor: pointer;
+  }
+  
+  .answer-style:hover {
+    border-color: #007bff;
+    background-color: #e6f7ff;
+  }
+  
+  /* Selected answer styling */
+  .answer-style.selected {
+    background-color: #e6f7ff;
+    border-color: #007bff;
+  }
+  
+  /* Responsive text inside the answer */
+  .answer-label {
+    font-size: 18px;
+    font-weight: 400;
+    margin-right: 10px;
+    cursor: pointer;
+  }

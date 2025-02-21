@@ -3,14 +3,13 @@ const Role = require("../models/Role");
 const bcrypt = require("bcrypt");
 const createError = require("http-errors");
 
-async function getAccountByUserName(userName) {
+async function getAccountById(id) {
   try {
-    return await Account.findOne({ userName }).populate("roles").exec();
+    return await Account.findById(id).populate("roles").exec();
   } catch (error) {
     throw error;
   }
 }
-
 async function hashPassword(password) {
   try {
     return await bcrypt.hash(password, parseInt(process.env.PASSWORD_SECRET));
@@ -57,22 +56,20 @@ async function validatePassword(inputPassword, accountPassword) {
   }
 }
 
-async function updateAccountField(userName, updateFields) {
+async function updateAccountById(id, updateFields) {
   try {
-    return await Account.findOneAndUpdate({ userName }, updateFields, {
-      new: true,
-    });
+    return await Account.findByIdAndUpdate(id, updateFields, { new: true });
   } catch (error) {
     throw error;
   }
 }
 
 module.exports = {
-  getAccountByUserName,
+  getAccountById,
   hashPassword,
   getUserRole,
   createAccount,
   getAccountByEmail,
   validatePassword,
-  updateAccountField,
+  updateAccountById,
 };

@@ -10,7 +10,7 @@ const {
 // Định tuyến cho đăng ký và đăng nhập
 accountRouter.post("/register", registerController);
 accountRouter.post("/login", loginController);
-accountRouter.get("/:userName", getAccountController);
-accountRouter.patch("/:userName", updateAccountController);
+accountRouter.get("/profile/:id", getAccountController);
+accountRouter.patch("/profile/:id", updateAccountController);
 
 module.exports = accountRouter;

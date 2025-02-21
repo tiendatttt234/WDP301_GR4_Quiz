@@ -52,8 +52,8 @@ async function loginController(req, res, next) {
 }
 async function getAccountController(req, res, next) {
   try {
-    const { userName } = req.params;
-    const account = await AccountService.getAccountService(userName);
+    const { id } = req.params;
+    const account = await AccountService.getAccountService(id);
 
     return res.status(200).json({
       success: true,
@@ -66,10 +66,13 @@ async function getAccountController(req, res, next) {
 }
 async function updateAccountController(req, res, next) {
   try {
-    const { userName } = req.params;
+    const { id } = req.params;
     const updateFields = req.body;
 
-    const updatedAccount = await updateAccountService(userName, updateFields);
+    const updatedAccount = await AccountService.updateAccountService(
+      id,
+      updateFields
+    );
 
     return res.status(200).json({
       success: true,

@@ -68,9 +68,9 @@ async function loginService(email, password) {
 }
 
 //[GET]profile
-async function getAccountService(userName) {
+async function getAccountService(id) {
   try {
-    const account = await AccountRepository.getAccountByUserName(userName);
+    const account = await AccountRepository.getAccountById(id);
     if (!account) {
       throw createError.NotFound("Người dùng không tồn tại");
     }
@@ -79,21 +79,23 @@ async function getAccountService(userName) {
     throw error;
   }
 }
+
 //[update]profile
-async function updateAccountService(userName, updateFields) {
+async function updateAccountService(id, updateFields) {
   try {
     const allowedFields = ["email", "phone", "userName"];
-
-    // Kiểm tra xem các field gửi lên có hợp lệ không
     const keys = Object.keys(updateFields);
     const isValid = keys.every((field) => allowedFields.includes(field));
     if (!isValid) {
       throw createError.BadRequest("Invalid field name");
     }
 
-    const updatedAccount = await updateAccountField(userName, updateFields);
+    const updatedAccount = await AccountRepository.updateAccountById(
+      id,
+      updateFields
+    );
     if (!updatedAccount) {
-      throw createError.NotFound(`User ${userName} not found`);
+      throw createError.NotFound(`User ${id} not found`);
     }
 
     return updatedAccount;

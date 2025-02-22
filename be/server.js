@@ -23,8 +23,7 @@ app.use(express.urlencoded({ extended: true }));
 //Cấu hình các Routes example
 
 app.use("/quiz", quizRouter);
-app.use("/questionbank", questionBankRouter);
-app.use("/questionbank/:id", questionBankRouter);
+app.use("/questionFile", questionBankRouter);
 //Đặt lại tên root cho questionfile cả ở server với route 
 app.use("/auth", accountRouter);
 

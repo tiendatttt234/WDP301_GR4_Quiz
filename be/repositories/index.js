@@ -8,6 +8,7 @@ const hashPassword = require("./Account.repository");
 const getUserRole = require("./Account.repository");
 const createAccount = require("./Account.repository");
 const updateAccountById = require("./Account.repository");
+const changePassword = require("./Account.repository");
 module.exports = {
   quizRepository,
   quizResultRepository,
@@ -19,4 +20,5 @@ module.exports = {
   getAccountByEmail,
   validatePassword,
   updateAccountById,
+  changePassword,
 };

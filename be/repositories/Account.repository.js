@@ -10,6 +10,13 @@ async function getAccountById(id) {
     throw error;
   }
 }
+async function getAccountByUserName(userName) {
+  try {
+    return await Account.findOne({ userName }).populate("roles").exec();
+  } catch (error) {
+    throw error;
+  }
+}
 async function hashPassword(password) {
   try {
     return await bcrypt.hash(password, parseInt(process.env.PASSWORD_SECRET));
@@ -97,6 +104,7 @@ async function changePassword(id, oldPassword, newPassword) {
 
 module.exports = {
   getAccountById,
+  getAccountByUserName,
   hashPassword,
   getUserRole,
   createAccount,

@@ -1,4 +1,5 @@
 const AccountService = require("../services/Account.service");
+const { updateAccountService } = require("../services/Account.service");
 
 async function registerController(req, res, next) {
   try {
@@ -51,8 +52,8 @@ async function loginController(req, res, next) {
 }
 async function getAccountController(req, res, next) {
   try {
-    const { userName } = req.params;
-    const account = await AccountService.getAccountService(userName);
+    const { id } = req.params;
+    const account = await AccountService.getAccountService(id);
 
     return res.status(200).json({
       success: true,
@@ -63,9 +64,29 @@ async function getAccountController(req, res, next) {
     next(error);
   }
 }
+async function updateAccountController(req, res, next) {
+  try {
+    const { id } = req.params;
+    const updateFields = req.body;
+
+    const updatedAccount = await AccountService.updateAccountService(
+      id,
+      updateFields
+    );
+
+    return res.status(200).json({
+      success: true,
+      data: updatedAccount,
+    });
+  } catch (error) {
+    console.error("Error in updateAccount:", error.message);
+    next(error);
+  }
+}
 
 module.exports = {
   registerController,
   loginController,
   getAccountController,
+  updateAccountController,
 };

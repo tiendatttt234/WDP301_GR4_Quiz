@@ -4,6 +4,7 @@ const {
   signAccessToken,
   signRefreshToken,
 } = require("../middlewares/jwt_helper");
+const { updateAccountField } = require("../repositories/Account.repository");
 
 async function registerService(email, password, userName) {
   try {
@@ -66,10 +67,10 @@ async function loginService(email, password) {
   }
 }
 
-//profile
-async function getAccountService(userName) {
+//[GET]profile
+async function getAccountService(id) {
   try {
-    const account = await AccountRepository.getAccountByUserName(userName);
+    const account = await AccountRepository.getAccountById(id);
     if (!account) {
       throw createError.NotFound("Người dùng không tồn tại");
     }
@@ -79,8 +80,33 @@ async function getAccountService(userName) {
   }
 }
 
+//[update]profile
+async function updateAccountService(id, updateFields) {
+  try {
+    const allowedFields = ["email", "phone", "userName"];
+    const keys = Object.keys(updateFields);
+    const isValid = keys.every((field) => allowedFields.includes(field));
+    if (!isValid) {
+      throw createError.BadRequest("Invalid field name");
+    }
+
+    const updatedAccount = await AccountRepository.updateAccountById(
+      id,
+      updateFields
+    );
+    if (!updatedAccount) {
+      throw createError.NotFound(`User ${id} not found`);
+    }
+
+    return updatedAccount;
+  } catch (error) {
+    throw error;
+  }
+}
+
 module.exports = {
   registerService,
   loginService,
   getAccountService,
+  updateAccountService,
 };

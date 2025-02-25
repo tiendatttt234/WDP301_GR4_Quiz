@@ -104,9 +104,23 @@ async function updateAccountService(id, updateFields) {
   }
 }
 
+async function changePasswordService(id, oldPassword, newPassword) {
+  if (!id || !oldPassword || !newPassword) {
+    throw new Error("Vui lòng điền đầy đủ thông tin");
+  }
+
+  const updatedUser = await AccountRepository.changePassword(
+    id,
+    oldPassword,
+    newPassword
+  );
+  return updatedUser;
+}
+
 module.exports = {
   registerService,
   loginService,
   getAccountService,
   updateAccountService,
+  changePasswordService,
 };

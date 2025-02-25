@@ -3,6 +3,8 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import FlashCards from "./pages/Quiz/FlashCard/FlashCards";
 import QuizAttempt from "./pages/Quiz/QuizAttempt/QuizAttempt";
 import UserDefaultPage from "./layouts/user-default-layout";
+import Login from "./components/authen/Login/Login";
+import Register from "./components/authen/Register/Register";
 
 function App() {
   return (
@@ -16,9 +18,11 @@ function App() {
           element={<UserDefaultPage />}
           requiredRole="user"
         />
+
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
       </Routes>
     </BrowserRouter>
   );
 }
-
 export default App;

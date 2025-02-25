@@ -1,5 +1,4 @@
 const AccountService = require("../services/Account.service");
-const { updateAccountService } = require("../services/Account.service");
 
 async function registerController(req, res, next) {
   try {
@@ -83,10 +82,38 @@ async function updateAccountController(req, res, next) {
     next(error);
   }
 }
+async function changePasswordController(req, res, next) {
+  try {
+    const { id } = req.params;
+    const { oldPassword, newPassword } = req.body;
+
+    if (!id || !oldPassword || !newPassword) {
+      return res.status(400).json({
+        status: false,
+        message: "Vui lòng điền đầy đủ thông tin",
+      });
+    }
+
+    await AccountService.changePasswordService(id, oldPassword, newPassword);
+
+    return res.status(200).json({
+      status: true,
+      message: "Đổi mật khẩu thành công",
+    });
+  } catch (error) {
+    console.error("Error changing password:", error.message);
+    return res.status(500).json({
+      status: false,
+      message: "Lỗi server",
+      error: error.message,
+    });
+  }
+}
 
 module.exports = {
   registerController,
   loginController,
   getAccountController,
   updateAccountController,
+  changePasswordController,
 };

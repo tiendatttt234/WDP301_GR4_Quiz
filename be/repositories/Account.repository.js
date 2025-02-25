@@ -10,6 +10,13 @@ async function getAccountById(id) {
     throw error;
   }
 }
+async function getAccountByUserName(userName) {
+  try {
+    return await Account.findOne({ userName }).populate("roles").exec();
+  } catch (error) {
+    throw error;
+  }
+}
 async function hashPassword(password) {
   try {
     return await bcrypt.hash(password, parseInt(process.env.PASSWORD_SECRET));
@@ -64,12 +71,45 @@ async function updateAccountById(id, updateFields) {
   }
 }
 
+async function changePassword(id, oldPassword, newPassword) {
+  try {
+    const user = await Account.findById(id);
+    if (!user) {
+      throw new Error("Người dùng không tồn tại");
+    }
+
+    const isMatch = await bcrypt.compare(oldPassword, user.password);
+    if (!isMatch) {
+      throw new Error("Mật khẩu hiện tại không đúng");
+    }
+
+    const saltRounds = parseInt(process.env.PASSWORD_SECRET) || 10;
+    const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
+
+    const updatedUser = await Account.findByIdAndUpdate(
+      id,
+      { $set: { password: hashedPassword } },
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedUser) {
+      throw new Error("Cập nhật mật khẩu thất bại");
+    }
+
+    return updatedUser;
+  } catch (error) {
+    throw error;
+  }
+}
+
 module.exports = {
   getAccountById,
+  getAccountByUserName,
   hashPassword,
   getUserRole,
   createAccount,
   getAccountByEmail,
   validatePassword,
   updateAccountById,
+  changePassword,
 };

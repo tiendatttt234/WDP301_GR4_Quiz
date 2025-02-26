@@ -1,5 +1,7 @@
 const jwt = require("jsonwebtoken");
 const createError = require("http-errors");
+const AccountRepository = require("../repositories/Account.repository");
+
 
 function signAccessToken(userId) {
   return new Promise((resolve, reject) => {
@@ -70,10 +72,23 @@ function verifyRefreshToken(refreshToken) {
     );
   });
 }
-
+async function isAdmin(req, res, next) {
+  try {
+      const account = await AccountRepository.getAccountById(req.payload.user.id);
+      if (!account) return res.status(404).json({ message: "Tài khoản không tồn tại" });
+      
+      const isAdmin = account.roles.some(role => role.name === "admin");
+      if (!isAdmin) return res.status(403).json({ message: "Forbidden: Không có quyền truy cập" });
+      
+      next();
+  } catch (error) {
+      res.status(500).json({ message: error.message });
+  }
+}
 module.exports = {
   signAccessToken,
   signRefreshToken,
   verifyAccessToken,
   verifyRefreshToken,
+  isAdmin
 };

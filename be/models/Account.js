@@ -51,6 +51,10 @@ const AccountSchema = new mongoose.Schema({
   primeExpiresAt: {
     type: Date, 
   },
+  isLocked:{
+    type: Boolean,
+    default: false
+  }
 });
 
 

@@ -38,7 +38,9 @@ async function loginService(email, password) {
     if (!account) {
       throw createError.NotFound("Tài khoản không tồn tại");
     }
-
+    if (account.isLocked) {
+      throw createError.Forbidden("Tài khoản của bạn đã bị khóa. Vui lòng liên hệ hỗ trợ.");
+    }
     const isMatch = await AccountRepository.validatePassword(
       password,
       account.password

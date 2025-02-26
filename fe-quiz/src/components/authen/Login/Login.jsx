@@ -42,7 +42,7 @@ const Login = () => {
                 if (userRoles.includes('admin')) {
                     navigate('/admin');
                 } else {
-                    navigate('/user');
+                    navigate('/');
                 }
             }, 1000);
         } catch (err) {

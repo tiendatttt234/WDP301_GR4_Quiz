@@ -5,13 +5,13 @@ const { json } = require("body-parser");
 const morgan = require("morgan");
 const cors = require("cors");
 const Db = require("./dbConnect/dbConnect");
-const { quizRouter, questionBankRouter} = require("./routes");
+const { quizRouter, questionBankRouter, exportRouter} = require("./routes");
 require("dotenv").config();
 const accountRouter = require("./routes/account.router");
 
 //Import các Routes
 const accountRoutes = require('./routes/accountRoutes');
-const reportRoutes = require('./routes/reportRoutes');
+// const reportRoutes = require('./routes/reportRoutes');
 
 //Import các Routes 
 // const {
@@ -28,10 +28,10 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use("/quiz", quizRouter);
 app.use("/questionFile", questionBankRouter);
-//Đặt lại tên root cho questionfile cả ở server với route 
+app.use("/test", exportRouter);
 app.use("/auth", accountRouter);
 app.use('/api/accounts', accountRoutes);
-app.use('/api/reports', reportRoutes);
+// app.use('/api/reports', reportRoutes);
 //Kiểm soát lỗi xảy ra trên controller, router và model
 app.use((err, req, res, next) => {
   console.error(err.stack);

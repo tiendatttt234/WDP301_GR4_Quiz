@@ -1,4 +1,4 @@
-body {
+/* body {
   font-family: "Roboto", sans-serif;
   display: flex;
   justify-content: center;
@@ -6,7 +6,7 @@ body {
   height: 100vh;
   margin: 0;
   background-color: #f9f9f9;
-}
+} */
 
 .container {
   display: flex;

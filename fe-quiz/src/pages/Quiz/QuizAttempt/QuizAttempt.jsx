@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Card, Button } from "react-bootstrap";
+import { Card, Container } from "react-bootstrap";
 import { useParams } from "react-router-dom";
 import QuestionComponent from "../QuestionComponent/QuestionComponent";
 import "./QuizAttempt.css";
@@ -56,6 +56,7 @@ export default function QuizAttempt() {
   if (!quizData) return <p>Loading...</p>;
 
   return (
+    <Container>
     <div className="quiz-container">
       {/* Nội dung câu hỏi */}
       <div className="questions">
@@ -81,5 +82,6 @@ export default function QuizAttempt() {
         ))}
       </div>
     </div>
+    </Container>
   );
 }

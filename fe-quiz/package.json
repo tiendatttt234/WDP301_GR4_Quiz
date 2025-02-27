@@ -23,6 +23,7 @@
     "react-bootstrap": "^2.10.9",
     "react-card-flip": "^1.2.3",
     "react-bootstrap-icons": "^1.11.4",
+    "react-card-flip": "^1.2.3",
     "react-chartjs-2": "^5.2.0",
     "react-dom": "^19.0.0",
     "react-hook-form": "^7.53.0",

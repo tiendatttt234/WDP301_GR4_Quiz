@@ -29,6 +29,7 @@ export default function UserDefaultPage() {
             <Route path="/questionfile/getAll" element={<ListQuestion />} />
            {/*  <Route path="/viewques/:id" element={<ViewQuestionDetail />} /> */}
             <Route path="/questionfile/update/:id" element={<UpdateQuestion />} />
+            <Route path="/questionfile/update" element={<UpdateQuestion />} />
             
 
             {/* user profile */}

@@ -4,10 +4,10 @@ const AccountController = require("../controllers/admin/adminAccountController")
 const { verifyAccessToken, isAdmin } = require("../middlewares/jwt_helper");
 
 
-// API lấy danh sách tài khoản
+// API get account by admin
 router.get("/accounts", verifyAccessToken, isAdmin, AccountController.getAllAccounts);
 
-// API khóa hoặc mở khóa tài khoản
+// API lock account
 router.put("/accounts/:id/lock", verifyAccessToken, isAdmin, AccountController.islockAccount);
 
 module.exports = router;

@@ -101,6 +101,27 @@ async function changePassword(id, oldPassword, newPassword) {
     throw error;
   }
 }
+async function getAccountById(id) {
+  try {
+      return await Account.findById(id).populate("roles").exec();
+  } catch (error) {
+      throw error;
+  }
+}
+async function getAllAccounts() {
+  try {
+    return await Account.find()
+      .populate({
+        path: "roles",
+        match: { name: { $ne: "admin" } },
+      })
+      .then((accounts) => {
+        return accounts.filter((account) => account.roles.length > 0);
+      });
+  } catch (error) {
+    throw error;
+  }
+}
 
 module.exports = {
   getAccountById,
@@ -112,4 +133,6 @@ module.exports = {
   validatePassword,
   updateAccountById,
   changePassword,
+  getAllAccounts,
+  getAccountById
 };

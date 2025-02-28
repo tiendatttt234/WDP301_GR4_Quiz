@@ -6,15 +6,26 @@ import UserDefaultPage from "./layouts/user-default-layout";
 import Login from "./components/authen/Login/Login";
 import Register from "./components/authen/Register/Register";
 import QuizResult from "./pages/Quiz/QuizResult/QuizResult";
+import Profile from "./components/authen/Profile/Profile";
+import Header from "./components/Header/Header";
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<h1>Home Page</h1>} />
+        <Route
+          path="/"
+          element={
+            <>
+              <Header />
+              <h1>Home Page</h1>
+            </>
+          }
+        />
         <Route path="/flashcards" element={<FlashCards />} />
         <Route path="/attempt/:id" element={<QuizAttempt />} />
         <Route path="/result" element = {<QuizResult/>}/> 
+        <Route path="/profile/:id" element={<Profile />} />
         <Route
           path="/user/*"
           element={<UserDefaultPage />}

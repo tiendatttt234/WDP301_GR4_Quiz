@@ -12,6 +12,7 @@ const accountRouter = require("./routes/account.router");
 //Import các Routes
 const accountRoutes = require('./routes/accountRoutes');
 // const reportRoutes = require('./routes/reportRoutes');
+const adminRouter = require("./routes/admin.routes");
 
 //Import các Routes 
 // const {
@@ -32,6 +33,8 @@ app.use("/test", exportRouter);
 app.use("/auth", accountRouter);
 app.use('/api/accounts', accountRoutes);
 // app.use('/api/reports', reportRoutes);
+app.use("/admin", adminRouter);
+
 //Kiểm soát lỗi xảy ra trên controller, router và model
 app.use((err, req, res, next) => {
   console.error(err.stack);

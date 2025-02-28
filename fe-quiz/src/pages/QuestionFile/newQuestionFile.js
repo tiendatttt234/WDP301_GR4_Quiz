@@ -1,5 +1,9 @@
 import React, { useState } from "react";
+import axios from "axios";
 import { Trash2, Plus } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import "./styles.js";
 import {
   Container,
@@ -31,6 +35,21 @@ const QuestionCreator = () => {
       question: "",
     },
   ]);
+
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const navigate = useNavigate();
+  const validateForm = () => {
+    if (!title.trim()) return "Vui lòng nhập tiêu đề";
+    if (!description.trim()) return "Vui lòng nhập mô tả";
+    for (let q of questions) {
+      if (!q.question.trim()) return "Mỗi câu hỏi cần có nội dung";
+      for (let ans of q.answers) {
+        if (!ans.trim()) return "Mỗi đáp án cần có nội dung";
+      }
+    }
+    return null;
+  };
 
   const questionTypes = [
     { value: "trueFalse", label: "Đúng/Sai" },
@@ -130,13 +149,44 @@ const QuestionCreator = () => {
       })
     );
   };
+  const handleSubmit = async () => {
+    const errorMessage = validateForm();
+    if (errorMessage) {
+      toast.error(errorMessage);
+      return;
+    }
+    const formattedQuestions = questions.map((q) => ({
+      content: q.question,
+      type: q.type === "trueFalse" ? "Boolean" : q.type === "multiAnswer" ? "MAQ" : "MCQ",
+      answers: q.answers.map((ans, index) => ({
+        answerContent: ans,
+        isCorrect: q.selectedAnswers.includes(index),
+      })),
+    }));
+
+    const payload = {
+      name: title,
+      description,
+      arrayQuestion: formattedQuestions,
+    };
+
+    try {
+      await axios.post("http://localhost:9999/questionFile/create", payload);
+      toast.success("Tạo bộ câu hỏi thành công!", { autoClose: 4000 });
+      setTimeout(() => navigate("/user/questionfile/getAll"), 4000);
+    } catch (error) {
+      toast.error("Lỗi khi tạo bộ câu hỏi");
+      console.error(error);
+    }
+  };
 
   return (
     <Container>
+      <ToastContainer />
       <Title>Tạo học phần mới</Title>
 
-      <InputField type="text" placeholder="Nhập tiêu đề..." />
-      <TextArea placeholder="Nhập mô tả..." rows={3} />
+      <InputField type="text" placeholder="Nhập tiêu đề..." onChange={(e) => setTitle(e.target.value)}/>
+      <TextArea placeholder="Nhập mô tả..." rows={3} onChange={(e) => setDescription(e.target.value)}/>
 
       {questions.map((question, qIndex) => (
         <QuestionCard key={question.id}>
@@ -157,6 +207,7 @@ const QuestionCreator = () => {
           <InputField
             type="text"
             placeholder="Nhập câu hỏi..."
+            
             value={question.question}
             onChange={(e) => updateQuestionText(question.id, e.target.value)}
           />
@@ -198,7 +249,7 @@ const QuestionCreator = () => {
 
       <ButtonGroup>
         <SecondaryButton>Trở lại</SecondaryButton>
-        <PrimaryButton>Tạo và ôn luyện</PrimaryButton>
+        <PrimaryButton onClick={handleSubmit}>Tạo và ôn luyện</PrimaryButton>
       </ButtonGroup>
     </Container>
   );

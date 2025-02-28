@@ -10,10 +10,12 @@ const getUserRole = require("./Account.repository");
 const createAccount = require("./Account.repository");
 const updateAccountById = require("./Account.repository");
 const changePassword = require("./Account.repository");
+const NotificationRepository = require("./notification.repository");
 module.exports = {
   quizRepository,
   quizResultRepository,
   questionFileRepository,
+  NotificationRepository,
   getAccountById,
   getAccountByUserName,
   hashPassword,

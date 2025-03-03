@@ -2,8 +2,10 @@ const NotificationRepository = require("../repositories/notification.repository"
 
 
   async function sendNotification(recipientId, type, message) {
+    console.log("sendNotification", recipientId, type, message);
+    
     const notification = await NotificationRepository.createNotification({
-      recipient: recipientId,
+      recipent: recipientId,
       type,
       message,
     });

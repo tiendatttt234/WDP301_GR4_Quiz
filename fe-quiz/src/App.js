@@ -8,7 +8,9 @@ import Register from "./components/authen/Register/Register";
 import QuizResult from "./pages/Quiz/QuizResult/QuizResult";
 import Profile from "./components/authen/Profile/Profile";
 import Header from "./components/Header/Header";
-
+import AdminDefaultPage from "./layouts/admin-default-layout";
+import ReportManagement from "./pages/AdminPages/Report/ReportManagement";
+import Dashboard from "./pages/AdminPages/Dashboard/Dashboard";
 function App() {
   return (
     <BrowserRouter>
@@ -34,6 +36,11 @@ function App() {
 
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+
+        <Route path="/admin/*" element={<AdminDefaultPage />}>
+          <Route path="reports" element={<ReportManagement />} />
+          <Route path="" element={<Dashboard />} /> {/* Default route khi vào /admin */}
+        </Route>
       </Routes>
     </BrowserRouter>
   );

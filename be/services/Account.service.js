@@ -7,6 +7,7 @@ const {
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
 const JWT_SECRET = "jwt_secret_key";
+const bcrypt = require("bcrypt");
 async function registerService(email, password, userName) {
   try {
     const existingAccount = await AccountRepository.getAccountByUserName(

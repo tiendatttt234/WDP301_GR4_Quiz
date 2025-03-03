@@ -7,7 +7,9 @@ import Login from "./components/authen/Login/Login";
 import Register from "./components/authen/Register/Register";
 import QuizResult from "./pages/Quiz/QuizResult/QuizResult";
 import Profile from "./components/authen/Profile/Profile";
+import ForgotPassword from "./components/authen/forgotPassword/ForgotPassword";
 import Header from "./components/Header/Header";
+import ResetPassword from "./components/authen/forgotPassword/ResetPassword";
 
 function App() {
   return (
@@ -34,6 +36,8 @@ function App() {
 
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password/:id/:token" element={<ResetPassword />} />
       </Routes>
     </BrowserRouter>
   );

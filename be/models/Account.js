@@ -54,8 +54,9 @@ const AccountSchema = new mongoose.Schema({
   isLocked:{
     type: Boolean,
     default: false
-  }
-});
+  },
+ 
+}, { timestamps: true });
 
 
 // Create the Account model

@@ -1,0 +1,180 @@
+.reports-container {
+    padding: 20px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.reports-container h1 {
+    margin-bottom: 20px;
+    color: #333;
+    text-align: center;
+}
+
+.reports-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+.reports-table th,
+.reports-table td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.reports-table th {
+    background: #f0f2f5;
+    font-weight: bold;
+    color: #333;
+}
+
+.reports-table tr:nth-child(even) {
+    background: #f8f9fa;
+}
+
+.reports-table tr:hover {
+    background: #e9ecef;
+    cursor: pointer;
+}
+
+.status {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: bold;
+    color: #fff;
+}
+
+.status.pending {
+    background: #ff8c00; /* Cam */
+}
+
+.status.resolved {
+    background: #28a745; /* Xanh lá */
+}
+
+.status.under-review {
+    background: #6f42c1; /* Tím */
+}
+
+.action-btn {
+    padding: 6px 12px;
+    font-size: 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-right: 8px;
+}
+
+.action-btn.view {
+    background: #007bff; /* Xanh dương */
+    color: #fff;
+}
+
+.action-btn.view:hover {
+    background: #0056b3;
+}
+
+.action-btn.delete {
+    background: #dc3545; /* Đỏ */
+    color: #fff;
+}
+
+.action-btn.delete:hover {
+    background: #c82333;
+}
+/* Nền mờ của modal */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5); /* Làm mờ nền */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Nội dung modal */
+.modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    width: 50%;
+    max-width: 600px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    text-align: left;
+    position: relative;
+    animation: slideDown 0.3s ease-in-out;
+}
+
+/* Nút đóng modal */
+.close {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 24px;
+    cursor: pointer;
+    color: #333;
+    transition: 0.3s;
+}
+
+.close:hover {
+    color: red;
+}
+
+/* Căn chỉnh text */
+.modal-content p {
+    font-size: 16px;
+    margin: 8px 0;
+}
+
+/* Trạng thái */
+.status {
+    font-weight: bold;
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+
+.status.pending {
+    background: orange;
+    color: white;
+}
+
+.status.resolved {
+    background: green;
+    color: white;
+}
+
+.status.rejected {
+    background: red;
+    color: white;
+}
+
+/* Animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideDown {
+    from {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}

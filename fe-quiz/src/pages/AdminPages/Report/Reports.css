@@ -178,3 +178,26 @@
         opacity: 1;
     }
 }
+
+.form-group select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-bottom: 10px;
+}
+
+.status.approved {
+    background-color: #28a745;
+    color: white;
+}
+
+.status.rejected {
+    background-color: #dc3545;
+    color: white;
+}
+
+.status.pending {
+    background-color: #ffc107;
+    color: black;
+}

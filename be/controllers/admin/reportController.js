@@ -29,14 +29,15 @@ const getReportsList = async (req, res) => {
 
 const getReportDetails = async (req, res) => {
     const { reportId } = req.params;
-
+    console.log(reportId);
+    
     try {
         const report = await Report.findById(reportId)
             .populate("reportBy", "userName")
             .populate({
                 path: "questionFile",
-                select: "name createdBy",
-                populate: { path: "createdBy", select: "userName" }
+                select: "name createdBy _id",
+                populate: { path: "createdBy", select: ["userName","_id" ]}
             });
 
         if (!report) {
@@ -44,11 +45,14 @@ const getReportDetails = async (req, res) => {
         }
 
         res.status(200).json({
+            report_id: report._id,
             sender: report.reportBy.userName,
+            senderId: report.reportBy._id,
             questionFile: {
-                id: report.questionFile._id,
-                name: report.questionFile.name,
-                createdBy: report.questionFile.createdBy.userName
+                qf_id: report.questionFile._id,
+                qf_name: report.questionFile.name,
+                qf_createdBy: report.questionFile.createdBy.userName,
+                qf_createdById: report.questionFile.createdBy._id
             },
             reason: report.reason,
             status: report.status
@@ -75,8 +79,37 @@ const deleteReport = async (req, res) => {
     }
 };
 
+const updateReportStatus = async (req, res) => {
+    const { reportId } = req.params;
+    const { status } = req.body;
+
+    try {
+        if (!['approved', 'rejected'].includes(status)) {
+            return res.status(400).json({ message: "Trạng thái không hợp lệ" });
+        }
+
+        const report = await Report.findByIdAndUpdate(
+            reportId,
+            { status },
+            { new: true }
+        );
+
+        if (!report) {
+            return res.status(404).json({ message: "Báo cáo không tồn tại" });
+        }
+
+        res.status(200).json({ 
+            message: "Cập nhật trạng thái báo cáo thành công",
+            report 
+        });
+    } catch (error) {
+        res.status(500).json({ message: "Lỗi khi cập nhật trạng thái báo cáo", error: error.message });
+    }
+};
+
 module.exports = {
     getReportsList,
     getReportDetails,
-    deleteReport
+    deleteReport,
+    updateReportStatus
 };

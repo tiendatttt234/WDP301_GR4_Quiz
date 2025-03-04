@@ -11,6 +11,9 @@ import Header from "./components/Header/Header";
 import AdminDefaultPage from "./layouts/admin-default-layout";
 import ReportManagement from "./pages/AdminPages/Report/ReportManagement";
 import Dashboard from "./pages/AdminPages/Dashboard/Dashboard";
+import AccountManagement from "./pages/AdminPages/User/AccountManagement";
+
+
 function App() {
   return (
     <BrowserRouter>
@@ -40,6 +43,8 @@ function App() {
         <Route path="/admin/*" element={<AdminDefaultPage />}>
           <Route path="reports" element={<ReportManagement />} />
           <Route path="" element={<Dashboard />} /> {/* Default route khi vào /admin */}
+          <Route path="Users" element={<AccountManagement/>} />
+          <Route path = "Dashboard" element={<Dashboard/>}/>
         </Route>
       </Routes>
     </BrowserRouter>

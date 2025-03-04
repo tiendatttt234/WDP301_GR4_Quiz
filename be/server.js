@@ -11,7 +11,6 @@ const accountRouter = require("./routes/account.router");
 const adminRouter = require("./routes/admin.routes");
 const NotificationService = require("./services/notification.service");
 
-
 const app = express();
 
 // Middleware

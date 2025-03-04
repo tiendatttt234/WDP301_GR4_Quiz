@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Search } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import {
   Container,
   Header,
@@ -22,6 +23,7 @@ const ListQuestion = () => {
   const [activeTab, setActiveTab] = useState("hocPhan");
   const [search, setSearch] = useState("");
   const [questionSets, setQuestionSets] = useState([]);
+  const navigate = useNavigate();
   // Danh sách học phần
 
   useEffect(() => {
@@ -45,6 +47,9 @@ const ListQuestion = () => {
     (file.createdBy && file.createdBy.toLowerCase().includes(search.toLowerCase()))
   );
 
+  const handleQuestionClick = (id) => {
+    navigate(`/user/questionfile/update/${id}`); // Điều hướng đến trang chi tiết với ID
+  };
 
 
   return (
@@ -76,7 +81,11 @@ const ListQuestion = () => {
       </Header>
       <QuestionList>
         {filteredQuestionFiles.map((qf) => (
-          <QuestionItem key={qf._id}>
+          <QuestionItem 
+          key={qf._id}
+          onClick={() => handleQuestionClick(qf._id)} // Thêm onClick
+          style={{ cursor: 'pointer' }} // Thêm style để hiển thị con trỏ
+        >
             <QuestionDetails>
               <QuestionCount>{qf.arrayQuestion?.length} câu hỏi</QuestionCount>
               <QuestionAuthor>{qf.createdBy || "Không rõ"}</QuestionAuthor>

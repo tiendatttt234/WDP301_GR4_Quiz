@@ -40,10 +40,26 @@ async function updateQuestionFile(id, updateData) {
 async function deleteQuestionFile(id) {
   return await questionRepository.deleteQF(id);
 }
+async function updateQuestion(fileId, questionId, updatedQuestion) {
+  const questionFile = await questionRepository.updateQuestionInFile(fileId, questionId, updatedQuestion);
+  if (!questionFile) {
+    throw new Error("Không tìm thấy tệp hoặc câu hỏi để cập nhật");
+  }
+  return questionFile;
+}
+async function updatePrivacy(fileId, isPrivate) {
+  const updatedFile = await questionRepository.updatePrivacy(fileId, isPrivate);
+  if (!updatedFile) {
+    throw new Error("Không tìm thấy tệp để cập nhật trạng thái");
+  }
+  return updatedFile;
+}
+
 module.exports = {
   getAllQuestionFiles,
   getQuestionFileById,
   createQuestionFile,
   updateQuestionFile,
   deleteQuestionFile,
+  updateQuestion, updatePrivacy
 };

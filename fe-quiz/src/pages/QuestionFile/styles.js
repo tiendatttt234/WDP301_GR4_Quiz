@@ -129,6 +129,14 @@ export const PrimaryButton = styled(Button)`
     transform: scale(1.05);
   }
 `;
+export const ButtonContainer = styled.div`
+  display: flex;
+  align-items: center; /* Căn giữa theo chiều dọc */
+  justify-content: space-between; /* Đẩy tiêu đề sang trái, nút sang phải */
+  width: 100%;
+  margin-bottom: 10px;
+`;
+
 
 export const SecondaryButton = styled(Button)`
   border: 1px solid #e5e7eb;

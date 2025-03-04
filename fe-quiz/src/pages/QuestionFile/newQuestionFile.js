@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Trash2, Plus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -22,22 +22,51 @@ import {
   DeleteButton,
   SecondaryButton,
   PrimaryButton,
-  DeleteButtonWrapper
+  DeleteButtonWrapper,
+  ButtonContainer
 } from "./styles.js";
 
 const QuestionCreator = () => {
-  const [questions, setQuestions] = useState([
-    {
-      id: 1,
-      type: "trueFalse",
-      answers: ["Yes", "No"],
-      selectedAnswers: [],
-      question: "",
-    },
-  ]);
+  const [title, setTitle] = useState(() => localStorage.getItem("title") || "");
+  const [description, setDescription] = useState(() => localStorage.getItem("description") || "");
+  const [questions, setQuestions] = useState(() => {
+    const savedQuestions = localStorage.getItem("questions");
+    return savedQuestions
+      ? JSON.parse(savedQuestions)
+      : [
+          { id: 1, type: "trueFalse", answers: ["Đúng", "Sai"], selectedAnswers: [], question: "" },
+          { id: 2, type: "trueFalse", answers: ["Đúng", "Sai"], selectedAnswers: [], question: "" },
+        ];
+  });
+  
 
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
+  
+  useEffect(() => {
+    localStorage.setItem("title", title);
+  }, [title]);
+  
+  useEffect(() => {
+    localStorage.setItem("description", description);
+  }, [description]);
+  
+  useEffect(() => {
+    localStorage.setItem("questions", JSON.stringify(questions));
+  }, [questions]);
+  
+  const handleCreateNew = () => {
+    setTitle(""); // Reset về rỗng
+    setDescription("");
+    setQuestions([
+      { id: 1, type: "trueFalse", answers: ["Đúng", "Sai"], selectedAnswers: [], question: "" },
+      { id: 2, type: "trueFalse", answers: ["Đúng", "Sai"], selectedAnswers: [], question: "" },
+    ]);
+  
+    // Xóa dữ liệu trong localStorage
+    localStorage.removeItem("title");
+    localStorage.removeItem("description");
+    localStorage.removeItem("questions");
+  };
+  
   const navigate = useNavigate();
   const validateForm = () => {
     if (!title.trim()) return "Vui lòng nhập tiêu đề";
@@ -60,7 +89,7 @@ const QuestionCreator = () => {
   const getDefaultAnswers = (type) => {
     switch (type) {
       case "trueFalse":
-        return ["Yes", "No"];
+        return ["Đúng", "Sai"];
       case "multiAnswer":
       case "singleAnswer":
         return ["Đáp án 1", "Đáp án 2", "Đáp án 3", "Đáp án 4"];
@@ -157,7 +186,12 @@ const QuestionCreator = () => {
     }
     const formattedQuestions = questions.map((q) => ({
       content: q.question,
-      type: q.type === "trueFalse" ? "Boolean" : q.type === "multiAnswer" ? "MAQ" : "MCQ",
+      type:
+        q.type === "trueFalse"
+          ? "Boolean"
+          : q.type === "multiAnswer"
+          ? "MAQ"
+          : "MCQ",
       answers: q.answers.map((ans, index) => ({
         answerContent: ans,
         isCorrect: q.selectedAnswers.includes(index),
@@ -183,10 +217,22 @@ const QuestionCreator = () => {
   return (
     <Container>
       <ToastContainer />
+      <ButtonContainer>
       <Title>Tạo học phần mới</Title>
-
-      <InputField type="text" placeholder="Nhập tiêu đề..." onChange={(e) => setTitle(e.target.value)}/>
-      <TextArea placeholder="Nhập mô tả..." rows={3} onChange={(e) => setDescription(e.target.value)}/>
+      <PrimaryButton onClick={handleCreateNew}>Tạo Mới</PrimaryButton>
+      </ButtonContainer>
+      <InputField
+        type="text"
+        placeholder="Nhập tiêu đề..."
+        value={title} 
+        onChange={(e) => setTitle(e.target.value)}
+      />
+      <TextArea
+        placeholder="Nhập mô tả..."
+        rows={3}
+        value={description} 
+        onChange={(e) => setDescription(e.target.value)}
+      />
 
       {questions.map((question, qIndex) => (
         <QuestionCard key={question.id}>
@@ -207,7 +253,6 @@ const QuestionCreator = () => {
           <InputField
             type="text"
             placeholder="Nhập câu hỏi..."
-            
             value={question.question}
             onChange={(e) => updateQuestionText(question.id, e.target.value)}
           />
@@ -234,11 +279,13 @@ const QuestionCreator = () => {
               </AnswerItem>
             ))}
           </AnswersGrid>
-          <DeleteButtonWrapper> 
-          <DeleteButton onClick={() => removeQuestion(question.id)}>
-            <Trash2 size={20} />
-          </DeleteButton>
-          </DeleteButtonWrapper> 
+          {questions.length > 2 && (
+            <DeleteButtonWrapper>
+              <DeleteButton onClick={() => removeQuestion(question.id)}>
+                <Trash2 size={20} />
+              </DeleteButton>
+            </DeleteButtonWrapper>
+          )}
         </QuestionCard>
       ))}
 

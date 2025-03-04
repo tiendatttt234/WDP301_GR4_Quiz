@@ -8,6 +8,7 @@ import { Route, Routes } from "react-router-dom";
 import QuestionCreation from "../pages/QuestionFile/newQuestionFile";
 import UpdateQuestion from "../pages/QuestionFile/update/updateQuestionFile";
 import ListQuestion from "../pages/QuestionFile/listQuestion/listQuestionFile";
+import QuestionFileDetail from "../pages/QuestionFile/detail/questionFileDetail";
 // import FlashCardPage from "../../user/FlashCard";
 // import Profile from "../../authen/Profile";
 // import MyCourse from "../../authen/MyCourse";
@@ -27,7 +28,7 @@ export default function UserDefaultPage() {
             {/* <Route path='/flash' element={FlashCardPage}/> */}
             <Route path="/questionfile/create" element={<QuestionCreation />} />
             <Route path="/questionfile/getAll" element={<ListQuestion />} />
-           {/*  <Route path="/viewques/:id" element={<ViewQuestionDetail />} /> */}
+            <Route path="/questionfile/getById/:id" element={<QuestionFileDetail />} />
             <Route path="/questionfile/update/:id" element={<UpdateQuestion />} />
             
 

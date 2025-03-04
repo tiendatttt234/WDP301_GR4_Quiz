@@ -84,6 +84,33 @@ const questionFileService = require('../services/questionFile.service');
     }
   }
 
+  async function patchQuestion(req, res) {
+    try {
+      const { fileId, questionId } = req.params;
+      const updatedQuestion = req.body;
+      const updatedFile = await questionFileService.updateQuestion(fileId, questionId, updatedQuestion);
+      res.status(200).json(updatedFile);
+    } catch (error) {
+      console.error("Lỗi khi cập nhật câu hỏi:", error);
+      res.status(error.message.includes("Không tìm thấy") ? 404 : 500).json({
+        message: error.message || "Lỗi server",
+      });
+    }
+  }
+
+  async function updatePrivacy(req, res) {
+    try {
+      const { fileId } = req.params;
+      const { isPrivate } = req.body; // Chỉ lấy isPrivate từ body
+      const updatedFile = await questionFileService.updatePrivacy(fileId, isPrivate);
+      res.status(200).json({ message: "Privacy updated successfully", result: updatedFile });
+    } catch (error) {
+      console.error("Lỗi khi cập nhật trạng thái:", error);
+      res.status(error.message.includes("Không tìm thấy") ? 404 : 500).json({
+        message: error.message || "Lỗi server",
+      });
+    }
+  }
 
 const QuestionFileController = {
   getAllQuestionFile,
@@ -91,6 +118,7 @@ const QuestionFileController = {
   createQuestionFile,
   updateQuestionFile,
   deleteQuestionFile,
+  patchQuestion, updatePrivacy
 };
 
 module.exports = QuestionFileController;

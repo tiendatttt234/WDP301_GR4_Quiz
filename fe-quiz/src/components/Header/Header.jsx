@@ -47,7 +47,7 @@ const Header = ({ onSearchResults }) => {
 
     loadUserData();
   }, []);
-
+  //tạo thêm 1 bell ở user để nhận thông báo từ admin
   const handleLogout = () => {
     localStorage.removeItem("accessToken");
     localStorage.removeItem("userName");

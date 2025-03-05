@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import "./Reports.css";
 
 const ReportManagement = () => {
@@ -12,7 +13,7 @@ const ReportManagement = () => {
     const [handleMessage, setHandleMessage] = useState("");
     const [handleStatus, setHandleStatus] = useState("approved");
     const reportsPerPage = 10;
-
+    const navigate = useNavigate();
     useEffect(() => {
         fetchReports();
     }, []);
@@ -20,6 +21,8 @@ const ReportManagement = () => {
     const fetchReports = async () => {
         try {
             const response = await axios.get("http://localhost:9999/admin/reports");
+            console.log(response.data);
+            
             setReports(response.data);
             setLoading(false);
         } catch (error) {
@@ -31,12 +34,25 @@ const ReportManagement = () => {
     const viewReportDetails = async (reportId) => {
         try {
             const response = await axios.get(`http://localhost:9999/admin/reports/${reportId}/details`);
+            // console.log(response.data);
             setSelectedReport(response.data);
         } catch (error) {
             alert("Lỗi khi lấy chi tiết báo cáo");
         }
     };
 
+    const viewQuestionFileReported = async (reportId) => {
+        try {
+            const response = await axios.get(`http://localhost:9999/admin/reports/${reportId}/details`);
+            const questionFileReported = response.data.questionFile;
+            const questionFileId = questionFileReported.qf_id;
+
+            // Điều hướng sang trang ViewQuestion với questionFileId
+            navigate(`/admin/view-question-detail/${questionFileId}`);
+        } catch (error) {
+            alert("Lỗi khi lấy dữ liệu bộ câu hỏi bị báo cáo");
+        }
+    };
     const handleReport = async (reportId) => {
         try {
             // Gọi API để lấy chi tiết báo cáo
@@ -56,8 +72,8 @@ const ReportManagement = () => {
 
         try {
             console.log("selectedReport data: ", selectedReport.report_id);
-
-            
+            //Trước khi gửi thông báo cần thêm bước handle questionFile delete hoặc warning cho người sở hữu
+            //
             
             // Gửi thông báo tới người vi phạm
             await axios.post("http://localhost:9999/notifycation/notify", {
@@ -65,16 +81,16 @@ const ReportManagement = () => {
                 type: "Warning",
                 message: handleMessage,
             });
-
+            
             // Cập nhật trạng thái report
-            const response = await axios.put(`http://localhost:9999/admin/reports/${selectedReport.report_id}/status`, {
+            await axios.put(`http://localhost:9999/admin/reports/${selectedReport.report_id}/status`, {
                 status: handleStatus,
             });
-
+            
+            
             // Cập nhật danh sách reports
-            setReports(reports.map((r) =>
-                r._id === selectedReport._id ? { ...r, status: handleStatus } : r
-            ));
+            await fetchReports(); 
+
 
             setShowHandlePopup(false);
             setHandleMessage("");
@@ -138,12 +154,19 @@ const ReportManagement = () => {
                                     View
                                 </button>
                                 <button
+                                    className="action-btn view"
+                                    onClick={() => viewQuestionFileReported(report._id)}
+                                >
+                                    File Detail
+                                </button>
+                                <button
                                     className="action-btn delete"
                                     onClick={() => handleReport(report._id)}
                                     disabled={report.status !== "pending"}
                                 >
                                     Handle
                                 </button>
+
                             </td>
                         </tr>
                     ))}

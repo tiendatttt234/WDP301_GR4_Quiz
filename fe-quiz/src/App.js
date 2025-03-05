@@ -12,6 +12,8 @@ import AdminDefaultPage from "./layouts/admin-default-layout";
 import ReportManagement from "./pages/AdminPages/Report/ReportManagement";
 import Dashboard from "./pages/AdminPages/Dashboard/Dashboard";
 import AccountManagement from "./pages/AdminPages/User/AccountManagement";
+import ViewQuestions from "./pages/AdminPages/Report/ViewQuestions";
+import AdminListQF from "./pages/AdminPages/QuestionFile/AdminListQF";
 
 
 function App() {
@@ -45,6 +47,8 @@ function App() {
           <Route path="" element={<Dashboard />} /> {/* Default route khi vào /admin */}
           <Route path="Users" element={<AccountManagement/>} />
           <Route path = "Dashboard" element={<Dashboard/>}/>
+          <Route path="view-question-detail/:id" element={<ViewQuestions/>}/>
+          <Route path="questionFile/list" element={<AdminListQF/>}/>
         </Route>
       </Routes>
     </BrowserRouter>

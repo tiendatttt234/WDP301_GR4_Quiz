@@ -1,7 +1,25 @@
 const { create } = require("../models/Account");
 const questionRepository = require("../repositories/questionFile.repository");
+
 async function getAllQuestionFiles() {
   return await questionRepository.getAll();
+}
+
+async function getAllQuestionFileAndUser() {
+  const listQF = await questionRepository.getAllWithUser();
+  const formatQF = listQF.map((qf) => ({    
+    id: qf._id,
+    name: qf.name,
+    description: qf.description,
+    isPrivate: qf.isPrivate,
+    reportedCount: qf.reportedCount,
+    isReported: qf.isReported,
+    userId: qf.createdBy?._id || "N/A",
+    userName: qf.createdBy?.userName || "N/A",
+    createdAt: qf.createdAt,
+    updatedAt: qf.updatedAt,
+  }));
+  return formatQF;
 }
 
 async function getQuestionFileById(id) {
@@ -78,5 +96,6 @@ module.exports = {
   createQuestionFile,
   updateQuestionFile,
   deleteQuestionFile,
-  getQuestionFileByIdandUserId
+  getQuestionFileByIdandUserId,
+  getAllQuestionFileAndUser
 };

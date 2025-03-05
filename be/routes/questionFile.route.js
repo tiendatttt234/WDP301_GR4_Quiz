@@ -7,6 +7,7 @@ QuestionFileRouter.get('/getById/:id', questionFileController.getQuestionFileByI
 QuestionFileRouter.post('/create', questionFileController.createQuestionFile);
 QuestionFileRouter.put('/update/:id', questionFileController.updateQuestionFile);
 QuestionFileRouter.delete('/delete/:id', questionFileController.deleteQuestionFile);
+QuestionFileRouter.get('/getQFadmin', questionFileController.adminGetAllQF);
 
 module.exports = QuestionFileRouter;
 

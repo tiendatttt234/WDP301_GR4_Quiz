@@ -15,7 +15,11 @@ async function findByIdAndUserId(id, userId) {
   return await QuestionFile.findOne({ _id: id, createdBy: userId })
     .populate("createdBy", "userName");
 }
-
+async function getAllWithUser(){
+  return await QuestionFile.find({})
+    .select("name description createdAt updatedAt isPrivate isReported reportedCount")
+    .populate("createdBy", "userName _id");
+}
 async function getAll() {
   return await QuestionFile.find({})
     .sort({ createdAt: 1 })
@@ -51,7 +55,8 @@ const questionFileRepository = {
   findByIdAndUserId,
   createQF, updateQF,
   deleteQF,
-  getAll
+  getAll,
+  getAllWithUser
 };
 
 module.exports = questionFileRepository;

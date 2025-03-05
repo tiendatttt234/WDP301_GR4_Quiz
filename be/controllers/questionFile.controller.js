@@ -85,12 +85,30 @@ const questionFileService = require('../services/questionFile.service');
   }
 
 
+  async function adminGetAllQF(req, res, next) {
+    try {
+      
+
+      const listQuestionFile = await questionFileService.getAllQuestionFileAndUser();
+
+      return res.status(200).json({ 
+        success: true, 
+        data: listQuestionFile 
+      });
+    } catch (error) {
+      console.error("Error in getAllQuestionFile:", error);
+      next(error);
+    }
+  }
+
+
 const QuestionFileController = {
   getAllQuestionFile,
   getQuestionFileById,
   createQuestionFile,
   updateQuestionFile,
   deleteQuestionFile,
+  adminGetAllQF
 };
 
 module.exports = QuestionFileController;

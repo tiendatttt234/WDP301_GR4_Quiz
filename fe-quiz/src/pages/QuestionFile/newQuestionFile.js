@@ -4,7 +4,6 @@ import { Trash2, Plus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import "./styles.js";
 import {
   Container,
   Title,
@@ -23,51 +22,38 @@ import {
   SecondaryButton,
   PrimaryButton,
   DeleteButtonWrapper,
-  ButtonContainer
+  ButtonContainer,
 } from "./styles.js";
 
 const QuestionCreator = () => {
-  const [title, setTitle] = useState(() => localStorage.getItem("title") || "");
-  const [description, setDescription] = useState(() => localStorage.getItem("description") || "");
-  const [questions, setQuestions] = useState(() => {
-    const savedQuestions = localStorage.getItem("questions");
-    return savedQuestions
-      ? JSON.parse(savedQuestions)
-      : [
-          { id: 1, type: "trueFalse", answers: ["Đúng", "Sai"], selectedAnswers: [], question: "" },
-          { id: 2, type: "trueFalse", answers: ["Đúng", "Sai"], selectedAnswers: [], question: "" },
-        ];
-  });
-  
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [questions, setQuestions] = useState([
+    { id: 1, type: "trueFalse", answers: ["Đúng", "Sai"], selectedAnswers: [], question: "" },
+    { id: 2, type: "trueFalse", answers: ["Đúng", "Sai"], selectedAnswers: [], question: "" },
+  ]);
+  const [isDirty, setIsDirty] = useState(false);
 
-  
-  useEffect(() => {
-    localStorage.setItem("title", title);
-  }, [title]);
-  
-  useEffect(() => {
-    localStorage.setItem("description", description);
-  }, [description]);
-  
-  useEffect(() => {
-    localStorage.setItem("questions", JSON.stringify(questions));
-  }, [questions]);
-  
-  const handleCreateNew = () => {
-    setTitle(""); // Reset về rỗng
-    setDescription("");
-    setQuestions([
-      { id: 1, type: "trueFalse", answers: ["Đúng", "Sai"], selectedAnswers: [], question: "" },
-      { id: 2, type: "trueFalse", answers: ["Đúng", "Sai"], selectedAnswers: [], question: "" },
-    ]);
-  
-    // Xóa dữ liệu trong localStorage
-    localStorage.removeItem("title");
-    localStorage.removeItem("description");
-    localStorage.removeItem("questions");
-  };
-  
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const handleBeforeUnload = (e) => {
+      if (isDirty) {
+        e.preventDefault();
+        e.returnValue = "Nếu bạn rời đi sẽ mất dữ liệu bạn vừa nhập. Bạn có chắc chắn muốn rời đi không?";
+      }
+    };
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, [isDirty]);
+
+  useEffect(() => {
+    if (title || description || questions.some(q => q.question || q.answers.some(a => a))) {
+      setIsDirty(true);
+    }
+  }, [title, description, questions]);
+
+
   const validateForm = () => {
     if (!title.trim()) return "Vui lòng nhập tiêu đề";
     if (!description.trim()) return "Vui lòng nhập mô tả";
@@ -76,6 +62,7 @@ const QuestionCreator = () => {
       for (let ans of q.answers) {
         if (!ans.trim()) return "Mỗi đáp án cần có nội dung";
       }
+      if (q.selectedAnswers.length === 0) return "Vui lòng chọn ít nhất một đáp án đúng cho mỗi câu hỏi";
     }
     return null;
   };
@@ -86,27 +73,18 @@ const QuestionCreator = () => {
     { value: "singleAnswer", label: "Chọn 1 đáp án" },
   ];
 
-  const getDefaultAnswers = (type) => {
-    switch (type) {
-      case "trueFalse":
-        return ["Đúng", "Sai"];
-      case "multiAnswer":
-      case "singleAnswer":
-        return ["Đáp án 1", "Đáp án 2", "Đáp án 3", "Đáp án 4"];
-      default:
-        return [];
-    }
-  };
-
   const handleTypeChange = (questionId, newType) => {
     setQuestions(
       questions.map((question) => {
         if (question.id === questionId) {
+          let newSelectedAnswers = [...question.selectedAnswers];
+          if (newType === "trueFalse" || newType === "singleAnswer") {
+            newSelectedAnswers = newSelectedAnswers.length > 0 ? [newSelectedAnswers[0]] : [];
+          }
           return {
             ...question,
             type: newType,
-            answers: getDefaultAnswers(newType),
-            selectedAnswers: [],
+            selectedAnswers: newSelectedAnswers,
           };
         }
         return question;
@@ -119,22 +97,15 @@ const QuestionCreator = () => {
       questions.map((question) => {
         if (question.id === questionId) {
           let newSelectedAnswers = [...question.selectedAnswers];
-
-          if (
-            question.type === "trueFalse" ||
-            question.type === "singleAnswer"
-          ) {
+          if (question.type === "trueFalse" || question.type === "singleAnswer") {
             newSelectedAnswers = [answerIndex];
           } else {
             if (checked) {
               newSelectedAnswers.push(answerIndex);
             } else {
-              newSelectedAnswers = newSelectedAnswers.filter(
-                (i) => i !== answerIndex
-              );
+              newSelectedAnswers = newSelectedAnswers.filter((i) => i !== answerIndex);
             }
           }
-
           return { ...question, selectedAnswers: newSelectedAnswers };
         }
         return question;
@@ -149,7 +120,7 @@ const QuestionCreator = () => {
       {
         id: newId,
         type: "trueFalse",
-        answers: getDefaultAnswers("trueFalse"),
+        answers: ["Đúng", "Sai"],
         selectedAnswers: [],
         question: "",
       },
@@ -178,6 +149,36 @@ const QuestionCreator = () => {
       })
     );
   };
+
+  const addAnswer = (questionId) => {
+    setQuestions(
+      questions.map((q) => {
+        if (q.id === questionId) {
+          return {
+            ...q,
+            answers: [...q.answers, `Đáp án ${q.answers.length + 1}`],
+          };
+        }
+        return q;
+      })
+    );
+  };
+
+  const removeAnswer = (questionId, answerIndex) => {
+    setQuestions(
+      questions.map((q) => {
+        if (q.id === questionId) {
+          const newAnswers = q.answers.filter((_, idx) => idx !== answerIndex);
+          const newSelectedAnswers = q.selectedAnswers
+            .filter((idx) => idx !== answerIndex)
+            .map((idx) => (idx > answerIndex ? idx - 1 : idx));
+          return { ...q, answers: newAnswers, selectedAnswers: newSelectedAnswers };
+        }
+        return q;
+      })
+    );
+  };
+
   const handleSubmit = async () => {
     const errorMessage = validateForm();
     if (errorMessage) {
@@ -186,12 +187,7 @@ const QuestionCreator = () => {
     }
     const formattedQuestions = questions.map((q) => ({
       content: q.question,
-      type:
-        q.type === "trueFalse"
-          ? "Boolean"
-          : q.type === "multiAnswer"
-          ? "MAQ"
-          : "MCQ",
+      type: q.type === "trueFalse" ? "Boolean" : q.type === "multiAnswer" ? "MAQ" : "MCQ",
       answers: q.answers.map((ans, index) => ({
         answerContent: ans,
         isCorrect: q.selectedAnswers.includes(index),
@@ -207,6 +203,7 @@ const QuestionCreator = () => {
     try {
       await axios.post("http://localhost:9999/questionFile/create", payload);
       toast.success("Tạo bộ câu hỏi thành công!", { autoClose: 4000 });
+      setIsDirty(false);
       setTimeout(() => navigate("/user/questionfile/getAll"), 4000);
     } catch (error) {
       toast.error("Lỗi khi tạo bộ câu hỏi");
@@ -218,19 +215,19 @@ const QuestionCreator = () => {
     <Container>
       <ToastContainer />
       <ButtonContainer>
-      <Title>Tạo học phần mới</Title>
-      <PrimaryButton onClick={handleCreateNew}>Tạo Mới</PrimaryButton>
+        <Title>Tạo học phần mới</Title>
+        
       </ButtonContainer>
       <InputField
         type="text"
         placeholder="Nhập tiêu đề..."
-        value={title} 
+        value={title}
         onChange={(e) => setTitle(e.target.value)}
       />
       <TextArea
         placeholder="Nhập mô tả..."
         rows={3}
-        value={description} 
+        value={description}
         onChange={(e) => setDescription(e.target.value)}
       />
 
@@ -276,16 +273,28 @@ const QuestionCreator = () => {
                   }
                   placeholder={`Đáp án ${index + 1}`}
                 />
+                {question.answers.length > 2 && (
+                  <DeleteButton onClick={() => removeAnswer(question.id, index)}>
+                    <Trash2 size={16} />
+                  </DeleteButton>
+                )}
               </AnswerItem>
             ))}
           </AnswersGrid>
-          {questions.length > 2 && (
-            <DeleteButtonWrapper>
-              <DeleteButton onClick={() => removeQuestion(question.id)}>
-                <Trash2 size={20} />
-              </DeleteButton>
-            </DeleteButtonWrapper>
-          )}
+
+          <ButtonContainer>
+            <AddButton onClick={() => addAnswer(question.id)}>
+              <Plus size={20} />
+              <span>Thêm đáp án</span>
+            </AddButton>
+            {questions.length > 2 && (
+              <DeleteButtonWrapper>
+                <DeleteButton onClick={() => removeQuestion(question.id)}>
+                  <Trash2 size={20} />
+                </DeleteButton>
+              </DeleteButtonWrapper>
+            )}
+          </ButtonContainer>
         </QuestionCard>
       ))}
 

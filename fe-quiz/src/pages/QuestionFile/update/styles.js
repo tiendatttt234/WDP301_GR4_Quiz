@@ -18,7 +18,7 @@ export const Title = styled.h1`
 `;
 
 export const InputField = styled.input`
-  width: 100%;       // Đảm bảo full width
+  width: 97%;       // Đảm bảo full width
   padding: 0.75rem 1rem; // Tăng padding cho thoải mái
   margin-bottom: 1rem;
   border: 1px solid #e2e8f0;
@@ -40,7 +40,7 @@ export const InputField = styled.input`
 `;
 
 export const TextArea = styled.textarea`
-  width: 100%;
+  width: 97%;
   padding: 0.75rem 1rem;
   margin-bottom: 1.5rem;
   border: 1px solid #e2e8f0;

@@ -10,20 +10,13 @@ import Profile from "./components/authen/Profile/Profile";
 import ForgotPassword from "./components/authen/forgotPassword/ForgotPassword";
 import Header from "./components/Header/Header";
 import ResetPassword from "./components/authen/forgotPassword/ResetPassword";
+import HomePage from "./pages/Homepage/Homepage";
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route
-          path="/"
-          element={
-            <>
-              <Header />
-              <h1>Home Page</h1>
-            </>
-          }
-        />
+        <Route path="/" element={<HomePage />} />
         <Route path="/flashcards" element={<FlashCards />} />
         <Route path="/attempt" element={<QuizAttempt />} />
         <Route path="/result" element={<QuizResult />} />

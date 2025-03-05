@@ -7,6 +7,7 @@ const cors = require("cors");
 const Db = require("./dbConnect/dbConnect");
 require("dotenv").config();
 const accountRouter = require("./routes/account.router");
+const QuizRouter = require("./routes/quiz.route");
 
 //Import các Routes
 // const {
@@ -21,7 +22,7 @@ app.use(express.urlencoded({ extended: true }));
 
 //Cấu hình các Routes example
 
-// app.use("/quiz", QuizRouter);
+app.use("/quiz", QuizRouter);
 // app.use("/quizSubmit", QuizSubmitRouter);
 // app.use("/account", AccountRouter);
 // app.use("/questionFile", QuestionFileRouter);

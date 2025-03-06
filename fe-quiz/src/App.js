@@ -7,23 +7,19 @@ import Login from "./components/authen/Login/Login";
 import Register from "./components/authen/Register/Register";
 import QuizResult from "./pages/Quiz/QuizResult/QuizResult";
 import Profile from "./components/authen/Profile/Profile";
+import ForgotPassword from "./components/authen/forgotPassword/ForgotPassword";
 import Header from "./components/Header/Header";
 import AdminDefaultPage from "./layouts/admin-default-layout";
 import ReportManagement from "./pages/AdminPages/Report/ReportManagement";
 import Dashboard from "./pages/AdminPages/Dashboard/Dashboard";
+import ResetPassword from "./components/authen/forgotPassword/ResetPassword";
+import HomePage from "./pages/Homepage/Homepage";
+
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route
-          path="/"
-          element={
-            <>
-              <Header />
-              <h1>Home Page</h1>
-            </>
-          }
-        />
+        <Route path="/" element={<HomePage />} />
         <Route path="/flashcards" element={<FlashCards />} />
         <Route path="/attempt/:id" element={<QuizAttempt />} />
         <Route path="/result" element = {<QuizResult/>}/> 
@@ -41,6 +37,8 @@ function App() {
           <Route path="reports" element={<ReportManagement />} />
           <Route path="" element={<Dashboard />} /> {/* Default route khi vào /admin */}
         </Route>
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password/:id/:token" element={<ResetPassword />} />
       </Routes>
     </BrowserRouter>
   );

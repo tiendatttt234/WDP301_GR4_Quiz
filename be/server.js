@@ -10,6 +10,7 @@ const { quizRouter, questionBankRouter, exportRouter } = require("./routes");
 const accountRouter = require("./routes/account.router");
 const adminRouter = require("./routes/admin.routes");
 const NotificationService = require("./services/notification.service");
+const QuizRouter = require("./routes/quiz.route");
 
 
 const app = express();

@@ -1,39 +1,62 @@
 import styled from "styled-components";
 
 export const Container = styled.div`
-  width: 80%;
+  width: 85%;
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 20px;
-  background-color: #f8f9fc;
+  padding: 2rem;
+  background: linear-gradient(135deg, #f8fafc, #eef2ff);
+  border-radius: 16px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
+  min-height: 80vh;
 `;
 
 export const Header = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 1.5rem;
+  padding-bottom: 1rem;
 `;
 
 export const Title = styled.h2`
-  font-size: 24px;
-  font-weight: bold;
-  color: #1e293b;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1e3a8a;
+  background: linear-gradient(to right, #1e3a8a, #3b82f6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 `;
 
 export const TabMenu = styled.div`
   display: flex;
-  gap: 20px;
+  gap: 2rem;
   border-bottom: 2px solid #e2e8f0;
+  padding-bottom: 0.5rem;
 `;
 
 export const Tab = styled.button`
-  font-size: 16px;
-  font-weight: ${(props) => (props.active ? "bold" : "normal")};
+  font-size: 1.125rem;
+  font-weight: ${(props) => (props.active ? "600" : "500")};
   color: ${(props) => (props.active ? "#1d4ed8" : "#64748b")};
   border: none;
   background: none;
-  padding: 10px;
+  padding: 0.75rem 1rem;
   cursor: pointer;
-  border-bottom: ${(props) => (props.active ? "2px solid #1d4ed8" : "none")};
+  position: relative;
+  transition: all 0.3s ease;
+
+  &:after {
+    content: "";
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background-color: #1d4ed8;
+    transform: ${(props) => (props.active ? "scaleX(1)" : "scaleX(0)")};
+    transform-origin: bottom center;
+    transition: transform 0.3s ease;
+  }
 
   &:hover {
     color: #1d4ed8;
@@ -43,76 +66,113 @@ export const Tab = styled.button`
 export const SearchBox = styled.div`
   display: flex;
   align-items: center;
-  border: 1px solid #cbd5e1;
-  border-radius: 8px;
-  padding: 10px;
+  border: 2px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 0.5rem 1rem;
   background-color: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+
+  &:focus-within {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+  }
 `;
 
 export const SearchInput = styled.input`
   flex: 1;
   border: none;
   outline: none;
-  font-size: 16px;
-  padding: 5px;
+  font-size: 1rem;
+  padding: 0.5rem;
+  background: transparent;
+  color: #1e293b;
+
+  &::placeholder {
+    color: #94a3b8;
+  }
 `;
 
 export const SearchIcon = styled.div`
   color: #64748b;
   cursor: pointer;
+  transition: color 0.3s ease;
+
+  &:hover {
+    color: #1d4ed8;
+  }
 `;
 
 export const QuestionList = styled.div`
-  margin-top: 20px;
+  margin-top: 2rem;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 1rem;
 `;
 
 export const QuestionItem = styled.div`
-  background: white;
-  padding: 15px;
-  border-radius: 8px;
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-  display: flex;
-  flex-direction: column;
-`;
+  background: #ffffff;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+  display: flex; /* Sử dụng flex để căn chỉnh nội dung và nút xóa */
+  justify-content: space-between; /* Đẩy nội dung sang trái, nút xóa sang phải */
+  align-items: center; /* Căn giữa theo chiều dọc */
 
-// export const QuestionTitle = styled.h3`
-//   font-size: 18px;
-//   font-weight: bold;
-//   color: #1e293b;
-// `;
-
-export const QuestionMeta = styled.span`
-  font-size: 14px;
-  color: #64748b;
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+    border: 1px solid #dbeafe;
+  }
 `;
 
 export const QuestionDetails = styled.div`
   display: flex;
   align-items: center;
-  gap: 10px;
-  font-size: 14px;
+  gap: 1.5rem;
+  font-size: 0.875rem;
   color: #6b7280;
 `;
 
 export const QuestionCount = styled.span`
-  font-weight: bold;
+  font-weight: 600;
+  background-color: #eff6ff;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  color: #1d4ed8;
 `;
 
 export const QuestionAuthor = styled.span`
   display: flex;
   align-items: center;
-  gap: 5px;
-  margin-left: 20px;
+  gap: 0.5rem;
+  font-style: italic;
 `;
 
 export const QuestionTitle = styled.h3`
-  font-size: 18px;
-  font-weight: bold;
-  color: #2d2d2d;
-  margin-top: 15px;
-  padding-top: 5px;
-  margin-bottom: 8px;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin-top: 1rem;
+  line-height: 1.4;
+  transition: color 0.3s ease;
+
+  ${QuestionItem}:hover & {
+    color: #1d4ed8;
+  }
+`;
+
+export const DeleteButton = styled.button`
+  background: none;
+  border: none;
+  color: #6b7280;
+  cursor: pointer;
+  padding: 0.5rem;
+  transition: all 0.3s ease;
+
+  &:hover {
+    color: #ef4444; /* Đỏ khi hover */
+    transform: scale(1.1);
+  }
 `;

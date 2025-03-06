@@ -1,10 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Trash2, Plus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import "./styles.js";
 import {
   Container,
   Title,
@@ -22,23 +21,39 @@ import {
   DeleteButton,
   SecondaryButton,
   PrimaryButton,
-  DeleteButtonWrapper
+  DeleteButtonWrapper,
+  ButtonContainer,
 } from "./styles.js";
 
 const QuestionCreator = () => {
-  const [questions, setQuestions] = useState([
-    {
-      id: 1,
-      type: "trueFalse",
-      answers: ["Yes", "No"],
-      selectedAnswers: [],
-      question: "",
-    },
-  ]);
-
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [questions, setQuestions] = useState([
+    { id: 1, type: "trueFalse", answers: ["Đúng", "Sai"], selectedAnswers: [], question: "" },
+    { id: 2, type: "trueFalse", answers: ["Đúng", "Sai"], selectedAnswers: [], question: "" },
+  ]);
+  const [isDirty, setIsDirty] = useState(false);
+
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const handleBeforeUnload = (e) => {
+      if (isDirty) {
+        e.preventDefault();
+        e.returnValue = "Nếu bạn rời đi sẽ mất dữ liệu bạn vừa nhập. Bạn có chắc chắn muốn rời đi không?";
+      }
+    };
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, [isDirty]);
+
+  useEffect(() => {
+    if (title || description || questions.some(q => q.question || q.answers.some(a => a))) {
+      setIsDirty(true);
+    }
+  }, [title, description, questions]);
+
+
   const validateForm = () => {
     if (!title.trim()) return "Vui lòng nhập tiêu đề";
     if (!description.trim()) return "Vui lòng nhập mô tả";
@@ -47,6 +62,7 @@ const QuestionCreator = () => {
       for (let ans of q.answers) {
         if (!ans.trim()) return "Mỗi đáp án cần có nội dung";
       }
+      if (q.selectedAnswers.length === 0) return "Vui lòng chọn ít nhất một đáp án đúng cho mỗi câu hỏi";
     }
     return null;
   };
@@ -57,27 +73,18 @@ const QuestionCreator = () => {
     { value: "singleAnswer", label: "Chọn 1 đáp án" },
   ];
 
-  const getDefaultAnswers = (type) => {
-    switch (type) {
-      case "trueFalse":
-        return ["Yes", "No"];
-      case "multiAnswer":
-      case "singleAnswer":
-        return ["Đáp án 1", "Đáp án 2", "Đáp án 3", "Đáp án 4"];
-      default:
-        return [];
-    }
-  };
-
   const handleTypeChange = (questionId, newType) => {
     setQuestions(
       questions.map((question) => {
         if (question.id === questionId) {
+          let newSelectedAnswers = [...question.selectedAnswers];
+          if (newType === "trueFalse" || newType === "singleAnswer") {
+            newSelectedAnswers = newSelectedAnswers.length > 0 ? [newSelectedAnswers[0]] : [];
+          }
           return {
             ...question,
             type: newType,
-            answers: getDefaultAnswers(newType),
-            selectedAnswers: [],
+            selectedAnswers: newSelectedAnswers,
           };
         }
         return question;
@@ -90,22 +97,15 @@ const QuestionCreator = () => {
       questions.map((question) => {
         if (question.id === questionId) {
           let newSelectedAnswers = [...question.selectedAnswers];
-
-          if (
-            question.type === "trueFalse" ||
-            question.type === "singleAnswer"
-          ) {
+          if (question.type === "trueFalse" || question.type === "singleAnswer") {
             newSelectedAnswers = [answerIndex];
           } else {
             if (checked) {
               newSelectedAnswers.push(answerIndex);
             } else {
-              newSelectedAnswers = newSelectedAnswers.filter(
-                (i) => i !== answerIndex
-              );
+              newSelectedAnswers = newSelectedAnswers.filter((i) => i !== answerIndex);
             }
           }
-
           return { ...question, selectedAnswers: newSelectedAnswers };
         }
         return question;
@@ -120,7 +120,7 @@ const QuestionCreator = () => {
       {
         id: newId,
         type: "trueFalse",
-        answers: getDefaultAnswers("trueFalse"),
+        answers: ["Đúng", "Sai"],
         selectedAnswers: [],
         question: "",
       },
@@ -149,6 +149,36 @@ const QuestionCreator = () => {
       })
     );
   };
+
+  const addAnswer = (questionId) => {
+    setQuestions(
+      questions.map((q) => {
+        if (q.id === questionId) {
+          return {
+            ...q,
+            answers: [...q.answers, `Đáp án ${q.answers.length + 1}`],
+          };
+        }
+        return q;
+      })
+    );
+  };
+
+  const removeAnswer = (questionId, answerIndex) => {
+    setQuestions(
+      questions.map((q) => {
+        if (q.id === questionId) {
+          const newAnswers = q.answers.filter((_, idx) => idx !== answerIndex);
+          const newSelectedAnswers = q.selectedAnswers
+            .filter((idx) => idx !== answerIndex)
+            .map((idx) => (idx > answerIndex ? idx - 1 : idx));
+          return { ...q, answers: newAnswers, selectedAnswers: newSelectedAnswers };
+        }
+        return q;
+      })
+    );
+  };
+
   const handleSubmit = async () => {
     const errorMessage = validateForm();
     if (errorMessage) {
@@ -173,6 +203,7 @@ const QuestionCreator = () => {
     try {
       await axios.post("http://localhost:9999/questionFile/create", payload);
       toast.success("Tạo bộ câu hỏi thành công!", { autoClose: 4000 });
+      setIsDirty(false);
       setTimeout(() => navigate("/user/questionfile/getAll"), 4000);
     } catch (error) {
       toast.error("Lỗi khi tạo bộ câu hỏi");
@@ -183,10 +214,22 @@ const QuestionCreator = () => {
   return (
     <Container>
       <ToastContainer />
-      <Title>Tạo học phần mới</Title>
-
-      <InputField type="text" placeholder="Nhập tiêu đề..." onChange={(e) => setTitle(e.target.value)}/>
-      <TextArea placeholder="Nhập mô tả..." rows={3} onChange={(e) => setDescription(e.target.value)}/>
+      <ButtonContainer>
+        <Title>Tạo học phần mới</Title>
+        
+      </ButtonContainer>
+      <InputField
+        type="text"
+        placeholder="Nhập tiêu đề..."
+        value={title}
+        onChange={(e) => setTitle(e.target.value)}
+      />
+      <TextArea
+        placeholder="Nhập mô tả..."
+        rows={3}
+        value={description}
+        onChange={(e) => setDescription(e.target.value)}
+      />
 
       {questions.map((question, qIndex) => (
         <QuestionCard key={question.id}>
@@ -207,7 +250,6 @@ const QuestionCreator = () => {
           <InputField
             type="text"
             placeholder="Nhập câu hỏi..."
-            
             value={question.question}
             onChange={(e) => updateQuestionText(question.id, e.target.value)}
           />
@@ -231,14 +273,28 @@ const QuestionCreator = () => {
                   }
                   placeholder={`Đáp án ${index + 1}`}
                 />
+                {question.answers.length > 2 && (
+                  <DeleteButton onClick={() => removeAnswer(question.id, index)}>
+                    <Trash2 size={16} />
+                  </DeleteButton>
+                )}
               </AnswerItem>
             ))}
           </AnswersGrid>
-          <DeleteButtonWrapper> 
-          <DeleteButton onClick={() => removeQuestion(question.id)}>
-            <Trash2 size={20} />
-          </DeleteButton>
-          </DeleteButtonWrapper> 
+
+          <ButtonContainer>
+            <AddButton onClick={() => addAnswer(question.id)}>
+              <Plus size={20} />
+              <span>Thêm đáp án</span>
+            </AddButton>
+            {questions.length > 2 && (
+              <DeleteButtonWrapper>
+                <DeleteButton onClick={() => removeQuestion(question.id)}>
+                  <Trash2 size={20} />
+                </DeleteButton>
+              </DeleteButtonWrapper>
+            )}
+          </ButtonContainer>
         </QuestionCard>
       ))}
 

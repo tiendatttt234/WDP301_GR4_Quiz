@@ -1,5 +1,6 @@
 // const QuestionFile = require("../models/QuestionFile");
-
+const fs = require('fs');
+const path = require('path');
 const questionFileService = require('../services/questionFile.service');
 
 
@@ -111,6 +112,27 @@ const questionFileService = require('../services/questionFile.service');
       });
     }
   }
+  async function importQuestionFile(req, res) {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ error: "Vui lòng upload file .txt" });
+      }
+
+      const filePath = path.join(__dirname, "../uploads", req.file.filename);
+      const createdBy = req.user ? req.user._id : null; // Giả sử có middleware auth
+
+      const newQuestionFile = await questionFileService.createQuestionFileFromTxt(filePath, createdBy);
+
+      fs.unlinkSync(filePath); // Xóa file tạm
+      res.status(201).json({
+        message: "Import học phần thành công",
+        data: newQuestionFile,
+      });
+    } catch (error) {
+      if (req.file) fs.unlinkSync(path.join(__dirname, "../uploads", req.file.filename));
+      res.status(400).json({ error: error.message || "Lỗi khi import file" });
+    }
+  }
 
 const QuestionFileController = {
   getAllQuestionFile,
@@ -118,7 +140,8 @@ const QuestionFileController = {
   createQuestionFile,
   updateQuestionFile,
   deleteQuestionFile,
-  patchQuestion, updatePrivacy
+  patchQuestion, updatePrivacy,
+  importQuestionFile,
 };
 
 module.exports = QuestionFileController;

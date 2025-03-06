@@ -1,4 +1,6 @@
 const questionRepository = require("../repositories/questionFile.repository");
+const fs = require('fs');
+const path = require('path');
 async function getAllQuestionFiles() {
   return await questionRepository.getAll();
 }
@@ -55,11 +57,66 @@ async function updatePrivacy(fileId, isPrivate) {
   return updatedFile;
 }
 
+async function createQuestionFileFromTxt(filePath, createdBy) {
+  const fileContent = fs.readFileSync(filePath, "utf8");
+  const parsedData = this.parseTxtFile(fileContent);
+
+  const questionFileData = {
+    name: parsedData.name,
+    description: parsedData.description,
+    isPrivate: parsedData.isPrivate === "Không",
+    arrayQuestion: parsedData.questions,
+    createdBy: createdBy || null,
+  };
+
+  return await questionRepository.createTxt(questionFileData);
+}
+
+function parseTxtFile(content) {
+  const lines = content.split("\n").map((line) => line.trim());
+  let name = "";
+  let description = "";
+  let isPrivate = true;
+  const questions = [];
+  let currentQuestion = null;
+  let inQuestionSection = false;
+
+  lines.forEach((line) => {
+    if (line.startsWith("Chủ đề:")) {
+      name = line.replace("Chủ đề:", "").trim();
+    } else if (line.startsWith("Mô tả:")) {
+      description = line.replace("Mô tả:", "").trim();
+    } else if (line.startsWith("Công khai:")) {
+      isPrivate = line.replace("Công khai:", "").trim() === "Không";
+    } else if (line.startsWith("Danh sách câu hỏi:")) {
+      inQuestionSection = true;
+    } else if (inQuestionSection && line.match(/^\d+\./)) {
+      if (currentQuestion) questions.push(currentQuestion);
+      const [questionText, type] = line.split("(");
+      currentQuestion = {
+        content: questionText.replace(/^\d+\.\s*/, "").trim(),
+        type: type.replace(")", "").trim() === "Boolean" ? "Boolean" : type.replace(")", "").trim() === "MAQ" ? "MAQ" : "MCQ",
+        answers: [],
+      };
+    } else if (inQuestionSection && line.match(/^[a-e]\./)) {
+      const [answerText, correctText] = line.split("(");
+      const answerContent = answerText.replace(/^[a-e]\.\s*/, "").trim();
+      const isCorrect = correctText.replace(")", "").trim() === "Đúng";
+      currentQuestion.answers.push({ answerContent, isCorrect });
+    }
+  });
+
+  if (currentQuestion) questions.push(currentQuestion);
+  return { name, description, isPrivate, questions };
+}
+
 module.exports = {
   getAllQuestionFiles,
   getQuestionFileById,
   createQuestionFile,
   updateQuestionFile,
   deleteQuestionFile,
-  updateQuestion, updatePrivacy
+  updateQuestion, updatePrivacy,
+  createQuestionFileFromTxt,
+  parseTxtFile,
 };

@@ -64,13 +64,23 @@ async function createQF(data) {
     );
   }
 
+  async function createTxt(data) {
+    const questionFile = new QuestionFile({
+      ...data,
+      reportedCount: 0,
+      isReported: false,
+    });
+    return await questionFile.save();
+  }
+
 const questionFileRepository = {
     findQuestionFileById,
     getAllByUserId,
     findByIdAndUserId,
     createQF,updateQF,
     deleteQF,
-    getAll, updateQuestionInFile, updatePrivacy
+    getAll, updateQuestionInFile, updatePrivacy,
+    createTxt,
 };
 
 module.exports = questionFileRepository;

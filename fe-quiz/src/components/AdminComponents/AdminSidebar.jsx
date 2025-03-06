@@ -5,6 +5,7 @@ import {
   HomeOutlined,
   UserOutlined,
   BarChartOutlined,
+  FolderOutlined 
 } from "@ant-design/icons";
 import "./Sidebar.css";
 
@@ -29,7 +30,9 @@ const AdminSidebar = ({ collapsed }) => {
         <Menu.Item key="/admin/reports" icon={<BarChartOutlined />}>
           <Link to="/admin/reports">{collapsed ? "" : "Reports"}</Link>
         </Menu.Item>
-
+        <Menu.Item key="/admin/questionfile" icon={<FolderOutlined />}>
+          <Link to="/admin/questionfile/list">{collapsed ? "" : "Question File"}</Link>
+        </Menu.Item>
         <Menu.Item key="/admin/users" icon={<UserOutlined />}>
           <Link to="/admin/users">{collapsed ? "" : "Users"}</Link>
         </Menu.Item>

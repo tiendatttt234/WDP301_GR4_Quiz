@@ -12,5 +12,7 @@ QuestionFileRouter.delete('/delete/:id', questionFileController.deleteQuestionFi
 QuestionFileRouter.patch("/update/:fileId/question/:questionId", questionFileController.patchQuestion);
 QuestionFileRouter.patch("/updatePrivacy/:fileId", questionFileController.updatePrivacy);
 QuestionFileRouter.post("/import", upload.single("file"), questionFileController.importQuestionFile);
+QuestionFileRouter.get('/getQFadmin', questionFileController.adminGetAllQF);
+
 module.exports = QuestionFileRouter;
 

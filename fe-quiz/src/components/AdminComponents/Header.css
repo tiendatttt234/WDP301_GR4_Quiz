@@ -1,20 +1,41 @@
 .header {
-    background: #f8f9fa; /* Màu nền nhạt */
     display: flex;
     justify-content: space-between;
+    align-items: center; 
+    height: 50px; 
     padding: 0 20px;
-    height: 60px; /* Chiều cao nhỏ hơn một chút so với Ant Design default */
-    align-items: center;
-    border-bottom: 2px solid #b2b3b3; /* Đường viền dưới nhạt */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* Bóng nhẹ */
+    background-color: white;  /* Mặc định là Light Mode */
+    color: black;
+    border-bottom: 1px solid #ddd;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+/* Dark mode */
+.dark-header {
+    background-color: #1f1f1f !important;
+    color: #fff !important;
+    border-bottom: 1px solid #333;
 }
 
 .header-title {
-    font-size: 18px;
-    font-weight: 500;
-    color: #333;
     display: flex;
     align-items: center;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.header-icon {
+    font-size: 20px;
+    margin-right: 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.3s;
+}
+
+.header-icon:hover {
+    color: #1890ff;
 }
 
 .header-actions {

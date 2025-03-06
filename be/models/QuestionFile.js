@@ -62,6 +62,10 @@ const QuestionFileSchema = new mongoose.Schema({
     isReported: {
         type: Boolean,
         default: false
+    },
+    isLock: {
+        type: Boolean,
+        default: false
     }
 }, {
     timestamps: true  

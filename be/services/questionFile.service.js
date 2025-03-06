@@ -6,6 +6,23 @@ async function getAllQuestionFiles() {
   return await questionRepository.getAll();
 }
 
+async function getAllQuestionFileAndUser() {
+  const listQF = await questionRepository.getAllWithUser();
+  const formatQF = listQF.map((qf) => ({
+    id: qf._id,
+    name: qf.name,
+    description: qf.description,
+    isPrivate: qf.isPrivate,
+    reportedCount: qf.reportedCount,
+    isReported: qf.isReported,
+    userId: qf.createdBy?._id || "N/A",
+    userName: qf.createdBy?.userName || "N/A",
+    createdAt: qf.createdAt,
+    updatedAt: qf.updatedAt,
+  }));
+  return formatQF;
+}
+
 async function getQuestionFileById(id) {
   const questionFile = await questionRepository.findQuestionFileById(id);
 
@@ -56,8 +73,8 @@ async function getQuestionFileByIdandUserId(id, userId) {
     description: questionFile.description,
     isPrivate: questionFile.isPrivate,
     createBy: {
-      id: questionFile.createdBy._id, 
-      userName: questionFile.createdBy.userName, 
+      id: questionFile.createdBy._id,
+      userName: questionFile.createdBy.userName,
     },
     arrayQuestion: questionFile.arrayQuestion.map((question) => ({
       questionId: question._id,
@@ -72,20 +89,21 @@ async function getQuestionFileByIdandUserId(id, userId) {
     createdAt: questionFile.createdAt,
     updatedAt: questionFile.updatedAt,
   };
+};
 async function updateQuestion(fileId, questionId, updatedQuestion) {
   const questionFile = await questionRepository.updateQuestionInFile(fileId, questionId, updatedQuestion);
   if (!questionFile) {
     throw new Error("Không tìm thấy tệp hoặc câu hỏi để cập nhật");
   }
   return questionFile;
-}
+};
 async function updatePrivacy(fileId, isPrivate) {
   const updatedFile = await questionRepository.updatePrivacy(fileId, isPrivate);
   if (!updatedFile) {
     throw new Error("Không tìm thấy tệp để cập nhật trạng thái");
   }
   return updatedFile;
-}
+};
 
 async function createQuestionFileFromTxt(filePath, createdBy) {
   const fileContent = fs.readFileSync(filePath, "utf8");
@@ -100,7 +118,7 @@ async function createQuestionFileFromTxt(filePath, createdBy) {
   };
 
   return await questionRepository.createTxt(questionFileData);
-}
+};
 
 function parseTxtFile(content) {
   const lines = content.split("\n").map((line) => line.trim());
@@ -138,8 +156,8 @@ function parseTxtFile(content) {
 
   if (currentQuestion) questions.push(currentQuestion);
   return { name, description, isPrivate, questions };
-}
 };
+
 module.exports = {
   getAllQuestionFiles,
   getQuestionFileById,
@@ -150,4 +168,5 @@ module.exports = {
   updateQuestion, updatePrivacy,
   createQuestionFileFromTxt,
   parseTxtFile,
+  getAllQuestionFileAndUser
 };

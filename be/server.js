@@ -6,12 +6,11 @@ const morgan = require("morgan");
 const cors = require("cors");
 require("dotenv").config();
 const Db = require("./dbConnect/dbConnect");
-const { quizRouter, questionBankRouter, exportRouter } = require("./routes");
+const { quizRouter, questionBankRouter, exportRouter,notificationRouter } = require("./routes");
 const accountRouter = require("./routes/account.router");
 const adminRouter = require("./routes/admin.routes");
 const NotificationService = require("./services/notification.service");
 const QuizRouter = require("./routes/quiz.route");
-
 
 const app = express();
 
@@ -91,7 +90,7 @@ app.use("/questionFile", questionBankRouter);
 app.use("/test", exportRouter);
 app.use("/auth", accountRouter);
 app.use("/admin", adminRouter);
-
+app.use("/notifycation", notificationRouter);
 // Middleware xử lý lỗi
 app.use((err, req, res, next) => {
   console.error(err.stack);

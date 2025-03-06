@@ -14,6 +14,10 @@ import ReportManagement from "./pages/AdminPages/Report/ReportManagement";
 import Dashboard from "./pages/AdminPages/Dashboard/Dashboard";
 import ResetPassword from "./components/authen/forgotPassword/ResetPassword";
 import HomePage from "./pages/Homepage/Homepage";
+import AccountManagement from "./pages/AdminPages/User/AccountManagement";
+import ViewQuestions from "./pages/AdminPages/Report/ViewQuestions";
+import AdminListQF from "./pages/AdminPages/QuestionFile/AdminListQF";
+
 
 function App() {
   return (
@@ -36,6 +40,10 @@ function App() {
         <Route path="/admin/*" element={<AdminDefaultPage />}>
           <Route path="reports" element={<ReportManagement />} />
           <Route path="" element={<Dashboard />} /> {/* Default route khi vào /admin */}
+          <Route path="Users" element={<AccountManagement/>} />
+          <Route path = "Dashboard" element={<Dashboard/>}/>
+          <Route path="view-question-detail/:id" element={<ViewQuestions/>}/>
+          <Route path="questionFile/list" element={<AdminListQF/>}/>
         </Route>
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password/:id/:token" element={<ResetPassword />} />

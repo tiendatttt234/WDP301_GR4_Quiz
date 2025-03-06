@@ -1,0 +1,53 @@
+.admin-qf-container {
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+.admin-qf-container h1 {
+  font-size: 24px;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.qf-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #fff;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.qf-table th,
+.qf-table td {
+  padding: 12px 15px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+.qf-table th {
+  background-color: #f4f4f4;
+  font-weight: bold;
+  color: #555;
+}
+
+.qf-table tr:hover {
+  background-color: #f9f9f9;
+}
+
+.status-tag {
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.status-tag.private,
+.status-tag.reported {
+  background-color: #ffe6e6;
+  color: #d9534f;
+}
+
+.status-tag.public,
+.status-tag.not-reported {
+  background-color: #e6ffe6;
+  color: #5cb85c;
+}

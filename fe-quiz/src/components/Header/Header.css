@@ -6,20 +6,20 @@
   z-index: 1000;
   background-color: #ffffff;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  padding: 0 -10px;
+  padding: 0 10px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 64px; /* Chiều cao cố định */
+  height: 64px;
 }
 
 .logo h1 {
   margin: 0;
-  color: #007bff; /* Màu xanh đẹp mắt */
+  color: #007bff;
   font-size: 24px;
   font-weight: bold;
   text-decoration: none;
-  padding-left: 10px; /* Thêm padding nhỏ bên trái logo để không sát quá biên */
+  padding-left: 10px;
 }
 
 .nav-links .nav-button {
@@ -72,7 +72,7 @@
 .greeting {
   color: #333;
   font-size: 14px;
-  padding-right: 10px; /* Thêm padding nhỏ bên phải greeting */
+  padding-right: 10px;
 }
 
 .notification-badge .bell-icon {
@@ -87,9 +87,59 @@
 }
 
 .notification-badge .ant-badge-count {
-  background-color: #ff4d4f; /* Màu đỏ cho thông báo */
+  background-color: #ff4d4f;
   color: #fff;
   box-shadow: 0 0 0 1px #fff;
+  font-size: 12px;
+  padding: 0 4px;
+  min-width: 16px;
+  height: 16px;
+  line-height: 16px;
+}
+
+/* Style cho Dropdown thông báo */
+.notification-menu {
+  width: 300px;
+  max-height: 400px;
+  overflow-y: auto;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  background-color: #fff;
+  padding: 0;
+}
+
+.notification-menu .ant-menu-item {
+  padding: 10px 15px;
+  margin: 0;
+  border-bottom: 1px solid #f0f0f0;
+  display: flex;
+  align-items: center;
+  transition: background-color 0.3s, opacity 0.3s; /* Thêm transition cho opacity */
+  font-size: 14px;
+}
+
+.notification-menu .ant-menu-item:hover {
+  background-color: #f5f7fa;
+}
+
+.notification-menu .ant-menu-item.unread {
+  background-color: #e6f7ff; /* Màu nền nhẹ cho thông báo chưa đọc */
+  font-weight: 500;
+  opacity: 1; /* Thông báo chưa đọc rõ nét */
+}
+
+.notification-menu .ant-menu-item.read {
+  color: #888;
+  font-weight: normal;
+  opacity: 0.6; /* Thông báo đã đọc mờ đi */
+}
+
+/* Style khi không có thông báo */
+.notification-menu .ant-menu-item.no-notifications {
+  text-align: center;
+  color: #888;
+  font-style: italic;
+  opacity: 0.8; /* Mờ nhẹ nhưng không quá mờ như thông báo đã đọc */
 }
 
 .user-avatar {
@@ -127,4 +177,37 @@
 
 .custom-menu .ant-menu-item:hover {
   background-color: #f0f2f5;
+}
+
+/* Custom style cho react-toastify */
+.Toastify__toast {
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 10px 15px;
+  font-family: "Arial", sans-serif;
+  font-size: 14px;
+}
+
+.Toastify__toast--info {
+  background-color: #007bff;
+  color: #fff;
+}
+
+.Toastify__toast--success {
+  background-color: #52c41a;
+  color: #fff;
+}
+
+.Toastify__close-button {
+  color: #fff;
+  opacity: 0.8;
+  transition: opacity 0.3s;
+}
+
+.Toastify__close-button:hover {
+  opacity: 1;
+}
+
+.Toastify__progress-bar {
+  background-color: rgba(255, 255, 255, 0.7);
 }

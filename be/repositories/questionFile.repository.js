@@ -17,7 +17,7 @@ async function findByIdAndUserId(id, userId) {
 }
 async function getAllWithUser(){
   return await QuestionFile.find({})
-    .select("name description createdAt updatedAt isPrivate isReported reportedCount")
+    .select("name description createdAt updatedAt isPrivate isReported reportedCount isLocked")
     .populate("createdBy", "userName _id");
 }
 async function getAll() {

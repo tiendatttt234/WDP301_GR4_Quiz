@@ -15,5 +15,6 @@ router.get("/reports", ReportController.getReportsList);
 router.get("/reports/:reportId/details", ReportController.getReportDetails);
 router.delete("/reports/:reportId", ReportController.deleteReport);
 router.put("/reports/:reportId/status", ReportController.updateReportStatus);
+router.put("/reports/:reportId/action", ReportController.lockOrDeleteQuestionFile);
 
 module.exports = router;

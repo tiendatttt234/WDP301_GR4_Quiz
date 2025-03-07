@@ -41,12 +41,14 @@
 }
 
 .status-tag.private,
+.status-tag.locked,
 .status-tag.reported {
   background-color: #ffe6e6;
   color: #d9534f;
 }
 
 .status-tag.public,
+.status-tag.not-locked,
 .status-tag.not-reported {
   background-color: #e6ffe6;
   color: #5cb85c;

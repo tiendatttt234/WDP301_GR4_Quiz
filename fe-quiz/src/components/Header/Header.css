@@ -1,105 +1,130 @@
-/* Style cho Dropdown menu */
-.custom-dropdown-menu {
-  background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  padding: 10px;
-  width: 200px; /* Điều chỉnh kích thước nếu cần */
-  margin-top: 20px; /* Tạo khoảng cách giữa dropdown và nút */
-}
-.custom-dropdown-menu.show {
-  display: block;
-  margin-top: 19px;
-}
-.icon-text {
-  display: flex;
-  align-items: center;
-}
-
-.icon-text i {
-  margin-right: 8px; /* Khoảng cách giữa icon và văn bản */
-}
-
-/* Style cho từng Item trong Dropdown */
-.custom-dropdown-item {
-  padding: 10px;
-  margin-bottom: 8px; /* Khoảng cách giữa các item */
-  transition: background-color 0.3s ease; /* Hiệu ứng khi hover */
-  border-radius: 5px; /* Bo góc cho item */
-}
-
-/* Hover và Active style cho item */
-.custom-dropdown-item:hover {
-  background-color: #f0f0f0;
-}
-
-/* Style cho các link bên trong Dropdown item */
-.custom-dropdown-link {
-  color: #333;
-  text-decoration: none;
-  font-weight: bold;
-  display: block;
-}
-
-.custom-dropdown-link:hover {
-  color: #79797d; /* Màu chữ khi hover */
-}
-
-.sidebar-menu {
+/* Header.css */
+.custom-header {
   position: fixed;
-  left: -250px;
   top: 0;
-  width: 250px;
-  height: 100%;
-  background-color: #fff;
-  box-shadow: 2px 0px 5px rgba(0, 0, 0, 0.1);
-  transition: left 0.3s ease;
-  z-index: 999;
-  padding-top: 20px;
-}
-
-.sidebar-menu.open {
-  left: 0;
-}
-
-.sidebar-menu ul {
-  list-style: none;
-  padding: 0;
-}
-
-.sidebar-menu ul li {
-  margin: 20px;
-}
-
-.sidebar-menu ul li a {
-  text-decoration: none;
-  color: #333;
+  width: 100%;
+  z-index: 1000;
+  background-color: #ffffff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 0 -10px;
   display: flex;
   align-items: center;
-  font-size: 1.2rem;
-}
-
-.sidebar-menu ul li a i {
-  margin-right: 10px;
-}
-
-.sidebar-header {
-  display: flex;
   justify-content: space-between;
+  height: 64px; /* Chiều cao cố định */
+}
+
+.logo h1 {
+  margin: 0;
+  color: #007bff; /* Màu xanh đẹp mắt */
+  font-size: 24px;
+  font-weight: bold;
+  text-decoration: none;
+  padding-left: 10px; /* Thêm padding nhỏ bên trái logo để không sát quá biên */
+}
+
+.nav-links .nav-button {
+  color: #333;
+  font-weight: 500;
+  padding: 0 10px;
+  transition: color 0.3s;
+}
+
+.nav-links .nav-button:hover {
+  color: #007bff;
+}
+
+.custom-search {
+  width: 300px;
+  border: 1px solid #d9d9d9;
+  border-radius: 4px;
+  padding: 5px 10px;
+}
+
+.custom-search input {
+  border: none;
+  outline: none;
+  width: 100%;
+}
+
+.search-button {
+  background-color: #007bff;
+  border: none;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
   align-items: center;
-  padding: 10px 20px;
-}
-
-.close-icon {
+  justify-content: center;
+  color: #fff;
   cursor: pointer;
-  /* color: #333; */
+  transition: background-color 0.3s;
 }
 
-/* Style cho phần nội dung khi sidebar mở */
-.main-content {
-  transition: margin-left 0.3s ease;
+.search-button:hover {
+  background-color: #0056b3;
 }
 
-.main-content.shifted {
-  margin-left: 250px;
+.user-section {
+  display: flex;
+  align-items: center;
+}
+
+.greeting {
+  color: #333;
+  font-size: 14px;
+  padding-right: 10px; /* Thêm padding nhỏ bên phải greeting */
+}
+
+.notification-badge .bell-icon {
+  font-size: 20px;
+  color: #333;
+  cursor: pointer;
+  transition: color 0.3s;
+}
+
+.notification-badge .bell-icon:hover {
+  color: #007bff;
+}
+
+.notification-badge .ant-badge-count {
+  background-color: #ff4d4f; /* Màu đỏ cho thông báo */
+  color: #fff;
+  box-shadow: 0 0 0 1px #fff;
+}
+
+.user-avatar {
+  cursor: pointer;
+  transition: transform 0.3s;
+}
+
+.user-avatar:hover {
+  transform: scale(1.1);
+}
+
+.login-button {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 5px 15px;
+  font-weight: 500;
+  transition: background-color 0.3s;
+}
+
+.login-button:hover {
+  background-color: #0056b3;
+  color: #fff;
+}
+
+.custom-menu {
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.custom-menu .ant-menu-item {
+  padding: 5px 12px;
+}
+
+.custom-menu .ant-menu-item:hover {
+  background-color: #f0f2f5;
 }

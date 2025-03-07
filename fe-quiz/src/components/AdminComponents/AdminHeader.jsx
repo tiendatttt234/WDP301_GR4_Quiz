@@ -6,25 +6,6 @@ import './Header.css';
 
 const AdminHeader = ({ onToggleSidebar }) => {
     const navigate = useNavigate();
-    const [darkMode, setDarkMode] = useState(() => {
-        return localStorage.getItem('header-theme') === 'dark';
-    });
-
-    useEffect(() => {
-        document.body.classList.toggle('dark-mode', darkMode);
-        const header = document.querySelector('.header');
-        if (darkMode) {
-            header.classList.add('dark-header');
-            localStorage.setItem('header-theme', 'dark');
-        } else {
-            header.classList.remove('dark-header');
-            localStorage.setItem('header-theme', 'light');
-        }
-    }, [darkMode]);
-
-    const handleToggleTheme = () => {
-        setDarkMode(prev => !prev);
-    };
 
     const handleLogout = () => {
         localStorage.removeItem('token');
@@ -40,21 +21,13 @@ const AdminHeader = ({ onToggleSidebar }) => {
     );
     //thêm thông báo của phía admin vào trong bell
     return (
-        <div className="header">
+        <div className="header-admin">
             <div className="header-title">
                 <MenuOutlined className="header-icon" onClick={onToggleSidebar} />
                 Admin Dashboard
             </div>
             <div className="header-actions">
                 <BellOutlined className="header-icon" />
-                <div className="theme-switch">
-                    <Switch
-                        checked={darkMode}
-                        onChange={handleToggleTheme}
-                        checkedChildren={<MoonOutlined />}
-                        unCheckedChildren={<SunOutlined />}
-                    />
-                </div>
                 <Dropdown overlay={menu} placement="bottomRight" arrow>
                     <Avatar className="header-avatar" icon={<UserOutlined />} />
                 </Dropdown>

@@ -63,7 +63,7 @@ const QuestionFileSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
-    isLock: {
+    isLocked: {
         type: Boolean,
         default: false
     }

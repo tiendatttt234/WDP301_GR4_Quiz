@@ -1,43 +1,56 @@
-import { Route, Routes } from "react-router-dom";
-// import QuizAttempt from "../../user/QuizAttempt";
-// import QuizResults from "../../user/QuizResult";
-// import AddQuestion from "../../user/question/AddQues";
-// import ViewQuestionDetail from "../../user/question/ViewQuesDetail";
-// import EditQuestion from "../../user/question/UpdateQuestion";
-// import ViewQuestion from "../../user/question/ViewQues";
-import QuestionCreation from "../pages/QuestionFile/newQuestionFile";
-import UpdateQuestion from "../pages/QuestionFile/update/updateQuestionFile";
-import ListQuestion from "../pages/QuestionFile/listQuestion/listQuestionFile";
-// import FlashCardPage from "../../user/FlashCard";
-// import Profile from "../../authen/Profile";
-// import MyCourse from "../../authen/MyCourse";
+// UserDefaultPage.js
+import React from "react";
+import { Outlet } from "react-router-dom";
+import { Layout } from "antd";
+import UserHeader from "../components/Header/Header";
 
-export default function UserDefaultPage() {
+
+const { Header, Content, Footer } = Layout;
+
+const UserDefaultPage = () => {
   return (
-    <div className="container-fluid">
-      {/* <Header/> */}
-      <div className="container-fluid">
-        <div className={`container-fluid `}>
-          <Routes>
-            {/* Làm quiz */}
-            {/* <Route path="/quiz/attempt/:id" element={<QuizAttempt />} />
-            <Route path="/quiz-result" element={<QuizResults />} /> */}
+    <Layout style={{ minHeight: "100vh" }}>
+      {/* Header cố định */}
+      <Header
+        style={{
+          position: "fixed",
+          top: 0,
+          width: "100%",
+          zIndex: 1000,
+          background: "#fff", // Màu nền tùy chỉnh
+          padding: "0 20px",
+        }}
+      >
+        <UserHeader />
+      </Header>
 
-            {/* Chỉnh sửa tệp câu hỏi  */}
-            {/* <Route path='/flash' element={FlashCardPage}/> */}
-            <Route path="/questionfile/create" element={<QuestionCreation />} />
-            <Route path="/questionfile/getAll" element={<ListQuestion />} />
-           {/*  <Route path="/viewques/:id" element={<ViewQuestionDetail />} /> */}
-            <Route path="/questionfile/update/:id" element={<UpdateQuestion />} />
-            <Route path="/questionfile/update" element={<UpdateQuestion />} />
-            
+      {/* Content ở giữa */}
+      <Content
+        style={{
+          marginTop: "64px", // Khoảng cách để tránh bị Header che
+          padding: "20px",
+          background: "#f0f2f5", // Màu nền nhạt
+          flex: 1, // Để Content chiếm không gian giữa Header và Footer
+        }}
+      >
+        <Outlet /> {/* Nội dung thay đổi theo route */}
+      </Content>
 
-            {/* user profile */}
-            {/* <Route path="/profile" element={<Profile />} />
-            <Route path="/mycourse" element={<MyCourse />} /> */}
-          </Routes>
-        </div>
-      </div>
-    </div>
+      {/* Footer cố định */}
+      <Footer
+        style={{
+          position: "fixed",
+          bottom: 0,
+          width: "100%",
+          background: "#fff", // Màu nền tùy chỉnh
+          textAlign: "center",
+          padding: "10px 0",
+        }}
+      >
+        {/* <UserFooter /> */}
+      </Footer>
+    </Layout>
   );
-}
+};
+
+export default UserDefaultPage;

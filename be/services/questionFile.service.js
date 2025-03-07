@@ -7,13 +7,16 @@ async function getAllQuestionFiles() {
 
 async function getAllQuestionFileAndUser() {
   const listQF = await questionRepository.getAllWithUser();
-  const formatQF = listQF.map((qf) => ({    
+  // console.log(listQF);
+  
+  const formatQF = listQF.map((qf) => ({
     id: qf._id,
     name: qf.name,
     description: qf.description,
     isPrivate: qf.isPrivate,
     reportedCount: qf.reportedCount,
     isReported: qf.isReported,
+    isLocked: qf?.isLocked || false,
     userId: qf.createdBy?._id || "N/A",
     userName: qf.createdBy?.userName || "N/A",
     createdAt: qf.createdAt,

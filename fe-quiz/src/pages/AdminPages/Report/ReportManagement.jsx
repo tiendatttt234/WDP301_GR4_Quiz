@@ -11,9 +11,11 @@ const ReportManagement = () => {
     const [selectedReport, setSelectedReport] = useState(null);
     const [showHandlePopup, setShowHandlePopup] = useState(false);
     const [handleMessage, setHandleMessage] = useState("");
-    const [handleStatus, setHandleStatus] = useState("approved");
+    const [handleStatus, setHandleStatus] = useState("");
+    const [actionType, setActionType] = useState("");
     const reportsPerPage = 10;
     const navigate = useNavigate();
+
     useEffect(() => {
         fetchReports();
     }, []);
@@ -21,8 +23,6 @@ const ReportManagement = () => {
     const fetchReports = async () => {
         try {
             const response = await axios.get("http://localhost:9999/admin/reports");
-            console.log(response.data);
-            
             setReports(response.data);
             setLoading(false);
         } catch (error) {
@@ -34,7 +34,6 @@ const ReportManagement = () => {
     const viewReportDetails = async (reportId) => {
         try {
             const response = await axios.get(`http://localhost:9999/admin/reports/${reportId}/details`);
-            // console.log(response.data);
             setSelectedReport(response.data);
         } catch (error) {
             alert("Lỗi khi lấy chi tiết báo cáo");
@@ -46,57 +45,73 @@ const ReportManagement = () => {
             const response = await axios.get(`http://localhost:9999/admin/reports/${reportId}/details`);
             const questionFileReported = response.data.questionFile;
             const questionFileId = questionFileReported.qf_id;
-
-            // Điều hướng sang trang ViewQuestion với questionFileId
             navigate(`/admin/view-question-detail/${questionFileId}`);
         } catch (error) {
             alert("Lỗi khi lấy dữ liệu bộ câu hỏi bị báo cáo");
         }
     };
+
     const handleReport = async (reportId) => {
         try {
-            // Gọi API để lấy chi tiết báo cáo
             const response = await axios.get(`http://localhost:9999/admin/reports/${reportId}/details`);
             setSelectedReport(response.data);
-            setShowHandlePopup(true); // Mở popup sau khi lấy dữ liệu thành công
+            setShowHandlePopup(true);
+            setActionType("");
+            setHandleMessage("");
+            setHandleStatus(response.data.status);
         } catch (error) {
             alert("Lỗi khi lấy chi tiết báo cáo để xử lý");
         }
     };
 
     const submitHandleReport = async () => {
-        if (!handleMessage.trim()) {
-            alert("Vui lòng nhập thông báo");
-            return;
+        // Thêm xác nhận bằng window.confirm
+        const confirmMessage = handleStatus === "approved"
+            ? `Bạn có chắc chắn muốn ${actionType} bộ câu hỏi và gửi thông báo cho người vi phạm không?`
+            : "Bạn có chắc chắn muốn từ chối báo cáo này không?";
+        
+        if (!window.confirm(confirmMessage)) {
+            return; // Nếu người dùng chọn "Cancel", thoát hàm
         }
 
         try {
-            console.log("selectedReport data: ", selectedReport.report_id);
-            //Trước khi gửi thông báo cần thêm bước handle questionFile delete hoặc warning cho người sở hữu
-            //
-            
-            // Gửi thông báo tới người vi phạm
-            await axios.post("http://localhost:9999/notifycation/notify", {
-                recipientId: selectedReport.questionFile.qf_createdById,
-                type: "Warning",
-                message: handleMessage,
-            });
-            
-            // Cập nhật trạng thái report
+            if (handleStatus === "approved") {
+                if (!actionType) {
+                    alert("Vui lòng chọn hành động (Lock hoặc Delete)");
+                    return;
+                }
+                if (!handleMessage.trim()) {
+                    alert("Vui lòng nhập thông báo cho người vi phạm");
+                    return;
+                }
+
+                // Xử lý lock hoặc delete question file
+                await axios.put(`http://localhost:9999/admin/reports/${selectedReport.report_id}/action`, {
+                    action: actionType.toLowerCase(),
+                });
+
+                // Gửi thông báo tới người vi phạm
+                await axios.post("http://localhost:9999/notifycation/notify", {
+                    recipientId: selectedReport.questionFile.qf_createdById,
+                    type: "Warning",
+                    message: `Bộ câu hỏi "${selectedReport.questionFile.qf_name}" của bạn đã bị ${actionType === "lock" ? "khóa" : "xóa"}. Lý do: ${handleMessage}`,
+                });
+            }
+
+            // Cập nhật trạng thái report (approved hoặc rejected)
             await axios.put(`http://localhost:9999/admin/reports/${selectedReport.report_id}/status`, {
                 status: handleStatus,
             });
-            
-            
-            // Cập nhật danh sách reports
-            await fetchReports(); 
 
+            // Cập nhật danh sách reports
+            await fetchReports();
 
             setShowHandlePopup(false);
             setHandleMessage("");
             setHandleStatus("approved");
+            setActionType("");
             setSelectedReport(null);
-            alert("Đã xử lý báo cáo và gửi thông báo thành công");
+            alert(`Đã xử lý báo cáo thành công với trạng thái ${handleStatus}`);
         } catch (error) {
             alert("Lỗi khi xử lý báo cáo: " + error.message);
         }
@@ -107,6 +122,7 @@ const ReportManagement = () => {
         setShowHandlePopup(false);
         setHandleMessage("");
         setHandleStatus("approved");
+        setActionType("");
     };
 
     const indexOfLastReport = currentPage * reportsPerPage;
@@ -162,11 +178,10 @@ const ReportManagement = () => {
                                 <button
                                     className="action-btn delete"
                                     onClick={() => handleReport(report._id)}
-                                    disabled={report.status !== "pending"}
+                                    disabled={report.status === "approved" || report.status === "rejected"}
                                 >
                                     Handle
                                 </button>
-
                             </td>
                         </tr>
                     ))}
@@ -225,21 +240,40 @@ const ReportManagement = () => {
                                 value={handleStatus}
                                 onChange={(e) => setHandleStatus(e.target.value)}
                             >
+                                <option value="">Chọn hành động</option>
                                 <option value="approved">Approved</option>
                                 <option value="rejected">Rejected</option>
                             </select>
                         </div>
 
-                        <div className="form-group">
-                            <label htmlFor="handleMessage">Thông báo tới người vi phạm:</label>
-                            <textarea
-                                id="handleMessage"
-                                value={handleMessage}
-                                onChange={(e) => setHandleMessage(e.target.value)}
-                                placeholder="Nhập thông báo xử lý..."
-                                rows="4"
-                            />
-                        </div>
+                        {handleStatus === "approved" && (
+                            <>
+                                <div className="form-group">
+                                    <label htmlFor="actionType">Hành động:</label>
+                                    <select
+                                        id="actionType"
+                                        value={actionType}
+                                        onChange={(e) => setActionType(e.target.value)}
+                                    >
+                                        <option value="">Chọn hành động</option>
+                                        <option value="lock">Lock</option>
+                                        <option value="delete">Delete</option>
+                                    </select>
+                                </div>
+
+                                <div className="form-group">
+                                    <label htmlFor="handleMessage">Thông báo tới người vi phạm:</label>
+                                    <textarea
+                                        id="handleMessage"
+                                        value={handleMessage}
+                                        onChange={(e) => setHandleMessage(e.target.value)}
+                                        placeholder="Nhập thông báo xử lý..."
+                                        rows="4"
+                                    />
+                                </div>
+                            </>
+                        )}
+
                         <div className="modal-actions">
                             <button className="action-btn submit" onClick={submitHandleReport}>
                                 Gửi và Cập nhật

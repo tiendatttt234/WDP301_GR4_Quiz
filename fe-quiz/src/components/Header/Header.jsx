@@ -1,15 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Search, X } from "react-bootstrap-icons";
-import { Dropdown } from "react-bootstrap";
+import { SearchOutlined, BellOutlined } from "@ant-design/icons";
+import { Layout, Menu, Dropdown, Button, Input, Avatar, Space, Badge } from "antd";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import "./Header.css"; // Import file CSS tùy chỉnh
+
+const { Header: AntHeader } = Layout;
 
 const Header = ({ onSearchResults }) => {
   const [userName, setUserName] = useState(localStorage.getItem("userName") || "");
-  const [id, setid] = useState(localStorage.getItem("id") || "");
+  const [id, setId] = useState(localStorage.getItem("id") || "");
   const [userRole, setUserRole] = useState("");
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
 
@@ -17,14 +19,14 @@ const Header = ({ onSearchResults }) => {
     const loadUserData = () => {
       const accessToken = localStorage.getItem("accessToken");
       const storedUserName = localStorage.getItem("userName");
-      const storedid = localStorage.getItem("id");
+      const storedId = localStorage.getItem("id");
       const storedRoles = localStorage.getItem("roles");
 
       const handleStorageChange = () => {
         const updatedUserName = localStorage.getItem("userName");
-        const updatedid = localStorage.getItem("id");
+        const updatedId = localStorage.getItem("id");
         setUserName(updatedUserName || "");
-        setid(updatedid || "");
+        setId(updatedId || "");
       };
 
       window.addEventListener("storage", handleStorageChange);
@@ -33,28 +35,26 @@ const Header = ({ onSearchResults }) => {
         try {
           const roleObj = JSON.parse(storedRoles);
           setUserName(storedUserName);
-          setid(storedid);
+          setId(storedId);
           setUserRole(roleObj);
         } catch (error) {
           console.error("Error parsing roles:", error);
         }
       }
 
-      return () => {
-        window.removeEventListener("storage", handleStorageChange);
-      };
+      return () => window.removeEventListener("storage", handleStorageChange);
     };
 
     loadUserData();
   }, []);
-  //tạo thêm 1 bell ở user để nhận thông báo từ admin
+
   const handleLogout = () => {
     localStorage.removeItem("accessToken");
     localStorage.removeItem("userName");
     localStorage.removeItem("id");
     localStorage.removeItem("roles");
     setUserName("");
-    setid("");
+    setId("");
     setUserRole(null);
     toast.success("Đăng xuất thành công!", {
       position: "top-right",
@@ -64,13 +64,7 @@ const Header = ({ onSearchResults }) => {
       pauseOnHover: true,
       draggable: true,
     });
-    setTimeout(() => {
-      navigate("/login");
-    }, 1200);
-  };
-
-  const toggleSidebar = () => {
-    setIsSidebarOpen((prev) => !prev);
+    setTimeout(() => navigate("/login"), 1200);
   };
 
   const handleSearch = async () => {
@@ -91,8 +85,8 @@ const Header = ({ onSearchResults }) => {
     try {
       const response = await fetch(`http://localhost:9999/auth/profile/${id}`);
       if (response.ok) {
-        const Profile = await response.json();
-        navigate(`/profile/${id}`, { state: { user: Profile } });
+        const profile = await response.json();
+        navigate(`/profile/${id}`, { state: { user: profile } });
       } else {
         console.error("Lỗi khi lấy dữ liệu hồ sơ");
       }
@@ -101,125 +95,104 @@ const Header = ({ onSearchResults }) => {
     }
   };
 
+  const toolsMenu = (
+    <Menu className="custom-menu">
+      <Menu.Item key="1">
+        <Link to="/blogList">Blog</Link>
+      </Menu.Item>
+      <Menu.Item key="2">
+        <Link to="/user/viewques">Thư viện của bạn</Link>
+      </Menu.Item>
+    </Menu>
+  );
+
+  const topicsMenu = (
+    <Menu className="custom-menu">
+      <Menu.Item key="1">
+        <Link to="/user/quizHistory">Các bài quiz đã làm</Link>
+      </Menu.Item>
+      <Menu.Item key="2">
+        <Link to="#">Các học phần đã thích</Link>
+      </Menu.Item>
+    </Menu>
+  );
+
+  const userMenu = (
+    <Menu className="custom-menu">
+      <Menu.Item key="1" onClick={handleGoToProfile}>
+        Hồ sơ
+      </Menu.Item>
+      <Menu.Item key="2">
+        <Link to="/upgrade">Nâng cấp</Link>
+      </Menu.Item>
+      <Menu.Item key="3" onClick={handleLogout}>
+        Đăng xuất
+      </Menu.Item>
+    </Menu>
+  );
+
   return (
-    <header
-      style={{
-        position: "sticky",
-        top: 0,
-        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-        backgroundColor: "#fff",
-        zIndex: 1000,
-      }}
-    >
-      <div className={`sidebar-menu ${isSidebarOpen ? "open" : ""}`} style={{ display: isSidebarOpen ? "block" : "none" }}>
-        <div className="sidebar-header">
-          <X onClick={toggleSidebar} size={24} className="close-icon" />
-        </div>
-        <ul>
-          <li>
-            <Link to="/" onClick={toggleSidebar}>
-              Trang chủ
-            </Link>
-          </li>
-          <li>
-            <Link to="/user/viewques" onClick={toggleSidebar}>
-              Thư viện của bạn
-            </Link>
-          </li>
-        </ul>
-      </div>
-      <div
-        className="container"
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          padding: "5px 10px",
-        }}
-      >
-        <Link to="/" style={{ textDecoration: "none" }}>
-          <h1 style={{ margin: 0 }}>Quiz</h1>
-        </Link>
-        <div onClick={toggleSidebar} className="sidebar-toggle"></div>
-        <div style={{ display: "flex", alignItems: "center", gap: "20px" }}>
-          <Dropdown>
-            <Dropdown.Toggle variant="light" id="dropdown-basic">
-              Công cụ
-            </Dropdown.Toggle>
-            <Dropdown.Menu>
-              <Dropdown.Item as={Link} to="/blogList">
-                Blog
-              </Dropdown.Item>
-              <Dropdown.Item as={Link} to="/user/viewques">
-                Thư viện của bạn
-              </Dropdown.Item>
-            </Dropdown.Menu>
-          </Dropdown>
+    <AntHeader className="custom-header">
+      {/* Logo */}
+      <Link to="/" className="logo">
+        <h1>Quiz</h1>
+      </Link>
 
-          <Dropdown>
-            <Dropdown.Toggle variant="light" id="dropdown-basic">
-              Chủ đề
-            </Dropdown.Toggle>
-            <Dropdown.Menu>
-              <Dropdown.Item as={Link} to="/user/quizHistory">
-                Các bài quiz đã làm
-              </Dropdown.Item>
-              <Dropdown.Item as={Link} to="#">
-                Các học phần đã thích
-              </Dropdown.Item>
-            </Dropdown.Menu>
-          </Dropdown>
-        </div>
+      {/* Công cụ và Chủ đề */}
+      <Space size="middle" className="nav-links">
+        <Dropdown overlay={toolsMenu}>
+          <Button type="link" className="nav-button">
+            Công cụ
+          </Button>
+        </Dropdown>
+        <Dropdown overlay={topicsMenu}>
+          <Button type="link" className="nav-button">
+            Chủ đề
+          </Button>
+        </Dropdown>
+      </Space>
 
-        <div className="search" style={{ display: "flex", alignItems: "center" }}>
-          <input
-            type="text"
-            placeholder="Tìm kiếm"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            style={{ padding: "5px", width: "300px" }}
+      {/* Thanh tìm kiếm */}
+      <Input
+        className="custom-search"
+        placeholder="Tìm kiếm"
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+        onPressEnter={handleSearch}
+        suffix={
+          <Button
+            icon={<SearchOutlined />}
+            onClick={handleSearch}
+            className="search-button"
           />
-          <button onClick={handleSearch} style={{ backgroundColor: "rgb(66,85,255)", borderRadius: "25%", padding: "8px" }}>
-            <Search />
-          </button>
-        </div>
+        }
+      />
 
-        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-          {userName ? (
-            <>
-              <span>Xin chào, {userName}</span>
-              <Dropdown>
-                <Dropdown.Toggle variant="light" id="dropdown-avatar">
-                  <img
-                    src="http://pm1.aminoapps.com/7239/b508c8e2b879561f650574466b86531cc90138d9r1-768-768v2_uhq.jpg"
-                    alt="User Avatar"
-                    style={{ width: "40px", borderRadius: "50%" }}
-                  />
-                </Dropdown.Toggle>
-                <Dropdown.Menu>
-                  <Dropdown.Item onClick={handleGoToProfile}>Hồ sơ</Dropdown.Item>
-                  <Dropdown.Item as={Link} to="/upgrade">Nâng cấp</Dropdown.Item>
-                  <Dropdown.Item onClick={handleLogout}>Đăng xuất</Dropdown.Item>
-                </Dropdown.Menu>
-              </Dropdown>
-            </>
-          ) : (
-            <Link to="/login">
-              <button
-                style={{
-                  padding: "5px 10px",
-                  backgroundColor: "rgb(66,85,255)",
-                  borderRadius: "10px",
-                }}
-              >
-                Đăng nhập
-              </button>
-            </Link>
-          )}
-        </div>
-      </div>
+      {/* User Section */}
+      <Space size="middle" className="user-section">
+        {userName ? (
+          <>
+            <span className="greeting">Xin chào, {userName}</span>
+            <Badge count={5} className="notification-badge">
+              <BellOutlined className="bell-icon" />
+            </Badge>
+            <Dropdown overlay={userMenu}>
+              <Avatar
+                src="http://pm1.aminoapps.com/7239/b508c8e2b879561f650574466b86531cc90138d9r1-768-768v2_uhq.jpg"
+                size={40}
+                className="user-avatar"
+              />
+            </Dropdown>
+          </>
+        ) : (
+          <Link to="/login">
+            <Button className="login-button">Đăng nhập</Button>
+          </Link>
+        )}
+      </Space>
+
       <ToastContainer />
-    </header>
+    </AntHeader>
   );
 };
 

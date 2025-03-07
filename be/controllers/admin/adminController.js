@@ -2,6 +2,7 @@ const AccountRepository = require("../../repositories/Account.repository");
 const Account = require("../../models/Account");
 const Role = require("../../models/Role");
 const Quiz = require('../../models/Quiz');
+
 async function getAllAccounts(req, res) {
     try {
         const accounts = await AccountRepository.getAllAccounts();

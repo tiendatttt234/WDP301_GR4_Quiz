@@ -109,6 +109,28 @@ async function changePasswordController(req, res, next) {
     });
   }
 }
+const forgetPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+    const result = await AccountService.requestPasswordReset(email);
+    res.json(result);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ status: "Error", error: error.message });
+  }
+};
+
+const resetPassword = async (req, res) => {
+  try {
+    const { id, token } = req.params;
+    const { password } = req.body;
+    const result = await AccountService.resetPassword(id, token, password);
+    res.json(result);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ status: "Error", error: error.message });
+  }
+};
 
 module.exports = {
   registerController,
@@ -116,4 +138,6 @@ module.exports = {
   getAccountController,
   updateAccountController,
   changePasswordController,
+  forgetPassword,
+  resetPassword,
 };

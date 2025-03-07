@@ -1,5 +1,6 @@
 // const QuestionFile = require("../models/QuestionFile");
-
+const fs = require('fs');
+const path = require('path');
 const questionFileService = require('../services/questionFile.service');
 
 
@@ -84,6 +85,54 @@ const questionFileService = require('../services/questionFile.service');
     }
   }
 
+  async function patchQuestion(req, res) {
+    try {
+      const { fileId, questionId } = req.params;
+      const updatedQuestion = req.body;
+      const updatedFile = await questionFileService.updateQuestion(fileId, questionId, updatedQuestion);
+      res.status(200).json(updatedFile);
+    } catch (error) {
+      console.error("Lỗi khi cập nhật câu hỏi:", error);
+      res.status(error.message.includes("Không tìm thấy") ? 404 : 500).json({
+        message: error.message || "Lỗi server",
+      });
+    }
+  }
+
+  async function updatePrivacy(req, res) {
+    try {
+      const { fileId } = req.params;
+      const { isPrivate } = req.body; // Chỉ lấy isPrivate từ body
+      const updatedFile = await questionFileService.updatePrivacy(fileId, isPrivate);
+      res.status(200).json({ message: "Privacy updated successfully", result: updatedFile });
+    } catch (error) {
+      console.error("Lỗi khi cập nhật trạng thái:", error);
+      res.status(error.message.includes("Không tìm thấy") ? 404 : 500).json({
+        message: error.message || "Lỗi server",
+      });
+    }
+  }
+  async function importQuestionFile(req, res) {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ error: "Vui lòng upload file .txt" });
+      }
+
+      const filePath = path.join(__dirname, "../uploads", req.file.filename);
+      const createdBy = req.user ? req.user._id : null; // Giả sử có middleware auth
+
+      const newQuestionFile = await questionFileService.createQuestionFileFromTxt(filePath, createdBy);
+
+      fs.unlinkSync(filePath); // Xóa file tạm
+      res.status(201).json({
+        message: "Import học phần thành công",
+        data: newQuestionFile,
+      });
+    } catch (error) {
+      if (req.file) fs.unlinkSync(path.join(__dirname, "../uploads", req.file.filename));
+      res.status(400).json({ error: error.message || "Lỗi khi import file" });
+    }
+  }
 
   async function adminGetAllQF(req, res, next) {
     try {
@@ -108,6 +157,8 @@ const QuestionFileController = {
   createQuestionFile,
   updateQuestionFile,
   deleteQuestionFile,
+  patchQuestion, updatePrivacy,
+  importQuestionFile,
   adminGetAllQF
 };
 

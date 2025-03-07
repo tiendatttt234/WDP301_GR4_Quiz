@@ -47,16 +47,46 @@ async function deleteQF(id) {
   return await QuestionFile.findByIdAndDelete(id);
 }
 
+  async function updateQuestionInFile(fileId, questionId, updatedQuestion) {
+    return await QuestionFile.findOneAndUpdate(
+      { _id: fileId, "arrayQuestion._id": questionId },
+      {
+        $set: {
+          "arrayQuestion.$.content": updatedQuestion.content,
+          "arrayQuestion.$.type": updatedQuestion.type,
+          "arrayQuestion.$.answers": updatedQuestion.answers,
+        },
+      },
+      { new: true }
+    );
+  }
 
+  async function updatePrivacy(fileId, isPrivate) {
+    return await QuestionFile.findByIdAndUpdate(
+      fileId,
+      { $set: { isPrivate } }, // Chỉ cập nhật isPrivate
+      { new: true }
+    );
+  }
+
+  async function createTxt(data) {
+    const questionFile = new QuestionFile({
+      ...data,
+      reportedCount: 0,
+      isReported: false,
+    });
+    return await questionFile.save();
+  }
 
 const questionFileRepository = {
-  findQuestionFileById,
-  getAllByUserId,
-  findByIdAndUserId,
-  createQF, updateQF,
-  deleteQF,
-  getAll,
-  getAllWithUser
+    findQuestionFileById,
+    getAllByUserId,
+    findByIdAndUserId,
+    createQF,updateQF,
+    deleteQF,
+    getAll, updateQuestionInFile, updatePrivacy,
+    createTxt,
+    getAllWithUser
 };
 
 module.exports = questionFileRepository;

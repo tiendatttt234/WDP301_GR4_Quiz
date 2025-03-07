@@ -26,6 +26,8 @@ function App() {
             <Route key={index} path={route.path} element={route.element} />
           ))}
         </Route>
+        {/* <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password/:id/:token" element={<ResetPassword />} /> */}
       </Routes>
     </BrowserRouter>
   );

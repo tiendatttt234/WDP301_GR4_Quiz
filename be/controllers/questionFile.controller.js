@@ -119,14 +119,15 @@ const questionFileService = require('../services/questionFile.service');
       }
 
       const filePath = path.join(__dirname, "../uploads", req.file.filename);
-      const createdBy = req.user ? req.user._id : null; // Giả sử có middleware auth
+      const createdBy = req.user ? req.user._id : null;
 
-      const newQuestionFile = await questionFileService.createQuestionFileFromTxt(filePath, createdBy);
+      const { data, warnings } = await questionFileService.createQuestionFileFromTxt(filePath, createdBy);
 
-      fs.unlinkSync(filePath); // Xóa file tạm
+      fs.unlinkSync(filePath);
       res.status(201).json({
         message: "Import học phần thành công",
-        data: newQuestionFile,
+        data,
+        warnings: warnings.length > 0 ? warnings : undefined,
       });
     } catch (error) {
       if (req.file) fs.unlinkSync(path.join(__dirname, "../uploads", req.file.filename));

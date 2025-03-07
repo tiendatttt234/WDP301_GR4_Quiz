@@ -5,7 +5,7 @@ import { Route, Routes } from "react-router-dom";
 // import ViewQuestionDetail from "../../user/question/ViewQuesDetail";
 // import EditQuestion from "../../user/question/UpdateQuestion";
 // import ViewQuestion from "../../user/question/ViewQues";
-import QuestionCreation from "../pages/QuestionFile/newQuestionFile";
+import QuestionCreation from "../pages/QuestionFile/create/newQuestionFile";
 import UpdateQuestion from "../pages/QuestionFile/update/updateQuestionFile";
 import ListQuestion from "../pages/QuestionFile/listQuestion/listQuestionFile";
 import QuestionFileDetail from "../pages/QuestionFile/detail/questionFileDetail";

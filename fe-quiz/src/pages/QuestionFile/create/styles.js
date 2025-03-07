@@ -8,6 +8,7 @@ export const Container = styled.div`
   border-radius: 12px;
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
   margin-top: 30px;
+  overflow: hidden; /* Ngăn container cha tạo thanh cuộn */
 `;
 
 export const Title = styled.h1`
@@ -21,7 +22,7 @@ export const Title = styled.h1`
 `;
 
 export const InputField = styled.input`
-  width: 97%;
+  width: 100%;
   padding: 0.75rem 1rem;
   margin-bottom: 1rem;
   border: 2px solid #e2e8f0;
@@ -42,7 +43,7 @@ export const InputField = styled.input`
 `;
 
 export const TextArea = styled.textarea`
-  width: 97%;
+  width: 100%;
   padding: 0.75rem 1rem;
   margin-bottom: 1.25rem;
   border: 2px solid #e2e8f0;
@@ -70,6 +71,7 @@ export const QuestionCard = styled.div`
   background-color: #ffffff;
   margin-bottom: 1.5rem;
   transition: all 0.3s ease;
+  min-height: 200px;
 
   &:hover {
     border-color: #dbeafe;
@@ -111,6 +113,7 @@ export const AnswersGrid = styled.div`
   grid-template-columns: 1fr 1fr;
   gap: 1rem;
   align-items: start;
+  margin-top: 10px;
 `;
 
 export const AnswerItem = styled.div`
@@ -161,11 +164,11 @@ export const PrimaryButton = styled(Button)`
 
 export const ButtonContainer = styled.div`
   display: flex;
-  justify-content: space-between; /* Đảm bảo nút phân bố đều */
+  justify-content: space-between;
   align-items: center;
   width: 100%;
   margin-top: 1rem;
-  gap: 1rem; /* Khoảng cách giữa các nút */
+  gap: 1rem;
 `;
 
 export const SecondaryButton = styled(Button)`
@@ -218,4 +221,64 @@ export const DeleteButtonWrapper = styled.div`
   display: flex;
   justify-content: flex-end;
   align-items: center;
+`;
+
+export const ImportButtonContainer = styled.div`
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+`;
+
+export const ModalContent = styled.div`
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: white;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  max-height: 80vh; /* Giới hạn chiều cao tối đa */
+  overflow-y: auto; /* Chỉ cuộn dọc khi cần */
+  overflow-x: hidden; /* Loại bỏ thanh cuộn ngang */
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  width: 700px;
+  height: 500px; 
+`;
+
+export const ModalOverlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+`;
+
+export const CloseButton = styled.button`
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #6b7280;
+
+  &:hover {
+    color: #ef4444;
+  }
+`;
+
+export const ExampleText = styled.pre`
+  white-space: pre-wrap; /* Giữ định dạng nhưng không cuộn ngang */
+  word-wrap: break-word;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden; /* Loại bỏ thanh cuộn ngang trong ví dụ */
+  font-family: inherit; /* Sử dụng font của cha để đồng nhất */
 `;

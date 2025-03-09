@@ -1,0 +1,82 @@
+.sidebar {
+    width: 250px; /* Rộng mặc định */
+    background: #2c3e50;
+    height: 100vh;
+    overflow-y: auto;
+    position: sticky;
+    top: 0;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    transition: width 0.3s ease; /* Hiệu ứng chuyển động mượt */
+}
+
+.sidebar-collapsed {
+    width: 80px; /* Chiều rộng khi thu gọn */
+}
+
+.sidebar-title {
+    padding: 20px 20px 10px;
+    color: #fff;
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+    transition: opacity 0.3s ease;
+}
+
+.sidebar-collapsed .sidebar-title {
+    opacity: 0; /* Ẩn tiêu đề khi thu gọn */
+    padding: 0; /* Loại bỏ padding khi thu gọn */
+}
+
+.sidebar-menu {
+    background: #2c3e50;
+    color: #fff;
+    font-size: 14px;
+    border: none;
+}
+
+.sidebar-menu .ant-menu-item,
+.sidebar-menu .ant-menu-submenu-title {
+    color: #fff !important;
+}
+
+.sidebar-menu .ant-menu-item-selected,
+.sidebar-menu .ant-menu-item-active,
+.sidebar-menu .ant-menu-submenu-selected,
+.sidebar-menu .ant-menu-submenu-active {
+    background: #34495e;
+    color: #fff !important;
+}
+
+.sidebar-menu .ant-menu-item a,
+.sidebar-menu .ant-menu-submenu-title {
+    text-decoration: none;
+    color: #fff !important;
+}
+
+.sidebar-menu .ant-menu-item:hover,
+.sidebar-menu .ant-menu-submenu-title:hover {
+    background: #34495e;
+    color: #fff !important;
+}
+
+.sidebar-menu .ant-menu-item-icon,
+.sidebar-menu .ant-menu-submenu-arrow {
+    color: #fff !important;
+}
+
+/* Ẩn text khi thu gọn, chỉ hiển thị icon */
+.sidebar-collapsed .ant-menu-item,
+.sidebar-collapsed .ant-menu-submenu-title {
+    padding: 0 20px !important; /* Giảm padding để chỉ hiển thị icon */
+}
+
+.sidebar-collapsed .ant-menu-item .anticon,
+.sidebar-collapsed .ant-menu-submenu-title .anticon {
+    margin-right: 0 !important; /* Loại bỏ khoảng cách giữa icon và text */
+}
+
+.sidebar-collapsed .ant-menu-item a,
+.sidebar-collapsed .ant-menu-submenu-title {
+    display: flex;
+    justify-content: center; /* Căn giữa icon khi thu gọn */
+}

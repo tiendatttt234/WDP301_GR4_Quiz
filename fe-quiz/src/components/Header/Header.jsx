@@ -1,52 +1,120 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Search, X } from "react-bootstrap-icons";
-import { Dropdown } from "react-bootstrap";
+import { SearchOutlined, BellOutlined } from "@ant-design/icons";
+import {
+  Layout,
+  Menu,
+  Dropdown,
+  Button,
+  Input,
+  Avatar,
+  Space,
+  Badge,
+} from "antd";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import socket from "../../helper/socket";
+import axios from "axios";
+import "./Header.css";
+
+const { Header: AntHeader } = Layout;
 
 const Header = ({ onSearchResults }) => {
-  const [userName, setUserName] = useState(localStorage.getItem("userName") || "");
-  const [id, setid] = useState(localStorage.getItem("id") || "");
+  const [userName, setUserName] = useState(
+    localStorage.getItem("userName") || ""
+  );
+  const [id, setId] = useState(localStorage.getItem("id") || "");
   const [userRole, setUserRole] = useState("");
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [notificationCount, setNotificationCount] = useState(0);
+  const [notifications, setNotifications] = useState([]);
   const navigate = useNavigate();
+
+  console.log("userRole", id + userRole);
 
   useEffect(() => {
     const loadUserData = () => {
       const accessToken = localStorage.getItem("accessToken");
       const storedUserName = localStorage.getItem("userName");
-      const storedid = localStorage.getItem("id");
-      const storedRoles = localStorage.getItem("roles");
+      const storedId = localStorage.getItem("id");
 
-      const handleStorageChange = () => {
-        const updatedUserName = localStorage.getItem("userName");
-        const updatedid = localStorage.getItem("id");
-        setUserName(updatedUserName || "");
-        setid(updatedid || "");
-      };
+      setUserName(storedUserName || "");
+      setId(storedId || "");
 
-      window.addEventListener("storage", handleStorageChange);
-
-      if (accessToken && storedUserName && storedRoles) {
-        try {
-          const roleObj = JSON.parse(storedRoles);
-          setUserName(storedUserName);
-          setid(storedid);
-          setUserRole(roleObj);
-        } catch (error) {
-          console.error("Error parsing roles:", error);
+      if (accessToken && storedUserName) {
+        if (storedId) {
+          console.log("Registering user with ID:", storedId);
+          socket.emit("registerUser", storedId);
+          fetchNotifications(storedId);
         }
       }
-
-      return () => {
-        window.removeEventListener("storage", handleStorageChange);
-      };
     };
 
+    const fetchNotifications = async (userId) => {
+      try {
+        const response = await axios.get(
+          `http://localhost:9999/notifycation/${userId}`
+        );
+        const fetchedNotifications = response.data.notifications;
+        setNotifications(fetchedNotifications);
+        const unreadCount = fetchedNotifications.filter(
+          (notif) => !notif.isRead
+        ).length;
+        setNotificationCount(unreadCount);
+      } catch (error) {
+        console.error("Error fetching notifications:", error);
+      }
+    };
+
+    // Kiểm tra kết nối Socket.IO
+    socket.on("connect", () => {
+      console.log("Socket.IO connected with ID:", socket.id);
+      if (id) {
+        socket.emit("registerUser", id); // Đăng ký lại khi reconnect
+      }
+    });
+    socket.on("disconnect", () => {
+      console.log("Socket.IO disconnected");
+    });
+
+    // Lắng nghe thông báo real-time
+    socket.on("newNotification", (notification) => {
+      console.log("Received notification:", notification);
+      setNotifications((prev) => [...prev, notification]);
+      setNotificationCount((prev) => prev + 1);
+      toast.info(notification.message, {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+    });
+
     loadUserData();
-  }, []);
+
+    // Lắng nghe thay đổi localStorage
+    const handleStorageChange = () => {
+      const updatedUserName = localStorage.getItem("userName");
+      const updatedId = localStorage.getItem("id");
+      setUserName(updatedUserName || "");
+      setId(updatedId || "");
+      if (updatedId) {
+        socket.emit("registerUser", updatedId);
+        fetchNotifications(updatedId);
+      }
+    };
+    window.addEventListener("storage", handleStorageChange);
+
+    // Dọn dẹp
+    return () => {
+      socket.off("connect");
+      socket.off("disconnect");
+      socket.off("newNotification");
+      window.removeEventListener("storage", handleStorageChange);
+    };
+  }, [id]); // Thêm id vào dependency để reload khi id thay đổi
 
   const handleLogout = () => {
     localStorage.removeItem("accessToken");
@@ -54,8 +122,10 @@ const Header = ({ onSearchResults }) => {
     localStorage.removeItem("id");
     localStorage.removeItem("roles");
     setUserName("");
-    setid("");
+    setId("");
     setUserRole(null);
+    setNotifications([]);
+    setNotificationCount(0);
     toast.success("Đăng xuất thành công!", {
       position: "top-right",
       autoClose: 1200,
@@ -64,18 +134,14 @@ const Header = ({ onSearchResults }) => {
       pauseOnHover: true,
       draggable: true,
     });
-    setTimeout(() => {
-      navigate("/login");
-    }, 1200);
-  };
-
-  const toggleSidebar = () => {
-    setIsSidebarOpen((prev) => !prev);
+    setTimeout(() => navigate("/login"), 1200);
   };
 
   const handleSearch = async () => {
     try {
-      const response = await fetch(`http://localhost:9999/questionFile/search?name=${searchQuery}`);
+      const response = await fetch(
+        `http://localhost:9999/questionFile/search?name=${searchQuery}`
+      );
       if (response.ok) {
         const data = await response.json();
         onSearchResults(data.questionFiles);
@@ -91,8 +157,8 @@ const Header = ({ onSearchResults }) => {
     try {
       const response = await fetch(`http://localhost:9999/auth/profile/${id}`);
       if (response.ok) {
-        const Profile = await response.json();
-        navigate(`/profile/${id}`, { state: { user: Profile } });
+        const profile = await response.json();
+        navigate(`/profile/${id}`, { state: { user: profile } });
       } else {
         console.error("Lỗi khi lấy dữ liệu hồ sơ");
       }
@@ -101,125 +167,138 @@ const Header = ({ onSearchResults }) => {
     }
   };
 
+  const markAsRead = async (notificationId) => {
+    try {
+      await axios.patch(
+        `http://localhost:9999/notifycation/${notificationId}/read`
+      );
+      setNotifications((prev) =>
+        prev.map((notif) =>
+          notif._id === notificationId ? { ...notif, isRead: true } : notif
+        )
+      );
+      setNotificationCount((prev) => prev - 1);
+    } catch (error) {
+      console.error("Lỗi khi đánh dấu thông báo đã đọc:", error);
+    }
+  };
+
+  const notificationMenu = (
+    <Menu className="notification-menu">
+      {notifications.length > 0 ? (
+        notifications.map((notif, index) => (
+          <Menu.Item
+            key={index}
+            onClick={() => !notif.isRead && markAsRead(notif._id)}
+            className={notif.isRead ? "read" : "unread"} // Thêm class dựa trên trạng thái
+          >
+            {notif.message}
+          </Menu.Item>
+        ))
+      ) : (
+        <Menu.Item key="0" className="no-notifications">
+          Không có thông báo
+        </Menu.Item>
+      )}
+    </Menu>
+  );
+
+  const toolsMenu = (
+    <Menu className="custom-menu">
+      <Menu.Item key="1">
+        <Link to="/blogList">Blog</Link>
+      </Menu.Item>
+      <Menu.Item key="2">
+        <Link to="/user/viewques">Thư viện của bạn</Link>
+      </Menu.Item>
+    </Menu>
+  );
+
+  const topicsMenu = (
+    <Menu className="custom-menu">
+      <Menu.Item key="1">
+        <Link to="/user/quizHistory">Các bài quiz đã làm</Link>
+      </Menu.Item>
+      <Menu.Item key="2">
+        <Link to="#">Các học phần đã thích</Link>
+      </Menu.Item>
+    </Menu>
+  );
+
+  const userMenu = (
+    <Menu className="custom-menu">
+      <Menu.Item key="1" onClick={handleGoToProfile}>
+        Hồ sơ
+      </Menu.Item>
+      <Menu.Item key="2">
+        <Link to="/upgrade">Nâng cấp</Link>
+      </Menu.Item>
+      <Menu.Item key="3" onClick={handleLogout}>
+        Đăng xuất
+      </Menu.Item>
+    </Menu>
+  );
+
   return (
-    <header
-      style={{
-        position: "sticky",
-        top: 0,
-        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-        backgroundColor: "#fff",
-        zIndex: 1000,
-      }}
-    >
-      <div className={`sidebar-menu ${isSidebarOpen ? "open" : ""}`} style={{ display: isSidebarOpen ? "block" : "none" }}>
-        <div className="sidebar-header">
-          <X onClick={toggleSidebar} size={24} className="close-icon" />
-        </div>
-        <ul>
-          <li>
-            <Link to="/" onClick={toggleSidebar}>
-              Trang chủ
-            </Link>
-          </li>
-          <li>
-            <Link to="/user/viewques" onClick={toggleSidebar}>
-              Thư viện của bạn
-            </Link>
-          </li>
-        </ul>
-      </div>
-      <div
-        className="container"
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          padding: "5px 10px",
-        }}
-      >
-        <Link to="/" style={{ textDecoration: "none" }}>
-          <h1 style={{ margin: 0 }}>Quiz</h1>
-        </Link>
-        <div onClick={toggleSidebar} className="sidebar-toggle"></div>
-        <div style={{ display: "flex", alignItems: "center", gap: "20px" }}>
-          <Dropdown>
-            <Dropdown.Toggle variant="light" id="dropdown-basic">
-              Công cụ
-            </Dropdown.Toggle>
-            <Dropdown.Menu>
-              <Dropdown.Item as={Link} to="/blogList">
-                Blog
-              </Dropdown.Item>
-              <Dropdown.Item as={Link} to="/user/viewques">
-                Thư viện của bạn
-              </Dropdown.Item>
-            </Dropdown.Menu>
-          </Dropdown>
+    <AntHeader className="custom-header">
+      <Link to="/" className="logo">
+        <h1>Quiz</h1>
+      </Link>
 
-          <Dropdown>
-            <Dropdown.Toggle variant="light" id="dropdown-basic">
-              Chủ đề
-            </Dropdown.Toggle>
-            <Dropdown.Menu>
-              <Dropdown.Item as={Link} to="/user/quizHistory">
-                Các bài quiz đã làm
-              </Dropdown.Item>
-              <Dropdown.Item as={Link} to="#">
-                Các học phần đã thích
-              </Dropdown.Item>
-            </Dropdown.Menu>
-          </Dropdown>
-        </div>
+      <Space size="middle" className="nav-links">
+        <Dropdown overlay={toolsMenu}>
+          <Button type="link" className="nav-button">
+            Công cụ
+          </Button>
+        </Dropdown>
+        <Dropdown overlay={topicsMenu}>
+          <Button type="link" className="nav-button">
+            Chủ đề
+          </Button>
+        </Dropdown>
+      </Space>
 
-        <div className="search" style={{ display: "flex", alignItems: "center" }}>
-          <input
-            type="text"
-            placeholder="Tìm kiếm"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            style={{ padding: "5px", width: "300px" }}
+      <Input
+        className="custom-search"
+        placeholder="Tìm kiếm"
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+        onPressEnter={handleSearch}
+        suffix={
+          <Button
+            icon={<SearchOutlined />}
+            onClick={handleSearch}
+            className="search-button"
           />
-          <button onClick={handleSearch} style={{ backgroundColor: "rgb(66,85,255)", borderRadius: "25%", padding: "8px" }}>
-            <Search />
-          </button>
-        </div>
+        }
+      />
 
-        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-          {userName ? (
-            <>
-              <span>Xin chào, {userName}</span>
-              <Dropdown>
-                <Dropdown.Toggle variant="light" id="dropdown-avatar">
-                  <img
-                    src="http://pm1.aminoapps.com/7239/b508c8e2b879561f650574466b86531cc90138d9r1-768-768v2_uhq.jpg"
-                    alt="User Avatar"
-                    style={{ width: "40px", borderRadius: "50%" }}
-                  />
-                </Dropdown.Toggle>
-                <Dropdown.Menu>
-                  <Dropdown.Item onClick={handleGoToProfile}>Hồ sơ</Dropdown.Item>
-                  <Dropdown.Item as={Link} to="/upgrade">Nâng cấp</Dropdown.Item>
-                  <Dropdown.Item onClick={handleLogout}>Đăng xuất</Dropdown.Item>
-                </Dropdown.Menu>
-              </Dropdown>
-            </>
-          ) : (
-            <Link to="/login">
-              <button
-                style={{
-                  padding: "5px 10px",
-                  backgroundColor: "rgb(66,85,255)",
-                  borderRadius: "10px",
-                }}
-              >
-                Đăng nhập
-              </button>
-            </Link>
-          )}
-        </div>
-      </div>
+      <Space size="middle" className="user-section">
+        {userName ? (
+          <>
+            <span className="greeting">Xin chào, {userName}</span>
+            <Dropdown overlay={notificationMenu}>
+              <Badge count={notificationCount} className="notification-badge">
+                <BellOutlined className="bell-icon" />
+              </Badge>
+            </Dropdown>
+            <Dropdown overlay={userMenu}>
+              <Avatar
+                src="http://pm1.aminoapps.com/7239/b508c8e2b879561f650574466b86531cc90138d9r1-768-768v2_uhq.jpg"
+                size={40}
+                className="user-avatar"
+              />
+            </Dropdown>
+          </>
+        ) : (
+          <Link to="/login">
+            <Button className="login-button">Đăng nhập</Button>
+          </Link>
+        )}
+      </Space>
+
       <ToastContainer />
-    </header>
+    </AntHeader>
   );
 };
 

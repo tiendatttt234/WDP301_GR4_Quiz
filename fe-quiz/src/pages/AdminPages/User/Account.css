@@ -1,0 +1,87 @@
+.container {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+    background: #f9f9f9;
+    border-radius: 10px;
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+  
+  .header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  
+  .search-bar {
+    padding: 5px;
+    width: 200px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  .sort-select {
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  th, td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  th {
+    background: #f2f2f2;
+  }
+  
+  .status {
+    padding: 5px 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .active {
+    background-color: #4caf50;
+    color: white;
+  }
+  
+  .inactive {
+    background-color: #f44336;
+    color: white;
+  }
+  
+  .pagination {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+  }
+  
+  .pagination-buttons button {
+    padding: 5px 10px;
+    margin: 0 5px;
+    border: 1px solid #ddd;
+    background: white;
+    cursor: pointer;
+    border-radius: 5px;
+  }
+  
+  .pagination-buttons button.active {
+    background: #007bff;
+    color: white;
+  }
+  
+  .pagination-buttons button:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }

@@ -1,5 +1,7 @@
-import React, { useState } from "react";
-import { Search } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { Search, Trash2 } from "lucide-react"; // Thêm Trash2 vào import
+import { useNavigate } from "react-router-dom";
 import {
   Container,
   Header,
@@ -14,22 +16,54 @@ import {
   QuestionTitle,
   QuestionAuthor,
   QuestionCount,
-  QuestionDetails
+  QuestionDetails,
+  DeleteButton, // Thêm DeleteButton vào import
 } from "./styles";
 
 const ListQuestion = () => {
   const [activeTab, setActiveTab] = useState("hocPhan");
   const [search, setSearch] = useState("");
-  const questions = [
-    { id: 1, title: "SE_Kỳ 1_CSI104", author: "KandalsMe", count: 302 },
-    { id: 2, title: "SWD391 - Test1", author: "Trần Thị B", count: 40 },
-  ];
+  const [questionSets, setQuestionSets] = useState([]);
+  const navigate = useNavigate();
 
-  const filteredQuestions = questions.filter(
-    (q) =>
-      q.title.toLowerCase().includes(search.toLowerCase()) ||
-      q.author.toLowerCase().includes(search.toLowerCase())
+  useEffect(() => {
+    const fetchQuestionFiles = async () => {
+      try {
+        const response = await axios.get("http://localhost:9999/questionFile/getAll");
+        console.log("API Response:", response.data);
+        setQuestionSets(response.data.questionFileRespone || []);
+      } catch (error) {
+        console.error("Lỗi khi lấy danh sách học phần", error);
+        setQuestionSets([]);
+      }
+    };
+    fetchQuestionFiles();
+  }, []);
+
+  const filteredQuestionFiles = questionSets.filter((file) =>
+    file.name.toLowerCase().includes(search.toLowerCase()) ||
+    (file.createdBy && file.createdBy.toLowerCase().includes(search.toLowerCase()))
   );
+
+  const handleQuestionClick = (id) => {
+    navigate(`/user/questionfile/update/${id}`);
+  };
+
+  const handleDeleteQuestion = async (id) => {
+    const confirmDelete = window.confirm(
+      "Điều này sẽ làm mất toàn bộ câu hỏi? Bạn có muốn tiếp tục không?"
+    );
+    if (confirmDelete) {
+      try {
+        await axios.delete(`http://localhost:9999/questionFile/delete/${id}`);
+        setQuestionSets(questionSets.filter((qf) => qf._id !== id)); // Cập nhật danh sách sau khi xóa
+        alert("Xóa học phần thành công!"); // Thông báo thành công (có thể thay bằng toast nếu muốn)
+      } catch (error) {
+        console.error("Lỗi khi xóa học phần", error);
+        alert("Lỗi khi xóa học phần!");
+      }
+    }
+  };
 
   return (
     <Container>
@@ -59,13 +93,21 @@ const ListQuestion = () => {
         </SearchBox>
       </Header>
       <QuestionList>
-        {filteredQuestions.map((q) => (
-          <QuestionItem key={q.id}>
-            <QuestionDetails>
-              <QuestionCount>{q.count} thuật ngữ</QuestionCount>
-              <QuestionAuthor>{q.author}</QuestionAuthor>
-            </QuestionDetails>
-            <QuestionTitle>{q.title}</QuestionTitle>
+        {filteredQuestionFiles.map((qf) => (
+          <QuestionItem key={qf._id}>
+            <div
+              onClick={() => handleQuestionClick(qf._id)}
+              style={{ cursor: "pointer", flex: 1 }} // Đảm bảo vùng click không bị ảnh hưởng bởi nút xóa
+            >
+              <QuestionDetails>
+                <QuestionCount>{qf.arrayQuestion?.length} câu hỏi</QuestionCount>
+                <QuestionAuthor>{qf.createdBy || "Không rõ"}</QuestionAuthor>
+              </QuestionDetails>
+              <QuestionTitle>{qf.name}</QuestionTitle>
+            </div>
+            <DeleteButton onClick={() => handleDeleteQuestion(qf._id)}>
+              <Trash2 size={20} />
+            </DeleteButton>
           </QuestionItem>
         ))}
       </QuestionList>

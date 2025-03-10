@@ -16,15 +16,19 @@ const BlogSchema = new mongoose.Schema(
     createDate: {
       type: Date,
     },
-    isActive: {
-      type: Boolean,
-      default: true,
-      required: [true, "Status of blog is require"],
-    },
-    account: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Account",
-      required: true,
+    // isActive: {
+    //   type: Boolean,
+    //   default: true,
+    //   required: [true, "Status of blog is require"],
+    // },
+    // account: {
+    //   type: mongoose.Schema.Types.ObjectId,
+    //   ref: "Account",
+    //   required: true,
+    // },
+    view: {
+      type: Number,
+      default: 0, 
     },
   },
   {

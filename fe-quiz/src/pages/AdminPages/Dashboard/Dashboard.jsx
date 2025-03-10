@@ -1,42 +1,63 @@
-import { useEffect, useState } from "react";
-import axios from "axios";
-import "./Dashboard.css"; 
-
+import { useEffect, useState } from "react"
+import axios from "axios"
+import "./Dashboard.css"
+import Chart from "./AccountChart"
+import QuizChart from "./QuizChart"
 const Dashboard = () => {
-  const [stats, setStats] = useState({
-    totalUsers: { count: 0, change: "0%" },
-    newUsers: { count: 0, change: "0%" },
-    totalQuizzes: { count: 0, change: "0%" },
-    premiumUsers: { count: 0, change: "0%" },
-  });
+  const [stats, setStats] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
 
   useEffect(() => {
-    const fetchStats = async () => {
+    const fetchDashboardData = async () => {
       try {
-        const res = await axios.get("http://localhost:9999/admin/dashboard");
-        setStats(res.data);
-      } catch (error) {
-        console.error("Error fetching dashboard stats", error);
+        setLoading(true)
+        const response = await axios.get("http://localhost:9999/admin/dashboard")
+        setStats(response.data)
+      } catch (err) {
+        console.error("Error fetching dashboard data:", err)
+        setError("Failed to load dashboard data")
+      } finally {
+        setLoading(false)
       }
-    };
+    }
 
-    fetchStats();
-  }, []);
+    fetchDashboardData()
+  }, [])
+
+  if (loading) return <div className="loading">Loading...</div>
+  if (error) return <div className="error">{error}</div>
 
   return (
     <div className="dashboard-container">
       <div className="dashboard-grid">
-        <StatCard title="Total Account" value={stats.totalUsers.count} change={stats.totalUsers.change} />
-        <StatCard title="New Account" value={stats.newUsers.count} change={stats.newUsers.change} negative />
-        <StatCard title="Account Premium" value={stats.premiumUsers.count} change={stats.premiumUsers.change} />
-        <StatCard title="Total Flashcard" value={stats.totalQuizzes.count} change={stats.totalQuizzes.change} />
+        {stats ? (
+          <>
+            <StatCard title="Total Account" value={stats.totalUsers.count} change={stats.totalUsers.change} />
+            <StatCard title="New Account" value={stats.newUsers.count} change={stats.newUsers.change} />
+            <StatCard title="Account Premium" value={stats.premiumUsers.count} change={stats.premiumUsers.change} />
+            <StatCard title="Total Flashcard" value={stats.totalQuizzes.count} change={stats.totalQuizzes.change} />
+          </>
+        ) : (
+          <p>No statistics available</p>
+        )}
+      </div>
+
+      <div className="charts-row">
+        <div className="chart-column">
+          <Chart />
+        </div>
+        <div className="chart-divider"></div>
+        <div className="chart-column">
+          <QuizChart />
+        </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
 const StatCard = ({ title, value, change }) => {
-  const isNegative = change.includes("-");
+  const isNegative = change.includes("-")
   return (
     <div className="stat-card">
       <h3 className="stat-title">{title}</h3>
@@ -45,7 +66,8 @@ const StatCard = ({ title, value, change }) => {
         <span className="change-icon">{isNegative ? "↓" : "↑"}</span> {change}
       </span>
     </div>
-  );
-};
+  )
+}
 
-export default Dashboard;
+export default Dashboard
+

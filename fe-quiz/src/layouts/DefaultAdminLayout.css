@@ -6,7 +6,7 @@
 }
 
 .ant-layout-header {
-    background: #f8f9fa; /* Màu nền Header giống hình ảnh */
+    background: #f8f9fa !important; /* Màu nền Header giống hình ảnh */
     padding: 0;
     height: 60px; /* Chiều cao Header */
     line-height: 60px; /* Căn giữa nội dung theo chiều dọc */

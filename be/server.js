@@ -8,7 +8,6 @@ const Db = require("./dbConnect/dbConnect");
 const { quizRouter, questionBankRouter, exportRouter, notificationRouter } = require("./routes");
 const accountRouter = require("./routes/account.router");
 const adminRouter = require("./routes/admin.routes");
-const QuizRouter = require("./routes/quiz.route");
 
 const app = express();
 

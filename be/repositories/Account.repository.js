@@ -134,6 +134,14 @@ const updatePassword = async (id, hashedPassword) => {
   return await Account.findByIdAndUpdate(id, { password: hashedPassword });
 };
 
+//update prime cho user va thoi gian het han
+async function updatePrimeStatus(accountId, isPrime, primeExpiresAt) {
+  return await Account.findByIdAndUpdate(
+    accountId,
+    { isPrime, primeExpiresAt },
+    { new: true }
+  );
+};
 module.exports = {
   getAccountById,
   getAccountByUserName,
@@ -149,4 +157,5 @@ module.exports = {
   findByEmail,
   findById,
   updatePassword,
+  updatePrimeStatus
 };

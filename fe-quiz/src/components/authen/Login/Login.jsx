@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFacebookF, faTwitter, faLinkedinIn } from '@fortawesome/free-brands-svg-icons';
 
@@ -272,7 +272,7 @@ const Login = () => {
                             <input type="checkbox" style={styles.checkbox} /> 
                             Ghi nhớ đăng nhập
                         </label>
-                        <a href="/forgot-password" style={styles.link}>Quên mật khẩu?</a>
+                        <Link to="/forgot-password" style={styles.link}>Quên mật khẩu?</Link>
                     </div>
                     <button 
                         style={styles.loginBtn} 
@@ -283,7 +283,7 @@ const Login = () => {
                         ĐĂNG NHẬP
                     </button>
                     <div style={styles.registerLink}>
-                        Bạn chưa có tài khoản? <a href="register" style={styles.registerLinkA}>Đăng ký</a>
+                        Bạn chưa có tài khoản? <Link to="/register" style={styles.registerLinkA}>Đăng ký</Link>
                     </div>
                 </div>
             </div>

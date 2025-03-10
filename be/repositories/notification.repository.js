@@ -6,7 +6,9 @@ const {Notification} = require("../models");
   }
 
   async function getNotificationsByRecipient(recipientId) {
-    return await Notification.find({ recipient: recipientId }).sort({ createdAt: -1 });
+    // console.log("repo userid", recipientId);
+    
+    return await Notification.find({ recipent: recipientId }).sort({ createdAt: -1 });
   }
 
   async function markAsRead(notificationId) {

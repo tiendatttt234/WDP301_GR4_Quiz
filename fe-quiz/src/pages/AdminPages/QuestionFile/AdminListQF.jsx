@@ -15,6 +15,8 @@ const AdminListQF = () => {
         const response = await axios.get(
           "http://localhost:9999/questionFile/getQFadmin"
         );
+        console.log(response.data);
+        
         if (response.data.success) {
           setQuestionFiles(response.data.data);
         }
@@ -51,6 +53,7 @@ const AdminListQF = () => {
               <th>Private</th>
               <th>Reported</th>
               <th>Reported Count</th>
+              <th>Locked</th>
               <th>Created At</th>
               <th>Updated At</th>
               <th>Action</th>
@@ -79,7 +82,16 @@ const AdminListQF = () => {
                     {qf.isReported ? "Yes" : "No"}
                   </span>
                 </td>
-                <td>{qf.reportedCount}</td>
+                <td style={{textAlign:"center"}}>{qf.reportedCount}</td>
+                <td>
+                  <span
+                    className={`status-tag ${
+                      qf.isLocked ? "locked" : "not-locked"
+                    }`}
+                  >
+                    {qf.isLocked ? "Yes" : "No"}
+                  </span>
+                </td>
                 <td>{new Date(qf.createdAt).toLocaleString()}</td>
                 <td>{new Date(qf.updatedAt).toLocaleString()}</td>
                 <td>

@@ -15,6 +15,7 @@ async function getAllQuestionFileAndUser() {
     isPrivate: qf.isPrivate,
     reportedCount: qf.reportedCount,
     isReported: qf.isReported,
+    isLocked: qf?.isLocked || false,
     userId: qf.createdBy?._id || "N/A",
     userName: qf.createdBy?.userName || "N/A",
     createdAt: qf.createdAt,

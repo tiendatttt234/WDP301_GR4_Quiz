@@ -1,5 +1,5 @@
 // userRoutes.js
-import QuestionCreation from "../pages/QuestionFile/newQuestionFile";
+import QuestionCreation from "../pages/QuestionFile/create/newQuestionFile";
 import UpdateQuestion from "../pages/QuestionFile/update/updateQuestionFile";
 import ListQuestion from "../pages/QuestionFile/listQuestion/listQuestionFile";
 import QuestionFileDetail from "../pages/QuestionFile/detail/questionFileDetail";

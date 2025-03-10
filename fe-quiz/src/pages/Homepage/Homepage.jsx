@@ -1,307 +1,127 @@
-"use client"
-
-import { useState } from "react"
-import { Search, ChevronLeft, ChevronRight, Star } from "lucide-react"
+import { useState, useEffect } from "react";
+import { Search, ChevronLeft, ChevronRight } from "lucide-react";
 
 const Homepage = () => {
-  const [searchQuery, setSearchQuery] = useState("")
+  const [searchQuery, setSearchQuery] = useState("");
+  const [tempSearchQuery, setTempSearchQuery] = useState("");
+  const [questionFiles, setQuestionFiles] = useState([]);
+  const [filteredFiles, setFilteredFiles] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const filesPerPage = 6;
 
-  // Inline styles
-  const styles = {
-    homepage: {
-      minHeight: "100vh",
-      display: "flex",
-      flexDirection: "column",
-      fontFamily: "Arial, sans-serif",
-    },
-    container: {
-      width: "100%",
-      maxWidth: "1200px",
-      margin: "0 auto",
-      padding: "0 1rem",
-    },
-    heroSection: {
-      background: "linear-gradient(to right, #5a4a9f, #7a6abf)",
-      color: "white",
-    },
-    heroContent: {
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "center",
-    },
-    heroText: {
-      width: "100%",
-      maxWidth: "700px",
-      padding: "4rem 0",
-      textAlign: "center",
-    },
-    heroTitle: {
-      fontSize: "2.5rem",
-      fontWeight: "bold",
-      marginBottom: "1rem",
-      lineHeight: 1.2,
-    },
-    heroSubtitle: {
-      fontSize: "1.125rem",
-      marginBottom: "2rem",
-    },
-    searchContainer: {
-      position: "relative",
-      maxWidth: "500px",
-      margin: "0 auto",
-    },
-    searchInput: {
-      width: "100%",
-      padding: "0.75rem 1rem",
-      paddingRight: "3rem",
-      borderRadius: "0.375rem",
-      border: "none",
-      fontSize: "1rem",
-      outline: "none",
-    },
-    searchButton: {
-      position: "absolute",
-      right: 0,
-      top: 0,
-      height: "100%",
-      backgroundColor: "#ff5757",
-      color: "white",
-      padding: "0 1rem",
-      border: "none",
-      borderTopRightRadius: "0.375rem",
-      borderBottomRightRadius: "0.375rem",
-      cursor: "pointer",
-    },
-    searchIcon: {
-      width: "1.25rem",
-      height: "1.25rem",
-    },
-    coursesSection: {
-      padding: "4rem 0",
-    },
-    sectionHeader: {
-      textAlign: "center",
-      marginBottom: "3rem",
-    },
-    sectionTitle: {
-      fontSize: "1.875rem",
-      fontWeight: "bold",
-      marginBottom: "0.5rem",
-    },
-    sectionSubtitle: {
-      color: "#6b7280",
-    },
-    courseCarousel: {
-      position: "relative",
-    },
-    carouselArrow: {
-      position: "absolute",
-      top: "50%",
-      transform: "translateY(-50%)",
-      backgroundColor: "white",
-      border: "none",
-      borderRadius: "50%",
-      width: "2.5rem",
-      height: "2.5rem",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)",
-      cursor: "pointer",
-      zIndex: 10,
-    },
-    carouselArrowLeft: {
-      left: 0,
-    },
-    carouselArrowRight: {
-      right: 0,
-    },
-    carouselArrowIcon: {
-      width: "1.5rem",
-      height: "1.5rem",
-      color: "#4b5563",
-    },
-    courseList: {
-      display: "flex",
-      gap: "1.5rem",
-      overflowX: "auto",
-      padding: "0 2rem 1rem 2rem",
-      scrollBehavior: "smooth",
-    },
-    courseCard: {
-      flex: "0 0 auto",
-      width: "16rem",
-      border: "1px solid #e5e7eb",
-      borderRadius: "0.5rem",
-      overflow: "hidden",
-      boxShadow: "0 2px 5px rgba(0, 0, 0, 0.05)",
-    },
-    courseImageContainer: {
-      position: "relative",
-    },
-    courseImage: {
-      width: "100%",
-      height: "10rem",
-      objectFit: "cover",
-    },
-    coursePrice: {
-      position: "absolute",
-      top: "0.5rem",
-      right: "0.5rem",
-      backgroundColor: "#ff5757",
-      color: "white",
-      fontSize: "0.875rem",
-      fontWeight: "bold",
-      padding: "0.25rem 0.5rem",
-      borderRadius: "0.25rem",
-    },
-    courseDetails: {
-      padding: "1rem",
-    },
-    courseTitle: {
-      fontWeight: "bold",
-      marginBottom: "0.25rem",
-    },
-    courseInstructor: {
-      fontSize: "0.875rem",
-      color: "#6b7280",
-      marginBottom: "0.5rem",
-    },
-    courseRating: {
-      display: "flex",
-      alignItems: "center",
-    },
-    ratingStars: {
-      display: "flex",
-      color: "#fbbf24",
-    },
-    starIcon: {
-      width: "1rem",
-      height: "1rem",
-      fill: "currentColor",
-    },
-    ratingValue: {
-      fontSize: "0.875rem",
-      marginLeft: "0.25rem",
-    },
-    ratingCount: {
-      fontSize: "0.875rem",
-      color: "#6b7280",
-      marginLeft: "0.25rem",
-    },
-  }
+  useEffect(() => {
+    fetch("http://localhost:9999/questionFile/getAll")
+      .then((res) => res.json())
+      .then((data) => {
+        console.log("API response:", data);
+        if (Array.isArray(data.questionFileRespone)) {
+          setQuestionFiles(data.questionFileRespone);
+          setFilteredFiles(data.questionFileRespone);
+        } else {
+          console.error("Invalid data format");
+        }
+      })
+      .catch((error) => console.error("Error fetching data:", error));
+  }, []);
 
-  const courses = [
-    {
-      id: 1,
-      title: "Python for Data Science and Machine Learning",
-      instructor: "Mario Speedwagon",
-      price: 118,
-      rating: 4.9,
-      reviews: 120,
-    },
-    {
-      id: 2,
-      title: "Python for Data Science and Machine Learning",
-      instructor: "Mario Speedwagon",
-      price: 118,
-      rating: 4.9,
-      reviews: 120,
-    },
-    {
-      id: 3,
-      title: "Python for Data Science and Machine Learning",
-      instructor: "Mario Speedwagon",
-      price: 4.9,
-      rating: 4.9,
-      reviews: 120,
-    },
-    {
-      id: 4,
-      title: "Python for Data Science and Machine Learning",
-      instructor: "Mario Speedwagon",
-      price: 118,
-      rating: 4.9,
-      reviews: 120,
-    },
-  ]
+  // Tìm kiếm khi nhấn nút
+  const handleSearch = () => {
+    setSearchQuery(tempSearchQuery);
+  };
+
+  // Lọc danh sách khi searchQuery thay đổi
+  useEffect(() => {
+    if (searchQuery.trim() === "") {
+      setFilteredFiles(questionFiles);
+    } else {
+      const filtered = questionFiles.filter((file) =>
+        file.name.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+      setFilteredFiles(filtered);
+    }
+    setCurrentPage(1);
+  }, [searchQuery, questionFiles]);
+
+  // Phân trang
+  const indexOfLastFile = currentPage * filesPerPage;
+  const indexOfFirstFile = indexOfLastFile - filesPerPage;
+  const currentFiles = filteredFiles.slice(indexOfFirstFile, indexOfLastFile);
+  const totalPages = Math.ceil(filteredFiles.length / filesPerPage);
+
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+  const nextPage = () => setCurrentPage((prev) => Math.min(prev + 1, totalPages));
+  const prevPage = () => setCurrentPage((prev) => Math.max(prev - 1, 1));
 
   return (
-    <div style={styles.homepage}>
-      {/* Hero Section */}
-      <section style={styles.heroSection}>
-        <div style={styles.container}>
-          <div style={styles.heroContent}>
-            <div style={styles.heroText}>
-              <h1 style={styles.heroTitle}>Learn new skills online with top educators</h1>
-              <p style={styles.heroSubtitle}>Learn 100% online with world-class universities and industry experts.</p>
+    <div style={{ minHeight: "100vh", background: "linear-gradient(to bottom, #6366f1, #a855f7)", color: "white", fontFamily: "Arial, sans-serif", paddingBottom: "40px" }}>
+      <div style={{ width: "100%", maxWidth: "1200px", margin: "0 auto", padding: "80px 20px 40px" }}>
+        <div style={{ textAlign: "center", marginBottom: "64px" }}>
+          <h1 style={{ fontSize: "48px", fontWeight: "bold", marginBottom: "24px" }}>Nền tảng học tập trực tuyến</h1>
+          <p style={{ maxWidth: "700px", margin: "0 auto 32px", lineHeight: "1.6", fontSize: "16px" }}>
+            Bạn thường cảm thấy lạc lõng trong lớp học? Bạn muốn đi trước các bạn cùng lớp và bắt đầu học về các môn học trước? 
+            Bạn cảm thấy mình cần luyện tập nhiều hơn? Hãy bắt đầu ngay bây giờ!
+          </p>
 
-              <div style={styles.searchContainer}>
-                <input
-                  type="text"
-                  placeholder="What do you want to learn?"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  style={styles.searchInput}
-                />
-                <button style={styles.searchButton}>
-                  <Search style={styles.searchIcon} />
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Courses Section */}
-      <section style={styles.coursesSection}>
-        <div style={styles.container}>
-          <div style={styles.sectionHeader}>
-            <h2 style={styles.sectionTitle}>The world's largest selection of courses</h2>
-            <p style={styles.sectionSubtitle}>
-              Choose from 130,000 online video courses with new additions published every month
-            </p>
-          </div>
-
-          <div style={styles.courseCarousel}>
-            <button style={{ ...styles.carouselArrow, ...styles.carouselArrowLeft }}>
-              <ChevronLeft style={styles.carouselArrowIcon} />
+          <div style={{ position: "relative", maxWidth: "500px", margin: "0 auto" }}>
+            <input
+              type="text"
+              placeholder="Tìm kiếm bộ câu hỏi..."
+              value={tempSearchQuery}
+              onChange={(e) => setTempSearchQuery(e.target.value)}
+              style={{ width: "100%", padding: "12px 16px", borderRadius: "8px", border: "none", fontSize: "16px", color: "#333", outline: "none" }}
+            />
+            <button onClick={handleSearch} style={{ position: "absolute", right: "4px", top: "4px", backgroundColor: "#f97316", color: "white", padding: "8px", borderRadius: "8px", border: "none", cursor: "pointer" }}>
+              <Search size={20} />
             </button>
+          </div>
 
-            <div style={styles.courseList}>
-              {courses.map((course) => (
-                <div key={course.id} style={styles.courseCard}>
-                  <div style={styles.courseImageContainer}>
-                    <div style={styles.coursePrice}>${course.price}</div>
-                  </div>
+          <button style={{ backgroundColor: "#f97316", color: "white", fontWeight: "500", padding: "12px 32px", borderRadius: "8px", border: "none", cursor: "pointer", fontSize: "16px", marginTop: "32px" }}>
+            Khám phá các môn học
+          </button>
+        </div>
 
-                  <div style={styles.courseDetails}>
-                    <h3 style={styles.courseTitle}>{course.title}</h3>
-                    <p style={styles.courseInstructor}>by {course.instructor}</p>
-
-                    <div style={styles.courseRating}>
-                      <div style={styles.ratingStars}>
-                        {[...Array(5)].map((_, i) => (
-                          <Star key={i} style={styles.starIcon} />
-                        ))}
-                      </div>
-                      <span style={styles.ratingValue}>{course.rating}</span>
-                      <span style={styles.ratingCount}>({course.reviews} Reviews)</span>
-                    </div>
+        {filteredFiles.length > 0 ? (
+          <>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: "20px", marginTop: "48px" }}>
+              {currentFiles.map((file) => (
+                <div key={file._id} style={{ backgroundColor: "white", borderRadius: "8px", padding: "20px", textAlign: "left", color: "#4b5563", boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)", transition: "transform 0.2s ease, box-shadow 0.2s ease", cursor: "pointer" }}>
+                  <h3 style={{ fontSize: "18px", fontWeight: "bold", color: "#3b82f6", marginBottom: "8px" }}>{file.name}</h3>
+                  <p style={{ fontSize: "14px", color: "#6b7280", marginBottom: "12px", minHeight: "60px" }}>{file.description || "Không có mô tả"}</p>
+                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: "12px", color: "#9ca3af", borderTop: "1px solid #e5e7eb", paddingTop: "12px" }}>
+                    <span>{file.arrayQuestion?.length || 0} câu hỏi</span>
+                    <span>Tạo bởi: {file.createdBy?.userName || "Không xác định"}</span>
                   </div>
                 </div>
               ))}
             </div>
 
-            <button style={{ ...styles.carouselArrow, ...styles.carouselArrowRight }}>
-              <ChevronRight style={styles.carouselArrowIcon} />
-            </button>
+            {totalPages > 1 && (
+              <div style={{ display: "flex", justifyContent: "center", alignItems: "center", marginTop: "40px", gap: "8px" }}>
+                <button onClick={prevPage} disabled={currentPage === 1} style={{ backgroundColor: "rgba(255, 255, 255, 0.2)", color: "white", border: "none", borderRadius: "4px", padding: "8px 12px", cursor: currentPage === 1 ? "not-allowed" : "pointer", opacity: currentPage === 1 ? 0.5 : 1 }}>
+                  <ChevronLeft size={16} />
+                </button>
+
+                {Array.from({ length: totalPages }, (_, i) => (
+                  <button key={i + 1} onClick={() => paginate(i + 1)} style={currentPage === i + 1 ? { backgroundColor: "#f97316", color: "white", border: "none", borderRadius: "4px", padding: "8px 12px", cursor: "pointer" } : { backgroundColor: "rgba(255, 255, 255, 0.2)", color: "white", border: "none", borderRadius: "4px", padding: "8px 12px", cursor: "pointer" }}>
+                    {i + 1}
+                  </button>
+                ))}
+
+                <button onClick={nextPage} disabled={currentPage === totalPages} style={{ backgroundColor: "rgba(255, 255, 255, 0.2)", color: "white", border: "none", borderRadius: "4px", padding: "8px 12px", cursor: currentPage === totalPages ? "not-allowed" : "pointer", opacity: currentPage === totalPages ? 0.5 : 1 }}>
+                  <ChevronRight size={16} />
+                </button>
+              </div>
+            )}
+          </>
+        ) : (
+          <div style={{ textAlign: "center", padding: "20px", backgroundColor: "rgba(255, 255, 255, 0.8)", borderRadius: "8px", color: "#4b5563", marginTop: "20px" }}>
+            <h3>Không tìm thấy bộ câu hỏi nào</h3>
+            <p>Vui lòng thử tìm kiếm với từ khóa khác</p>
           </div>
-        </div>
-      </section>
+        )}
+      </div>
     </div>
-  )
-}
+  );
+};
 
-export default Homepage
-
+export default Homepage;

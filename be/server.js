@@ -5,7 +5,7 @@ const morgan = require("morgan");
 const cors = require("cors");
 require("dotenv").config();
 const Db = require("./dbConnect/dbConnect");
-const { quizRouter, questionBankRouter, exportRouter, notificationRouter } = require("./routes");
+const { quizRouter, questionBankRouter, exportRouter, notificationRouter,transactionRouter } = require("./routes");
 const accountRouter = require("./routes/account.router");
 const adminRouter = require("./routes/admin.routes");
 const QuizRouter = require("./routes/quiz.route");
@@ -67,6 +67,7 @@ app.use("/test", exportRouter);
 app.use("/auth", accountRouter);
 app.use("/admin", adminRouter);
 app.use("/notifycation", notificationRouter);
+app.use("/payment", transactionRouter);
 
 // Middleware xử lý lỗi
 app.use((err, req, res, next) => {

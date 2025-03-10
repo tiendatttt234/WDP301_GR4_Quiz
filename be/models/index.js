@@ -7,6 +7,7 @@ const Quiz = require('./Quiz');
 const QuizResult = require('./QuizResult');
 const Role = require('./Role');
 const Favorite = require('./Favorite');
+const Transaction = require('./Transaction');
 
 module.exports = {
     Account,
@@ -17,5 +18,6 @@ module.exports = {
     Quiz,
     QuizResult,
     Role,
-    Favorite
+    Favorite,
+    Transaction
 };

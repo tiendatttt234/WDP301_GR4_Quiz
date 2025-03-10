@@ -3,10 +3,12 @@ const quizRouter = require('./quiz.route');
 const questionBankRouter = require('./questionFile.route');
 const exportRouter = require('./Export.route');
 const notificationRouter = require('./notifycation.route');
+const transactionRouter = require("./Transaction.route");
 module.exports = {
   accountRouter,
   quizRouter,
   questionBankRouter,
   exportRouter,
-  notificationRouter
+  notificationRouter,
+  transactionRouter
 };

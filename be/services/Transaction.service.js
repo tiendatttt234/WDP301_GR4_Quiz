@@ -1,12 +1,14 @@
-// services/PaymentService.js
+
 const crypto = require('crypto');
 const { vnpay } = require('../config/vnpay.config');
 const TransactionRepository = require("../repositories/Transaction.repository");
+const AccountRepository = require('../repositories/Account.repository');
 
 
   async function createPaymentUrl({ orderId, amount, orderInfo, createBy, ipAddr }) {
+    
     // Lưu giao dịch vào DB trước khi tạo URL
-    await PaymentRepository.createPayment({
+    await TransactionRepository.createPayment({
       orderId,
       amount,
       orderInfo,
@@ -66,15 +68,22 @@ const TransactionRepository = require("../repositories/Transaction.repository");
     const calculatedHash = hmac.update(signData).digest('hex');
 
     if (calculatedHash === vnp_SecureHash && query.vnp_ResponseCode === '00') {
-      await PaymentRepository.updatePaymentStatus(
+      const payment = await TransactionRepository.updatePaymentStatus(
         query.vnp_TxnRef,
         'success',
-        query.vnp_BankCode, // Lưu mã ngân hàng
-        query.vnp_TransactionNo // Lưu mã giao dịch VNPAY
+        query.vnp_BankCode,
+        query.vnp_TransactionNo
       );
+
+      // Cập nhật trạng thái Prime
+      const accountId = payment.createBy._id;
+      const primeExpiresAt = new Date();
+      primeExpiresAt.setDate(primeExpiresAt.getDate() + 30); // Hết hạn sau 30 ngày
+      await AccountRepository.updatePrimeStatus(accountId, true, primeExpiresAt);
+
       return { success: true, data: query };
     } else {
-      await PaymentRepository.updatePaymentStatus(
+      await TransactionRepository.updatePaymentStatus(
         query.vnp_TxnRef,
         'failed',
         query.vnp_BankCode,
@@ -100,12 +109,19 @@ const TransactionRepository = require("../repositories/Transaction.repository");
     const calculatedHash = hmac.update(signData).digest('hex');
 
     if (calculatedHash === vnp_SecureHash && query.vnp_ResponseCode === '00') {
-      await PaymentRepository.updatePaymentStatus(
+      const payment = await TransactionRepository.updatePaymentStatus(
         query.vnp_TxnRef,
         'success',
         query.vnp_BankCode,
         query.vnp_TransactionNo
       );
+
+      // Cập nhật trạng thái Prime
+      const accountId = payment.createBy._id;
+      const primeExpiresAt = new Date();
+      primeExpiresAt.setDate(primeExpiresAt.getDate() + 30); // Hết hạn sau 30 ngày
+      await AccountRepository.updatePrimeStatus(accountId, true, primeExpiresAt);
+
       return { RspCode: '00', Message: 'Confirm Success' };
     } else {
       return { RspCode: '97', Message: 'Invalid Checksum or Transaction Failed' };

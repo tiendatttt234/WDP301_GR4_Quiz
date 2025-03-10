@@ -11,5 +11,5 @@ const TransactionSchema = new mongoose.Schema({
     createdAt: { type: Date, default: Date.now },
 })
 
-const Transaction = mongoose.model("Role", TransactionSchema);
+const Transaction = mongoose.model("Transaction", TransactionSchema);
 module.exports = Transaction;

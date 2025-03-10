@@ -5,6 +5,7 @@ import AccountManagement from "../pages/AdminPages/User/AccountManagement";
 import ViewQuestions from "../pages/AdminPages/Report/ViewQuestions";
 import AdminListQF from "../pages/AdminPages/QuestionFile/AdminListQF";
 import Blog from "../pages/AdminPages/Blog/Blog";
+
 export const adminRoutes = [
     { path: "", element: <Dashboard /> },
     { path: "Dashboard", element: <Dashboard /> },

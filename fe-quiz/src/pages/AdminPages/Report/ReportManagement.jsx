@@ -164,19 +164,19 @@ const ReportManagement = () => {
                             </td>
                             <td>
                                 <button
-                                    className="action-btn view"
+                                    className="action-btn-reportmanagement view"
                                     onClick={() => viewReportDetails(report._id)}
                                 >
                                     View
                                 </button>
                                 <button
-                                    className="action-btn view"
+                                    className="action-btn-reportmanagement view"
                                     onClick={() => viewQuestionFileReported(report._id)}
                                 >
                                     File Detail
                                 </button>
                                 <button
-                                    className="action-btn delete"
+                                    className="action-btn-reportmanagement delete"
                                     onClick={() => handleReport(report._id)}
                                     disabled={report.status === "approved" || report.status === "rejected"}
                                 >
@@ -201,8 +201,8 @@ const ReportManagement = () => {
             </div>
 
             {selectedReport && !showHandlePopup && (
-                <div className="modal" onClick={closeModal}>
-                    <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                <div className="modal-reportmanagement" onClick={closeModal}>
+                    <div className="modal-content-reportmanagement" onClick={(e) => e.stopPropagation()}>
                         <span className="close" onClick={closeModal}>×</span>
                         <h2>Chi tiết báo cáo</h2>
                         <p><strong>Người gửi:</strong> {selectedReport.sender}</p>
@@ -226,8 +226,8 @@ const ReportManagement = () => {
             )}
 
             {showHandlePopup && selectedReport && (
-                <div className="modal" onClick={closeModal}>
-                    <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                <div className="modal-reportmanagement" onClick={closeModal}>
+                    <div className="modal-content-reportmanagement" onClick={(e) => e.stopPropagation()}>
                         <span className="close" onClick={closeModal}>×</span>
                         <h2>Xử lý báo cáo</h2>
                         <p><strong>Bộ câu hỏi:</strong> {selectedReport.questionFile?.qf_name}</p>
@@ -274,11 +274,11 @@ const ReportManagement = () => {
                             </>
                         )}
 
-                        <div className="modal-actions">
-                            <button className="action-btn submit" onClick={submitHandleReport}>
+                        <div className="modal-actions-reportmanagement">
+                            <button className="action-btn-reportmanagement submit" onClick={submitHandleReport}>
                                 Gửi và Cập nhật
                             </button>
-                            <button className="action-btn cancel" onClick={closeModal}>
+                            <button className="action-btn-reportmanagement cancel" onClick={closeModal}>
                                 Hủy
                             </button>
                         </div>

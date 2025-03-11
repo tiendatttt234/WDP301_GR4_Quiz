@@ -17,7 +17,8 @@ import {
   QuestionAuthor,
   QuestionCount,
   QuestionDetails,
-  DeleteButton, // Thêm DeleteButton vào import
+  DeleteButton, 
+  CreateButton// Thêm DeleteButton vào import
 } from "./styles";
 
 const ListQuestion = () => {
@@ -26,19 +27,33 @@ const ListQuestion = () => {
   const [questionSets, setQuestionSets] = useState([]);
   const navigate = useNavigate();
 
+  // const userId = localStorage.getItem("userId");
+
   useEffect(() => {
     const fetchQuestionFiles = async () => {
       try {
-        const response = await axios.get("http://localhost:9999/questionFile/getAll");
+        const userId = localStorage.getItem("id"); // Lấy đúng ID của tài khoản đang đăng nhập
+        console.log(userId);
+        
+        if (!userId) {
+          console.error("Không tìm thấy userId trong localStorage");
+          return;
+        }
+  
+        const response = await axios.get(`http://localhost:9999/questionFile/getAll/${userId}`);
         console.log("API Response:", response.data);
-        setQuestionSets(response.data.questionFileRespone || []);
+  
+        setQuestionSets(response.data.data || []);
       } catch (error) {
         console.error("Lỗi khi lấy danh sách học phần", error);
         setQuestionSets([]);
       }
     };
+  
     fetchQuestionFiles();
   }, []);
+  
+  
 
   const filteredQuestionFiles = questionSets.filter((file) =>
     file.name.toLowerCase().includes(search.toLowerCase()) ||
@@ -46,7 +61,7 @@ const ListQuestion = () => {
   );
 
   const handleQuestionClick = (id) => {
-    navigate(`/user/questionfile/update/${id}`);
+    navigate(`/questionfile/update/${id}`);
   };
 
   const handleDeleteQuestion = async (id) => {
@@ -92,25 +107,34 @@ const ListQuestion = () => {
           </SearchIcon>
         </SearchBox>
       </Header>
-      <QuestionList>
-        {filteredQuestionFiles.map((qf) => (
-          <QuestionItem key={qf._id}>
-            <div
-              onClick={() => handleQuestionClick(qf._id)}
-              style={{ cursor: "pointer", flex: 1 }} // Đảm bảo vùng click không bị ảnh hưởng bởi nút xóa
-            >
-              <QuestionDetails>
-                <QuestionCount>{qf.arrayQuestion?.length} câu hỏi</QuestionCount>
-                <QuestionAuthor>{qf.createdBy || "Không rõ"}</QuestionAuthor>
-              </QuestionDetails>
-              <QuestionTitle>{qf.name}</QuestionTitle>
-            </div>
-            <DeleteButton onClick={() => handleDeleteQuestion(qf._id)}>
-              <Trash2 size={20} />
-            </DeleteButton>
-          </QuestionItem>
-        ))}
-      </QuestionList>
+      {filteredQuestionFiles.length === 0 ? (
+  <div style={{ textAlign: "center", marginTop: "20px" }}>
+    <p>Bạn hiện chưa có học phần, hãy tạo mới ngay!</p>
+    <CreateButton onClick={() => navigate("/questionfile/create")}>
+      Tạo học phần mới
+    </CreateButton>
+  </div>
+) : (
+  <QuestionList>
+    {filteredQuestionFiles.map((qf) => (
+      <QuestionItem key={qf._id}>
+        <div
+          onClick={() => handleQuestionClick(qf._id)}
+          style={{ cursor: "pointer", flex: 1 }}
+        >
+          <QuestionDetails>
+            <QuestionCount>{qf.arrayQuestion?.length} câu hỏi</QuestionCount>
+            {/* <QuestionAuthor>{qf.createdBy || "Không rõ"}</QuestionAuthor> */}
+          </QuestionDetails>
+          <QuestionTitle>{qf.name}</QuestionTitle>
+        </div>
+        <DeleteButton onClick={() => handleDeleteQuestion(qf._id)}>
+          <Trash2 size={20} />
+        </DeleteButton>
+      </QuestionItem>
+    ))}
+  </QuestionList>
+)}
     </Container>
   );
 };

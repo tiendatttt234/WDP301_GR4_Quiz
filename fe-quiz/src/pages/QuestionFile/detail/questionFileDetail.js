@@ -5,6 +5,7 @@ import {
     Title,
     Answer,Container,Description,ErrorMessage,Header,QuestionCard,QuestionContent,TypeLabel
 } from './styles.js'
+import FlashcardList from '../../Quiz/FlashCard/FlashCards.jsx';
 
 const QuestionFileDetail = () => {
   const { id } = useParams();
@@ -49,7 +50,7 @@ const QuestionFileDetail = () => {
         <Description>{questionFile.description}</Description>
         <Description>Trạng thái: {questionFile.isPrivate ? 'Riêng tư' : 'Công khai'}</Description>
       </Header>
-
+      <FlashcardList questionFile={questionFile} />
       {questionFile.arrayQuestion.map((question) => (
         <QuestionCard key={question.questionId}>
           <QuestionContent>{question.content}</QuestionContent>

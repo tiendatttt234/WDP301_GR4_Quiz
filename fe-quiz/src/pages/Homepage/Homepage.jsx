@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Search, ChevronLeft, ChevronRight } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const Homepage = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -84,6 +85,7 @@ const Homepage = () => {
           <>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: "20px", marginTop: "48px" }}>
               {currentFiles.map((file) => (
+                <Link to={`/questionfile/getById/${file._id}`} style={{ textDecoration: "none" }}>
                 <div key={file._id} style={{ backgroundColor: "white", borderRadius: "8px", padding: "20px", textAlign: "left", color: "#4b5563", boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)", transition: "transform 0.2s ease, box-shadow 0.2s ease", cursor: "pointer" }}>
                   <h3 style={{ fontSize: "18px", fontWeight: "bold", color: "#3b82f6", marginBottom: "8px" }}>{file.name}</h3>
                   <p style={{ fontSize: "14px", color: "#6b7280", marginBottom: "12px", minHeight: "60px" }}>{file.description || "Không có mô tả"}</p>
@@ -92,6 +94,7 @@ const Homepage = () => {
                     <span>Tạo bởi: {file.createdBy?.userName || "Không xác định"}</span>
                   </div>
                 </div>
+                </Link>
               ))}
             </div>
 

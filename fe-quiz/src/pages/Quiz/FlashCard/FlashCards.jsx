@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import CardFlip from "react-card-flip";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "./Flashcard.css"; // Đảm bảo có file CSS để tùy chỉnh giao diện
+import "./Flashcard.css";
 
 const Flashcard = ({ question, answer, isFlipped, setIsFlipped, isTransitioning }) => {
   return (
@@ -16,49 +16,35 @@ const Flashcard = ({ question, answer, isFlipped, setIsFlipped, isTransitioning 
   );
 };
 
-const FlashcardList = () => {
-  const [flashcards, setFlashcards] = useState([]);
+const FlashcardList = ({ questionFile }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
-  const [loading, setLoading] = useState(true);
 
-  // Fetch dữ liệu từ API khi component mount
-  useEffect(() => {
-    fetch("http://localhost:9999/questionFile/getById/6728ebc9c0060ccd337b4348")
-      .then((response) => response.json())
-      .then((data) => {
-        // Xử lý dữ liệu từ API để tạo danh sách flashcard
-        const processedFlashcards = data.questionFile.arrayQuestion.map((q) => {
-          let answerText = "";
-          
-          if (q.type === "MCQ" || q.type === "Boolean") {
-            const correctAnswer = q.answers.find((a) => a.isCorrect);
-            answerText = correctAnswer ? correctAnswer.answerContent : "Không có đáp án đúng";
-          } else if (q.type === "MAQ") {
-            const correctAnswers = q.answers
-              .filter((a) => a.isCorrect)
-              .map((a) => a.answerContent)
-              .join(", ");
-            answerText = correctAnswers || "Không có đáp án đúng";
-          }
+  // Xử lý dữ liệu từ questionFile để tạo danh sách flashcard
+  const flashcards = questionFile ? questionFile.arrayQuestion.map((q) => {
+    let answerText = "";
+    
+    if (q.type === "MCQ" || q.type === "Boolean") {
+      const correctAnswer = q.answers.find((a) => a.isCorrect);
+      answerText = correctAnswer ? correctAnswer.answerContent : "Không có đáp án đúng";
+    } else if (q.type === "MAQ") {
+      const correctAnswers = q.answers
+        .filter((a) => a.isCorrect)
+        .map((a) => a.answerContent)
+        .join(", ");
+      answerText = correctAnswers || "Không có đáp án đúng";
+    }
 
-          return {
-            question: q.content,
-            answer: answerText,
-          };
-        });
-
-        setFlashcards(processedFlashcards);
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.error("Lỗi khi fetch dữ liệu:", error);
-        setLoading(false);
-      });
-  }, []);
+    return {
+      question: q.content,
+      answer: answerText,
+    };
+  }) : [];
 
   const nextCard = () => {
+    if (flashcards.length === 0) return;
+    
     setIsTransitioning(true);
     setTimeout(() => {
       setIsFlipped(false);
@@ -68,6 +54,8 @@ const FlashcardList = () => {
   };
 
   const prevCard = () => {
+    if (flashcards.length === 0) return;
+    
     setIsTransitioning(true);
     setTimeout(() => {
       setIsFlipped(false);
@@ -76,11 +64,7 @@ const FlashcardList = () => {
     }, 300);
   };
 
-  if (loading) {
-    return <div className="text-center">Đang tải dữ liệu...</div>;
-  }
-
-  if (flashcards.length === 0) {
+  if (!questionFile || flashcards.length === 0) {
     return <div className="text-center">Không có dữ liệu để hiển thị</div>;
   }
 

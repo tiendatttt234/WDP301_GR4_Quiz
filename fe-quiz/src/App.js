@@ -18,6 +18,7 @@ function App() {
             <Route key={index} path={route.path} element={route.element} />
           ))}
         </Route>
+        {/* Bỏ header ở login và đăng ký đi */}
         <Route path="/admin/*" element={<AdminDefaultPage />}>
           {adminRoutes.map((route, index) => (
             <Route key={index} path={route.path} element={route.element} />

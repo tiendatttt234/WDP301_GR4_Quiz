@@ -5,8 +5,10 @@ import AccountManagement from "../pages/AdminPages/User/AccountManagement";
 import ViewQuestions from "../pages/AdminPages/Report/ViewQuestions";
 import AdminListQF from "../pages/AdminPages/QuestionFile/AdminListQF";
 import Blog from "../pages/AdminPages/Blog/Blog";
+import NotFoundPage from "../pages/NotFound/NotFoundPage";
 
 export const adminRoutes = [
+    { path: "*", element: <NotFoundPage/> },
     { path: "", element: <Dashboard /> },
     { path: "Dashboard", element: <Dashboard /> },
     { path: "reports", element: <ReportManagement /> },
@@ -14,4 +16,7 @@ export const adminRoutes = [
     { path: "view-question-detail/:id", element: <ViewQuestions /> },
     { path: "questionFile/list", element: <AdminListQF /> },
     { path: "blogs", element: <Blog /> },
+
+
+
   ];

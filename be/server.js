@@ -23,6 +23,7 @@ const server = http.createServer(app);
 
 // Khởi tạo socket.io
 const { Server } = require("socket.io");
+const favoriteRouter = require("./routes/favorite.route");
 const io = new Server(server, {
   cors: {
     origin: "http://localhost:3000",
@@ -67,7 +68,7 @@ app.use("/test", exportRouter);
 app.use("/auth", accountRouter);
 app.use("/admin", adminRouter);
 app.use("/notifycation", notificationRouter);
-
+app.use('/favorite', favoriteRouter)
 app.use("/api/reports", reportRouter);
 
 app.use("/payment", transactionRouter);

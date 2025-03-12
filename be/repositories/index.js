@@ -15,6 +15,7 @@ const findByEmail = require("./Account.repository");
 const findById = require("./Account.repository");
 const updatePassword = require("./Account.repository");
 const ReportRepository = require('./report.repository');
+const favoriteRepository = require('./favorite.repository');
 module.exports = {
   quizRepository,
   quizResultRepository,
@@ -32,5 +33,6 @@ module.exports = {
   findByEmail,
   findById,
   updatePassword,
-  ReportRepository
+  ReportRepository,
+  favoriteRepository
 };

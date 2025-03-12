@@ -47,6 +47,7 @@ async function getQuestionFileById(id) {
     name: questionFile.name,
     description: questionFile.description,
     isPrivate: questionFile.isPrivate,
+    createBy: questionFile.createdBy,
     arrayQuestion: questionFile.arrayQuestion.map((question) => ({
       questionId: question._id,
       content: question.content,

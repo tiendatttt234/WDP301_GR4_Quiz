@@ -1,10 +1,10 @@
 const express = require("express");
 const NotificationController = require("../controllers/notification.controller");
 
-const router = express.Router();
+const NotificationRouter = express.Router();
 
-router.post("/notify", NotificationController.notifyQuestionViolation);
-router.get("/:userId", NotificationController.getNotifications);
-router.patch("/:notificationId/read", NotificationController.markAsRead);
+NotificationRouter.post("/notify", NotificationController.notifyQuestionViolation);
+NotificationRouter.get("/:userId", NotificationController.getNotifications);
+NotificationRouter.patch("/:notificationId/read", NotificationController.markAsRead);
 
-module.exports = router;
+module.exports = NotificationRouter;

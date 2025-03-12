@@ -1,4 +1,3 @@
-
 const QuestionFile = require("../models/QuestionFile");
 
 async function findQuestionFileById(id) {
@@ -15,23 +14,38 @@ async function findByIdAndUserId(id, userId) {
   return await QuestionFile.findOne({ _id: id, createdBy: userId })
     .populate("createdBy", "userName");
 }
-
+async function getAllWithUser(){
+  // return await QuestionFile.find({})
+  //   .select("name description createdAt updatedAt isPrivate isReported reportedCount isLocked")
+  return await QuestionFile.findOne({ _id: id, createdBy: userId }).populate(
+    "createdBy",
+    "userName"
+  );
+}
+async function getAllWithUser() {
+  return await QuestionFile.find({})
+    .select(
+      "name description createdAt updatedAt isPrivate isReported reportedCount isLocked"
+    )
+    .populate("createdBy", "userName _id");
+}
 async function getAll() {
   return await QuestionFile.find({})
     .sort({ createdAt: 1 })
-    .select('name description arrayQuestion createdAt isPrivate');
+    .select("name description arrayQuestion createdAt isPrivate")
+    .populate("createdBy", "userName");
 }
 
 async function getAllByUserId(userId) {
   return await QuestionFile.find({ createdBy: userId })
     .sort({ createdAt: 1 })
-    .select('name description arrayQuestion createdAt isPrivate');
+    .select("name description arrayQuestion createdAt isPrivate");
 }
 async function createQF(data) {
   return await QuestionFile.create({
     ...data,
     reportedCount: 0,
-    isReported: false
+    isReported: false,
   });
 }
 
@@ -43,17 +57,49 @@ async function deleteQF(id) {
   return await QuestionFile.findByIdAndDelete(id);
 }
 
+async function updateQuestionInFile(fileId, questionId, updatedQuestion) {
+  return await QuestionFile.findOneAndUpdate(
+    { _id: fileId, "arrayQuestion._id": questionId },
+    {
+      $set: {
+        "arrayQuestion.$.content": updatedQuestion.content,
+        "arrayQuestion.$.type": updatedQuestion.type,
+        "arrayQuestion.$.answers": updatedQuestion.answers,
+      },
+    },
+    { new: true }
+  );
+}
 
+async function updatePrivacy(fileId, isPrivate) {
+  return await QuestionFile.findByIdAndUpdate(
+    fileId,
+    { $set: { isPrivate } }, // Chỉ cập nhật isPrivate
+    { new: true }
+  );
+}
+
+async function createTxt(data) {
+  const questionFile = new QuestionFile({
+    ...data,
+    reportedCount: 0,
+    isReported: false,
+  });
+  return await questionFile.save();
+}
 
 const questionFileRepository = {
   findQuestionFileById,
   getAllByUserId,
   findByIdAndUserId,
-  createQF, updateQF,
+  createQF,
+  updateQF,
   deleteQF,
-  getAll
+  getAll,
+  updateQuestionInFile,
+  updatePrivacy,
+  createTxt,
+  getAllWithUser,
 };
 
 module.exports = questionFileRepository;
-
-

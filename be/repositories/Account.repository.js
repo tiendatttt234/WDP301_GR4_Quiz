@@ -103,9 +103,9 @@ async function changePassword(id, oldPassword, newPassword) {
 }
 async function getAccountById(id) {
   try {
-      return await Account.findById(id).populate("roles").exec();
+    return await Account.findById(id).populate("roles").exec();
   } catch (error) {
-      throw error;
+    throw error;
   }
 }
 async function getAllAccounts() {
@@ -122,7 +122,26 @@ async function getAllAccounts() {
     throw error;
   }
 }
+const findByEmail = async (email) => {
+  return await Account.findOne({ email }).exec();
+};
 
+const findById = async (id) => {
+  return await Account.findById(id);
+};
+
+const updatePassword = async (id, hashedPassword) => {
+  return await Account.findByIdAndUpdate(id, { password: hashedPassword });
+};
+
+//update prime cho user va thoi gian het han
+async function updatePrimeStatus(accountId, isPrime, primeExpiresAt) {
+  return await Account.findByIdAndUpdate(
+    accountId,
+    { isPrime, primeExpiresAt },
+    { new: true }
+  );
+};
 module.exports = {
   getAccountById,
   getAccountByUserName,
@@ -134,5 +153,9 @@ module.exports = {
   updateAccountById,
   changePassword,
   getAllAccounts,
-  getAccountById
+  getAccountById,
+  findByEmail,
+  findById,
+  updatePassword,
+  updatePrimeStatus
 };

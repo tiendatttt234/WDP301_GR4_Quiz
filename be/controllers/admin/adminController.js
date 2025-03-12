@@ -1,6 +1,7 @@
 const AccountRepository = require("../../repositories/Account.repository");
 const Account = require("../../models/Account");
 const Role = require("../../models/Role");
+const Quiz = require('../../models/Quiz');
 const QuestionFile = require("../../models/QuestionFile");
 
 async function getAllAccounts(req, res) {

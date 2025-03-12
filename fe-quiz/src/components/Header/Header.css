@@ -1,105 +1,213 @@
-/* Style cho Dropdown menu */
-.custom-dropdown-menu {
-  background-color: #fff;
-  border-radius: 8px;
+/* Header.css */
+.custom-header {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 1000;
+  background-color: #ffffff;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  padding: 10px;
-  width: 200px; /* Điều chỉnh kích thước nếu cần */
-  margin-top: 20px; /* Tạo khoảng cách giữa dropdown và nút */
+  padding: 0 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
 }
-.custom-dropdown-menu.show {
-  display: block;
-  margin-top: 19px;
+
+.logo h1 {
+  margin: 0;
+  color: #007bff;
+  font-size: 24px;
+  font-weight: bold;
+  text-decoration: none;
+  padding-left: 10px;
 }
-.icon-text {
+
+.nav-links .nav-button {
+  color: #333;
+  font-weight: 500;
+  padding: 0 10px;
+  transition: color 0.3s;
+}
+
+.nav-links .nav-button:hover {
+  color: #007bff;
+}
+
+.custom-search {
+  width: 300px;
+  border: 1px solid #d9d9d9;
+  border-radius: 4px;
+  padding: 5px 10px;
+}
+
+.custom-search input {
+  border: none;
+  outline: none;
+  width: 100%;
+}
+
+.search-button {
+  background-color: #007bff;
+  border: none;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.search-button:hover {
+  background-color: #0056b3;
+}
+
+.user-section {
   display: flex;
   align-items: center;
 }
 
-.icon-text i {
-  margin-right: 8px; /* Khoảng cách giữa icon và văn bản */
-}
-
-/* Style cho từng Item trong Dropdown */
-.custom-dropdown-item {
-  padding: 10px;
-  margin-bottom: 8px; /* Khoảng cách giữa các item */
-  transition: background-color 0.3s ease; /* Hiệu ứng khi hover */
-  border-radius: 5px; /* Bo góc cho item */
-}
-
-/* Hover và Active style cho item */
-.custom-dropdown-item:hover {
-  background-color: #f0f0f0;
-}
-
-/* Style cho các link bên trong Dropdown item */
-.custom-dropdown-link {
+.greeting {
   color: #333;
-  text-decoration: none;
-  font-weight: bold;
-  display: block;
+  font-size: 14px;
+  padding-right: 10px;
 }
 
-.custom-dropdown-link:hover {
-  color: #79797d; /* Màu chữ khi hover */
+.notification-badge .bell-icon {
+  font-size: 20px;
+  color: #333;
+  cursor: pointer;
+  transition: color 0.3s;
 }
 
-.sidebar-menu {
-  position: fixed;
-  left: -250px;
-  top: 0;
-  width: 250px;
-  height: 100%;
+.notification-badge .bell-icon:hover {
+  color: #007bff;
+}
+
+.notification-badge .ant-badge-count {
+  background-color: #ff4d4f;
+  color: #fff;
+  box-shadow: 0 0 0 1px #fff;
+  font-size: 12px;
+  padding: 0 4px;
+  min-width: 16px;
+  height: 16px;
+  line-height: 16px;
+}
+
+/* Style cho Dropdown thông báo */
+.notification-menu {
+  width: 300px;
+  max-height: 400px;
+  overflow-y: auto;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   background-color: #fff;
-  box-shadow: 2px 0px 5px rgba(0, 0, 0, 0.1);
-  transition: left 0.3s ease;
-  z-index: 999;
-  padding-top: 20px;
-}
-
-.sidebar-menu.open {
-  left: 0;
-}
-
-.sidebar-menu ul {
-  list-style: none;
   padding: 0;
 }
 
-.sidebar-menu ul li {
-  margin: 20px;
-}
-
-.sidebar-menu ul li a {
-  text-decoration: none;
-  color: #333;
+.notification-menu .ant-menu-item {
+  padding: 10px 15px;
+  margin: 0;
+  border-bottom: 1px solid #f0f0f0;
   display: flex;
   align-items: center;
-  font-size: 1.2rem;
+  transition: background-color 0.3s, opacity 0.3s; /* Thêm transition cho opacity */
+  font-size: 14px;
 }
 
-.sidebar-menu ul li a i {
-  margin-right: 10px;
+.notification-menu .ant-menu-item:hover {
+  background-color: #f5f7fa;
 }
 
-.sidebar-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px 20px;
+.notification-menu .ant-menu-item.unread {
+  background-color: #e6f7ff; /* Màu nền nhẹ cho thông báo chưa đọc */
+  font-weight: 500;
+  opacity: 1; /* Thông báo chưa đọc rõ nét */
 }
 
-.close-icon {
+.notification-menu .ant-menu-item.read {
+  color: #888;
+  font-weight: normal;
+  opacity: 0.6; /* Thông báo đã đọc mờ đi */
+}
+
+/* Style khi không có thông báo */
+.notification-menu .ant-menu-item.no-notifications {
+  text-align: center;
+  color: #888;
+  font-style: italic;
+  opacity: 0.8; /* Mờ nhẹ nhưng không quá mờ như thông báo đã đọc */
+}
+
+.user-avatar {
   cursor: pointer;
-  /* color: #333; */
+  transition: transform 0.3s;
 }
 
-/* Style cho phần nội dung khi sidebar mở */
-.main-content {
-  transition: margin-left 0.3s ease;
+.user-avatar:hover {
+  transform: scale(1.1);
 }
 
-.main-content.shifted {
-  margin-left: 250px;
+.login-button {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 5px 15px;
+  font-weight: 500;
+  transition: background-color 0.3s;
+}
+
+.login-button:hover {
+  background-color: #0056b3;
+  color: #fff;
+}
+
+.custom-menu {
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.custom-menu .ant-menu-item {
+  padding: 5px 12px;
+}
+
+.custom-menu .ant-menu-item:hover {
+  background-color: #f0f2f5;
+}
+
+/* Custom style cho react-toastify */
+.Toastify__toast {
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 10px 15px;
+  font-family: "Arial", sans-serif;
+  font-size: 14px;
+}
+
+.Toastify__toast--info {
+  background-color: #007bff;
+  color: #fff;
+}
+
+.Toastify__toast--success {
+  background-color: #52c41a;
+  color: #fff;
+}
+
+.Toastify__close-button {
+  color: #fff;
+  opacity: 0.8;
+  transition: opacity 0.3s;
+}
+
+.Toastify__close-button:hover {
+  opacity: 1;
+}
+
+.Toastify__progress-bar {
+  background-color: rgba(255, 255, 255, 0.7);
 }

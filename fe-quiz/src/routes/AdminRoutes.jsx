@@ -6,7 +6,7 @@ import ViewQuestions from "../pages/AdminPages/Report/ViewQuestions";
 import AdminListQF from "../pages/AdminPages/QuestionFile/AdminListQF";
 import Blog from "../pages/AdminPages/Blog/Blog";
 import NotFoundPage from "../pages/NotFound/NotFoundPage";
-
+import Settings from "../pages/AdminPages/Setting/Settings";
 export const adminRoutes = [
     { path: "*", element: <NotFoundPage/> },
     { path: "", element: <Dashboard /> },
@@ -16,7 +16,6 @@ export const adminRoutes = [
     { path: "view-question-detail/:id", element: <ViewQuestions /> },
     { path: "questionFile/list", element: <AdminListQF /> },
     { path: "blogs", element: <Blog /> },
-
-
-
+    {path: "settings", element: <Settings />},
+    
   ];

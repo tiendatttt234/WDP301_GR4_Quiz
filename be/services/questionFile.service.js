@@ -2,6 +2,7 @@ const { create } = require("../models/Account");
 const questionRepository = require("../repositories/questionFile.repository");
 const fs = require('fs');
 const path = require('path');
+const QuestionFile = require("../models/QuestionFile");
 async function getAllQuestionFiles() {
   return await questionRepository.getAll();
 }
@@ -24,6 +25,19 @@ async function getAllQuestionFileAndUser() {
   return formatQF;
 }
 
+
+async function getQuestionFileByUserId(userId) {
+  try {
+    return await QuestionFile.find({ createdBy: userId })
+      .sort({ createdAt: 1 })
+      .select("name description arrayQuestion createdAt isPrivate");
+  } catch (error) {
+    throw new Error("Error retrieving question files: " + error.message);
+  }
+}
+
+
+
 async function getQuestionFileById(id) {
   const questionFile = await questionRepository.findQuestionFileById(id);
 
@@ -33,6 +47,7 @@ async function getQuestionFileById(id) {
     name: questionFile.name,
     description: questionFile.description,
     isPrivate: questionFile.isPrivate,
+    createBy: questionFile.createdBy,
     arrayQuestion: questionFile.arrayQuestion.map((question) => ({
       questionId: question._id,
       content: question.content,
@@ -98,6 +113,7 @@ async function updateQuestion(fileId, questionId, updatedQuestion) {
   }
   return questionFile;
 };
+
 async function updatePrivacy(fileId, isPrivate) {
   const updatedFile = await questionRepository.updatePrivacy(fileId, isPrivate);
   if (!updatedFile) {
@@ -233,5 +249,6 @@ module.exports = {
   updateQuestion, updatePrivacy,
   createQuestionFileFromTxt,
   parseTxtFile,
-  getAllQuestionFileAndUser
+  getAllQuestionFileAndUser,
+  getQuestionFileByUserId
 };

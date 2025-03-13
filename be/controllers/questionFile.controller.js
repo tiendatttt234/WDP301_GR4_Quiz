@@ -20,7 +20,22 @@ const questionFileService = require('../services/questionFile.service');
     }
   }
 
-
+  async function getQuestionFilesByUserId(req, res) {
+    try {
+      const userId = req.params.userId; // Lấy userId từ params hoặc từ req.user nếu có auth
+      const questionFiles = await questionFileService.getQuestionFileByUserId(userId);
+  
+      res.status(200).json({
+        success: true,
+        data: questionFiles,
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: error.message,
+      });
+    }
+  }
 
   async function getQuestionFileById(req, res, next) {
     try {
@@ -160,7 +175,8 @@ const QuestionFileController = {
   deleteQuestionFile,
   patchQuestion, updatePrivacy,
   importQuestionFile,
-  adminGetAllQF
+  adminGetAllQF,
+  getQuestionFilesByUserId
 };
 
 module.exports = QuestionFileController;

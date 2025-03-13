@@ -209,7 +209,10 @@ const Header = ({ onSearchResults }) => {
         <Link to="/blogList">Blog</Link>
       </Menu.Item>
       <Menu.Item key="2">
-        <Link to="/user/viewques">Thư viện của bạn</Link>
+        <Link to="/questionfile/create">Tạo tệp câu hỏi</Link>
+      </Menu.Item>
+      <Menu.Item key="2">
+        <Link to="/questionfile/getAll">Thư viện của bạn</Link>
       </Menu.Item>
     </Menu>
   );

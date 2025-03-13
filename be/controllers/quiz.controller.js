@@ -46,9 +46,11 @@ async function getQuiz(req, res, next) {
 
 async function createQuiz(req, res, next) {
   try {
-      const { quizName, userId, questionFileId, questionCount } = req.body;
-      const newQuiz = await QuizService.createQuiz({ quizName, userId, questionFileId, questionCount });
-
+    
+      const { name, user, questionFileId, questionCount } = req.body;
+      const newQuiz = await QuizService.createQuiz({ name, user, questionFileId, questionCount });
+ 
+    
       return res.status(201).json({ message: "Quiz created successfully", quiz: newQuiz });
   } catch (error) {
       return res.status(400).json({ message: error.message });

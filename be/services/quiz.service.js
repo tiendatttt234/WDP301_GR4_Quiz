@@ -12,9 +12,6 @@ async function getQuizByUserId(userId) {
   if (!userId) {
     throw new Error("userId is required");
   }
-
-  //TH userId khong ton tai
-
   return await quizRepository.getQuizByUserId(userId);
 }
 
@@ -62,23 +59,28 @@ async function getQuizById(id) {
   };
 };
 
-async function createQuiz({ quizName, userId, questionFileId, questionCount }) {
+async function createQuiz({ name, user, questionFileId, questionCount }) {
+  console.log("here 1", user, questionFileId);
+  
   // Validate ObjectId
-  if (!mongoose.Types.ObjectId.isValid(userId) || !mongoose.Types.ObjectId.isValid(questionFileId)) {
-    throw new Error("Invalid userId or questionFileId");
+  if (!mongoose.Types.ObjectId.isValid(user) || !mongoose.Types.ObjectId.isValid(questionFileId)) {
+    throw new Error("Invalid userId or questionFileId"); // Thay vì dùng res
   }
-
+  
   // Fetch question file
   const questionFile = await QuestionFile.findById(questionFileId);
+  
   if (!questionFile) {
     throw new Error("Question file not found");
   }
-
+  
   // Validate question count
   if (questionCount > questionFile.arrayQuestion.length) {
-    throw new Error("Question count exceeds the number of questions in the question file");
+    console.log("here 2");
+    throw new Error("Question count exceeds the number of questions in the question file"); // Thay vì dùng res
   }
 
+  console.log("here 3");
   // Select random questions
   const allQuestions = questionFile.arrayQuestion.map(q => q._id);
   const getRandomQuestions = (questions, count) => {
@@ -94,7 +96,7 @@ async function createQuiz({ quizName, userId, questionFileId, questionCount }) {
 
   // Create quiz object
   const quizData = {
-    quizName,
+    name,
     duration: 30, // Default duration
     questionFile: questionFileId,
     selectedQuestions: randomListQuestions,

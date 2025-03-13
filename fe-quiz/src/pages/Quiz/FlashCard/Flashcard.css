@@ -1,66 +1,72 @@
 .flashcard {
-    width: 500px;
-    height: 300px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    font-size: 18px;
-    background: white;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    transition: transform 0.6s;
-    cursor: pointer;
-  }
-  
-  .flashcard-container {
-    display: flex;
-    gap: 20px;
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-  
-  .front {
-    background-color: #f8f9fa;
-  }
-  
-  .back {
-    background-color: #007bff;
-    color: white;
-  }
+  width: 500px;
+  height: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 18px;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  position: relative; /* Thêm để hỗ trợ animation */
+}
 
-  /* hiệu ưng fade-in, fade-out */
-  .fade-in {
-    opacity: 1;
-    transition: opacity 0.3s ease-in;
-  }
-  
-  .fade-out {
-    opacity: 0;
-    transition: opacity 0.3s ease-out;
-  }
-  /* hiệu ứng trượt sang trái hoặc phải */
-  .slide-in-left {
-    transform: translateX(0);
-    opacity: 1;
-    transition: transform 0.3s ease-in, opacity 0.3s ease-in;
-  }
-  
-  .slide-out-left {
-    transform: translateX(-100%);
-    opacity: 0;
-    transition: transform 0.3s ease-out, opacity 0.3s ease-out;
-  }
-  
-  .slide-in-right {
-    transform: translateX(0);
-    opacity: 1;
-    transition: transform 0.3s ease-in, opacity 0.3s ease-in;
-  }
-  
-  .slide-out-right {
-    transform: translateX(100%);
-    opacity: 0;
-    transition: transform 0.3s ease-out, opacity 0.3s ease-out;
-  }
-  
+/* Container giữ vị trí cố định để thẻ trượt trong không gian này */
+.flashcard-container {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  justify-content: center;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  position: relative;
+}
+
+/* Mặt trước và sau của thẻ */
+.front {
+  background-color: #f8f9fa;
+}
+
+.back {
+  background-color: #007bff;
+  color: white;
+}
+
+/* Hiệu ứng fade kết hợp slide */
+.fade-in {
+  opacity: 1;
+  transition: opacity 0.4s ease-in-out; /* Tăng thời gian lên 0.4s */
+}
+
+.fade-out {
+  opacity: 0;
+  transition: opacity 0.4s ease-in-out;
+}
+
+/* Hiệu ứng trượt mượt mà hơn */
+.slide-out-left {
+  transform: translateX(-20%);
+  opacity: 0;
+  transition: transform 0.2s ease-out, opacity 0.2s ease-out; /* Nhanh, chỉ 0.2s */
+}
+
+.slide-out-right {
+  transform: translateX(20%);
+  opacity: 0;
+  transition: transform 0.2s ease-out, opacity 0.2s ease-out; /* Nhanh, chỉ 0.2s */
+}
+
+/* Thẻ mới xuất hiện ngay lập tức */
+.slide-in-left {
+  transform: translateX(0);
+  opacity: 1;
+  transition: none; /* Không có animation khi vào */
+}
+
+.slide-in-right {
+  transform: translateX(0);
+  opacity: 1;
+  transition: none; /* Không có animation khi vào */
+}

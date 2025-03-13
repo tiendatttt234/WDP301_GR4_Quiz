@@ -155,6 +155,7 @@ export const QuestionTitle = styled.h3`
   font-weight: 600;
   color: #1e293b;
   margin-top: 1rem;
+  margin-left: 10px;
   line-height: 1.4;
   transition: color 0.3s ease;
 
@@ -174,5 +175,20 @@ export const DeleteButton = styled.button`
   &:hover {
     color: #ef4444; /* Đỏ khi hover */
     transform: scale(1.1);
+  }
+`;
+export const CreateButton = styled.button`
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 10px;
+  font-size: 16px;
+  transition: background 0.3s ease;
+
+  &:hover {
+    background-color: #0056b3;
   }
 `;

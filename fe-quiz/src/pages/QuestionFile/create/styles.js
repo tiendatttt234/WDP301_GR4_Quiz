@@ -282,3 +282,34 @@ export const ExampleText = styled.pre`
   overflow-x: hidden; /* Loại bỏ thanh cuộn ngang trong ví dụ */
   font-family: inherit; /* Sử dụng font của cha để đồng nhất */
 `;
+export const Pagination = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  margin: 25px 0;
+  
+  button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 5px;
+    background: #3498db;
+    color: white;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    
+    &:hover:not(:disabled) {
+      background: #2980b9;
+    }
+    
+    &:disabled {
+      background: #bdc3c7;
+      cursor: not-allowed;
+    }
+  }
+  
+  span {
+    font-size: 15px;
+    color: #2c3e50;
+  }
+`;

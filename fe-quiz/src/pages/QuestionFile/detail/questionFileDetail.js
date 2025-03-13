@@ -1,13 +1,3 @@
-<<<<<<< Updated upstream
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import { useParams } from 'react-router-dom';
-import {
-    Title,
-    Answer,Container,Description,ErrorMessage,Header,QuestionCard,QuestionContent,TypeLabel
-} from './styles.js'
-import FlashcardList from '../../Quiz/FlashCard/FlashCards.jsx';
-=======
 // QuestionFileDetail.jsx
 import React, { useEffect, useState } from "react";
 import axios from "axios";
@@ -34,32 +24,22 @@ import ReportModal from "./reportModal.js";
 import QuizCreationModal from "../../Quiz/QuizCreateModal/QuizCreationModal.jsx"
 
 const QUESTIONS_PER_PAGE = 30;
->>>>>>> Stashed changes
 
 const QuestionFileDetail = () => {
   const { id } = useParams();
   const [questionFile, setQuestionFile] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
-<<<<<<< Updated upstream
-=======
   const [currentPage, setCurrentPage] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isQuizModalOpen, setIsQuizModalOpen] = useState(false); // New state for quiz modal
   const [isSaved, setIsSaved] = useState(false);
   const [favoriteId, setFavoriteId] = useState(null);
   const [isOwnQuestionFile, setIsOwnQuestionFile] = useState(false);
->>>>>>> Stashed changes
 
   useEffect(() => {
     const fetchQuestionFile = async () => {
       try {
-<<<<<<< Updated upstream
-        const response = await axios.get(`http://localhost:9999/questionFile/getById/${id}`);
-        setQuestionFile(response.data.questionFile);
-        console.log(response.data.questionFile);
-        setError(null);
-=======
         const response = await axios.get(
           `http://localhost:9999/questionFile/getById/${id}`
         );
@@ -89,9 +69,8 @@ const QuestionFileDetail = () => {
             setFavoriteId(existingFavorite._id);
           }
         }
->>>>>>> Stashed changes
       } catch (err) {
-        setError('Không thể tải dữ liệu: ' + err.message);
+        setError("Không thể tải dữ liệu: " + err.message);
       } finally {
         setLoading(false);
       }
@@ -101,29 +80,32 @@ const QuestionFileDetail = () => {
   }, [id]);
 
   const getQuestionTypeLabel = (type) => {
-    switch(type) {
-      case 'MCQ': return 'Trắc nghiệm một lựa chọn';
-      case 'MAQ': return 'Trắc nghiệm nhiều lựa chọn';
-      case 'Boolean': return 'Đúng/Sai';
-      default: return type;
+    switch (type) {
+      case "MCQ":
+        return "Trắc nghiệm một lựa chọn";
+      case "MAQ":
+        return "Trắc nghiệm nhiều lựa chọn";
+      case "Boolean":
+        return "Đúng/Sai";
+      default:
+        return type;
     }
   };
 
-  if (loading) return <Container><ErrorMessage>Đang tải...</ErrorMessage></Container>;
-  if (error) return <Container><ErrorMessage>{error}</ErrorMessage></Container>;
+  if (loading)
+    return (
+      <Container>
+        <ErrorMessage>Đang tải...</ErrorMessage>
+      </Container>
+    );
+  if (error)
+    return (
+      <Container>
+        <ErrorMessage>{error}</ErrorMessage>
+      </Container>
+    );
   if (!questionFile) return null;
 
-<<<<<<< Updated upstream
-  return (
-    <Container>
-      <Header>
-        <Title>{questionFile.name}</Title>
-        <Description>{questionFile.description}</Description>
-        <Description>Trạng thái: {questionFile.isPrivate ? 'Riêng tư' : 'Công khai'}</Description>
-      </Header>
-      <FlashcardList questionFile={questionFile} />
-      {questionFile.arrayQuestion.map((question) => (
-=======
   const totalQuestions = questionFile.arrayQuestion.length;
   const totalPages = Math.ceil(totalQuestions / QUESTIONS_PER_PAGE);
   const startIndex = (currentPage - 1) * QUESTIONS_PER_PAGE;
@@ -200,6 +182,7 @@ const QuestionFileDetail = () => {
                   <span>Báo cáo</span>
                 </button>
               </>
+
             )}
             <button onClick={openQuizModal}>
               <FileText size={20} color="rgb(96, 99, 103)" />
@@ -225,22 +208,18 @@ const QuestionFileDetail = () => {
       />
 
       {paginatedQuestions.map((question) => (
->>>>>>> Stashed changes
         <QuestionCard key={question.questionId}>
           <QuestionContent>{question.content}</QuestionContent>
-          <TypeLabel>Loại câu hỏi: {getQuestionTypeLabel(question.type)}</TypeLabel>
+          <TypeLabel>
+            Loại câu hỏi: {getQuestionTypeLabel(question.type)}
+          </TypeLabel>
           {question.answers.map((answer) => (
-            <Answer 
-              key={answer.answerId}
-              isCorrect={answer.isCorrect}
-            >
-              {answer.answerContent} {answer.isCorrect ? '(Đúng)' : ''}
+            <Answer key={answer.answerId} isCorrect={answer.isCorrect}>
+              {answer.answerContent}
             </Answer>
           ))}
         </QuestionCard>
       ))}
-<<<<<<< Updated upstream
-=======
 
       {totalPages > 1 && (
         <Pagination>
@@ -274,7 +253,6 @@ const QuestionFileDetail = () => {
         draggable
         pauseOnHover
       />
->>>>>>> Stashed changes
     </Container>
   );
 };

@@ -1,7 +1,8 @@
 const express = require("express");
 const router = express.Router();
-const AccountController = require("../controllers/admin/adminController");
+const adminStatitics = require("../controllers/admin/adminStatitics");
 const ReportController = require("../controllers/admin/reportController");
+const AccountController = require("../controllers/admin/accountManagement");
 const { NotificationService } = require("../services");
 const multer = require('multer');
 const { 
@@ -11,8 +12,8 @@ const {
     updateBlog,
     deleteBlog 
 } = require('../controllers/admin/admin.blog'); 
-const premiumPackageController = require('../controllers/admin/settingPremium'); // Thêm controller mới
-const { verifyAccessToken, isAdmin } = require('../middlewares/jwt_helper'); // Thêm middleware hiện tại của bạn
+const premiumPackageController = require('../controllers/admin/settingPremium'); 
+const { verifyAccessToken, isAdmin } = require('../middlewares/jwt_helper'); 
 
 // Configure multer for file uploads
 const storage = multer.diskStorage({
@@ -27,15 +28,17 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 // API get account by admin
-router.get("/accounts", AccountController.getAllAccounts);
+router.get("/accounts",   AccountController.getAllAccounts);
 
 // API lock account
 router.put("/accounts/:id/lock", AccountController.islockAccount);
 // API dashboard
-router.get("/dashboard", AccountController.getDashboardStats);
+router.get("/dashboard", adminStatitics.getDashboardStats);
 // API statistics
-router.get("/statistics", AccountController.getUserStatistics);
-router.get("/quiz-statistics", AccountController.getQuestionStatistics);
+router.get("/statistics", adminStatitics.getUserStatistics);
+router.get("/quiz-statistics", adminStatitics.getQuestionStatistics);
+router.get("/revenue", adminStatitics.getRevenueStatistics);
+//api manage reports
 router.get("/reports", ReportController.getReportsList);
 router.get("/reports/:reportId/details", ReportController.getReportDetails);
 router.delete("/reports/:reportId", ReportController.deleteReport);
@@ -52,7 +55,7 @@ router.route('/blogs/:id')
     .put(upload.single('image'), updateBlog) 
     .delete(deleteBlog); 
 
-// Premium Package Routes (Admin - yêu cầu xác thực và quyền admin)
+// Setting Premium Package
 router.post(
   '/admin/premium-packages',
   verifyAccessToken,
@@ -83,10 +86,6 @@ router.delete(
   isAdmin,
   premiumPackageController.deletePremiumPackage
 );
-
-// Premium Package Routes (Công khai - không yêu cầu xác thực)
-router.get('/premium-packages', premiumPackageController.getActivePremiumPackages);
-router.get('/premium-packages/:id', premiumPackageController.getActivePremiumPackageById);
 
 // // Uncomment nếu bạn cần route block-question
 // router.post("/block-question", async (req, res, next) => {

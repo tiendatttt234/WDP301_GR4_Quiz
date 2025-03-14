@@ -3,14 +3,14 @@ import React, { useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import Modal from "react-modal";
-
+import { useNavigate } from "react-router-dom";
 
 Modal.setAppElement("#root");
 
 const QuizCreationModal = ({ isOpen, onRequestClose, questionFileId }) => {
   const [quizName, setQuizName] = useState("");
   const [questionCount, setQuestionCount] = useState("");
-
+  const navigate = useNavigate();
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -35,9 +35,13 @@ const QuizCreationModal = ({ isOpen, onRequestClose, questionFileId }) => {
       );
 
       toast.success("Tạo bài quiz thành công!");
+      console.log(response);
+      
+      const quizId = response.data.quiz?._id;
       onRequestClose();
       setQuizName("");
       setQuestionCount("");
+      navigate(`/attempt/${quizId}`);
     } catch (error) {
       const errorMessage = error.response?.data?.message || error.message;
       toast.error("Lỗi khi tạo bài quiz: " + errorMessage);

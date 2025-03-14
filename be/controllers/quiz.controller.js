@@ -59,6 +59,8 @@ async function createQuiz(req, res, next) {
 
 async function submitQuiz(req, res, next) {
   try {
+    console.log(req.body);
+    
       const quizResult = await QuizService.submitQuiz(req.body);
       res.status(200).json({ quizResult });
   } catch (error) {

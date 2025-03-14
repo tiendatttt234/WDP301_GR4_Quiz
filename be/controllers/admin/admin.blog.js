@@ -1,5 +1,5 @@
 const Blog = require('../../models/Blog');
-const cloudinary = require('../../controllers/admin/cloudinary');
+const cloudinary = require('../../config/cloudinary');
 const asyncHandler = require('express-async-handler');
 
 // Create Blog

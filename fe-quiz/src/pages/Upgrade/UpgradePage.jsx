@@ -1,35 +1,82 @@
 // UpgradePage.jsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './UpgradePage.css';
 
 const UpgradePage = () => {
   const [selectedPlan, setSelectedPlan] = useState(null);
+  const [plans, setPlans] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const plans = [
-    {
-      duration: '1 Month',
-      price: 9.99,
-      billing: 'Billed monthly',
-      savings: ''
-    },
-    {
-      duration: '3 Months',
-      price: 24.99,
-      billing: 'Billed every 3 months',
-      savings: 'Save 15%'
-    }
-  ];
+  useEffect(() => {
+    const fetchPremiumPackages = async () => {
+      try {
+        const response = await fetch('http://localhost:9999/package/getAllPremiumPackages');
+        const data = await response.json();
+        
+        const formattedPlans = data.map(packageItem => ({
+          duration: `${packageItem.durationDays / 30} Month${packageItem.durationDays > 30 ? 's' : ''}`,
+          price: packageItem.price,
+          billing: `Billed every ${packageItem.durationDays} days`,
+          savings: '',
+          originalData: packageItem
+        }));
+        
+        setPlans(formattedPlans);
+        setLoading(false);
+      } catch (error) {
+        console.error('Error fetching premium packages:', error);
+        setLoading(false);
+      }
+    };
+
+    fetchPremiumPackages();
+  }, []);
 
   const handlePlanSelect = (plan) => {
     setSelectedPlan(plan);
   };
 
-  const handleUpgrade = () => {
-    if (selectedPlan) {
-      // Xử lý logic nâng cấp ở đây (gọi API, xử lý thanh toán, etc.)
-      console.log(`Upgrading to ${selectedPlan.duration} plan`);
+  const handleUpgrade = async () => {
+    if (!selectedPlan) return;
+
+    try {
+      // Tạo orderId duy nhất (có thể dùng timestamp hoặc UUID)
+      const orderId = `ORDER_${Date.now()}`;
+      const amount = selectedPlan.price;
+      const orderInfo = `Upgrade to ${selectedPlan.duration} plan`;
+      const createBy = localStorage.getItem('id');
+
+      // Gửi request đến API create payment
+      const response = await fetch('http://localhost:9999/transaction/create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          orderId,
+          amount,
+          orderInfo,
+          createBy,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (result.success && result.paymentUrl) {
+        // Redirect người dùng đến trang thanh toán VNPay
+        window.location.href = result.paymentUrl;
+      } else {
+        alert('Không thể tạo link thanh toán. Vui lòng thử lại.');
+      }
+    } catch (error) {
+      console.error('Error during payment initiation:', error);
+      alert('Có lỗi xảy ra khi khởi tạo thanh toán!');
     }
   };
+
+  if (loading) {
+    return <div>Loading packages...</div>;
+  }
 
   return (
     <div className="upgrade-container">
@@ -53,10 +100,9 @@ const UpgradePage = () => {
             </div>
             <p className="billing">{plan.billing}</p>
             <ul className="features">
-              <li>Unlimited access to all features</li>
-              <li>Ad-free experience</li>
-              <li>Offline access</li>
-              <li>Priority support</li>
+              {plan.originalData.features.map((feature, idx) => (
+                <li key={idx}>{feature}</li>
+              ))}
             </ul>
           </div>
         ))}

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { Search, Trash2 } from "lucide-react";
+import { Search, Trash2, Pencil } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import {
   Container,
@@ -92,8 +92,16 @@ const ListQuestion = () => {
         );
 
   const handleQuestionClick = (id) => {
-    navigate(`/questionfile/update/${id}`);
+    if (activeTab === "luuhocphan") {
+      navigate(`/questionfile/getById/${id}`);
+    } else {
+      navigate(`/questionfile/getById/${id}`);
+    }
   };
+
+  const handleUpdateClick = (id) =>  {
+    navigate(`/questionfile/update/${id}`);
+  }
 
   const handleDeleteQuestion = async (id) => {
     const confirmDelete = window.confirm(
@@ -200,6 +208,12 @@ const ListQuestion = () => {
                   </QuestionDetails>
                   <QuestionTitle>{qf.name}</QuestionTitle>
                 </div>
+                <DeleteButton
+                    onClick={() => handleUpdateClick(qf._id)}
+                    style={{ marginRight: "10px" }}
+                  >
+                    <Pencil size={20} />
+                </DeleteButton>
                 <DeleteButton
                   onClick={() =>
                     isFavorite

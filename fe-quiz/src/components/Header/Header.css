@@ -173,10 +173,12 @@
 
 .custom-menu .ant-menu-item {
   padding: 5px 12px;
+  text-decoration: none;
 }
 
 .custom-menu .ant-menu-item:hover {
   background-color: #f0f2f5;
+  text-decoration: none;
 }
 
 /* Custom style cho react-toastify */

@@ -9,7 +9,7 @@ import "./Dashboard.css"
 
 export default function QuizChart() {
   const [chartData, setChartData] = useState([])
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [viewMode, setViewMode] = useState("daily")
 
@@ -65,7 +65,7 @@ export default function QuizChart() {
       <div className="chart-header">
         <h3>Quiz Statistics</h3>
         <Dropdown overlay={menu}>
-          <a onClick={(e) => e.preventDefault()}>
+          <a onClick={(e) => e.preventDefault()} className="period-selector">
             <Space>
               {viewMode === "daily" ? "This Month" : "This Week"}
               <DownOutlined />
@@ -86,7 +86,12 @@ export default function QuizChart() {
               <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: "#666" }} />
               <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: "#666" }} />
               <Tooltip formatter={(value) => [`Số lượng: ${value}`]} labelFormatter={(label) => `Ngày ${label}`} />
-              <Bar dataKey="quizCreated" fill="#ff7043" radius={[4, 4, 0, 0]} barSize={viewMode === "daily" ? 15 : 30} />
+              <Bar
+                dataKey="quizCreated"
+                fill="#ff7043"
+                radius={[4, 4, 0, 0]}
+                barSize={viewMode === "daily" ? 15 : 30}
+              />
             </BarChart>
           </ResponsiveContainer>
         ) : (
@@ -103,3 +108,4 @@ const LegendItem = ({ color, label }) => (
     <span>{label}</span>
   </div>
 )
+

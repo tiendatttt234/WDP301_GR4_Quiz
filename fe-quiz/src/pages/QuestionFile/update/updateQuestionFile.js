@@ -23,8 +23,13 @@ import {
   DeleteButtonWrapper,
   AddAnswerButton,
   SaveButton,
-  AddButton, HeaderContainer,ToggleButton
+  AddButton,
+  HeaderContainer,
+  ToggleButton,
+  Pagination,
 } from "./styles.js";
+
+const QUESTIONS_PER_PAGE = 10;
 
 const UpdateQuestion = () => {
   const { id } = useParams();
@@ -35,6 +40,7 @@ const UpdateQuestion = () => {
   const [isDirty, setIsDirty] = useState(false);
   const [isPrivate, setIsPrivate] = useState(false);
   const [dirtyQuestions, setDirtyQuestions] = useState({});
+  const [currentPage, setCurrentPage] = useState(1);
 
   const questionTypes = [
     { value: "trueFalse", label: "Đúng/Sai" },
@@ -46,7 +52,12 @@ const UpdateQuestion = () => {
     axios
       .get(`http://localhost:9999/questionFile/getById/${id}`)
       .then((response) => {
-        const { name, description, arrayQuestion, isPrivate: privateStatus } = response.data.questionFile;
+        const {
+          name,
+          description,
+          arrayQuestion,
+          isPrivate: privateStatus,
+        } = response.data.questionFile;
         setTitle(name);
         setDescription(description);
         setIsPrivate(privateStatus);
@@ -89,7 +100,8 @@ const UpdateQuestion = () => {
     if (!title.trim()) return "Vui lòng nhập tiêu đề!";
     if (!description.trim()) return "Vui lòng nhập mô tả!";
     for (let q of questions) {
-      if (!q.question.trim()) return "Vui lòng nhập nội dung cho tất cả câu hỏi!";
+      if (!q.question.trim())
+        return "Vui lòng nhập nội dung cho tất cả câu hỏi!";
     }
     return null;
   };
@@ -100,18 +112,31 @@ const UpdateQuestion = () => {
 
     // Gửi PATCH request để cập nhật isPrivate tức thời
     axios
-      .patch(`http://localhost:9999/questionFile/updatePrivacy/${id}`, { isPrivate: newPrivacy })
+      .patch(`http://localhost:9999/questionFile/updatePrivacy/${id}`, {
+        isPrivate: newPrivacy,
+      })
       .then((response) => {
-        console.log("Response from toggle:", JSON.stringify(response.data, null, 2));
-        if (!response.data.result || typeof response.data.result.isPrivate === "undefined") {
+        console.log(
+          "Response from toggle:",
+          JSON.stringify(response.data, null, 2)
+        );
+        if (
+          !response.data.result ||
+          typeof response.data.result.isPrivate === "undefined"
+        ) {
           throw new Error("Response không chứa isPrivate");
         }
         setIsPrivate(response.data.result.isPrivate); // Đồng bộ từ server
-        toast.success(`Đã đặt ${newPrivacy ? "riêng tư" : "công khai"}!`, { autoClose: 2000 });
+        toast.success(`Đã đặt ${newPrivacy ? "riêng tư" : "công khai"}!`, {
+          autoClose: 2000,
+        });
         setIsDirty(false); // Không cần lưu thêm vì đã cập nhật
       })
       .catch((error) => {
-        console.error("Lỗi khi cập nhật isPrivate:", error.response?.data || error.message);
+        console.error(
+          "Lỗi khi cập nhật isPrivate:",
+          error.response?.data || error.message
+        );
         toast.error("Cập nhật trạng thái thất bại!");
         setIsPrivate(!newPrivacy); // Hoàn tác nếu thất bại
       });
@@ -352,7 +377,7 @@ const UpdateQuestion = () => {
       if (
         window.confirm("Bạn có thay đổi chưa lưu, có chắc muốn rời đi không?")
       ) {
-        navigate(-1);
+        navigate("questionfile/getAll");
       }
     } else {
       navigate(-1);
@@ -362,15 +387,20 @@ const UpdateQuestion = () => {
     setQuestions(questions.filter((q) => q.id !== questionId));
   };
 
+  const totalQuestions = questions.length;
+  const totalPages = Math.ceil(totalQuestions / QUESTIONS_PER_PAGE);
+  const startIndex = (currentPage - 1) * QUESTIONS_PER_PAGE;
+  const paginatedQuestions = questions.slice(
+    startIndex,
+    startIndex + QUESTIONS_PER_PAGE
+  );
+
   return (
     <Container>
       <ToastContainer />
       <HeaderContainer>
         <Title>Cập nhật học phần</Title>
-        <ToggleButton
-          isPrivate={isPrivate}
-          onClick={handleTogglePrivacy}
-        >
+        <ToggleButton isPrivate={isPrivate} onClick={handleTogglePrivacy}>
           {isPrivate ? "Riêng tư" : "Công khai"}
         </ToggleButton>
       </HeaderContainer>
@@ -393,10 +423,10 @@ const UpdateQuestion = () => {
         }}
       />
 
-      {questions.map((question, qIndex) => (
+      {paginatedQuestions.map((question, qIndex) => (
         <QuestionCard key={question.id}>
           <QuestionHeader>
-            <QuestionNumber>Câu {qIndex + 1}</QuestionNumber>
+            <QuestionNumber>Câu {startIndex + qIndex + 1}</QuestionNumber>
             <Select
               value={question.type}
               onChange={(e) => handleTypeChange(question.id, e.target.value)}
@@ -459,6 +489,28 @@ const UpdateQuestion = () => {
           </DeleteButtonWrapper>
         </QuestionCard>
       ))}
+
+      {totalPages > 1 && (
+        <Pagination>
+          <button
+            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+            disabled={currentPage === 1}
+          >
+            Trước
+          </button>
+          <span>
+            Trang {currentPage} / {totalPages}
+          </span>
+          <button
+            onClick={() =>
+              setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+            }
+            disabled={currentPage === totalPages}
+          >
+            Sau
+          </button>
+        </Pagination>
+      )}
 
       <AddButton onClick={addQuestion}>
         <Plus size={20} />

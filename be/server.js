@@ -5,7 +5,8 @@ const morgan = require("morgan");
 const cors = require("cors");
 require("dotenv").config();
 const Db = require("./dbConnect/dbConnect");
-const { quizRouter, questionBankRouter, exportRouter, notificationRouter,transactionRouter } = require("./routes");
+const { quizRouter, questionBankRouter, exportRouter,notificationRouter, reportRouter,transactionRouter } = require("./routes");
+
 const accountRouter = require("./routes/account.router");
 const adminRouter = require("./routes/admin.routes");
 
@@ -22,6 +23,7 @@ const server = http.createServer(app);
 
 // Khởi tạo socket.io
 const { Server } = require("socket.io");
+const favoriteRouter = require("./routes/favorite.route");
 const io = new Server(server, {
   cors: {
     origin: "http://localhost:3000",
@@ -66,7 +68,11 @@ app.use("/test", exportRouter);
 app.use("/auth", accountRouter);
 app.use("/admin", adminRouter);
 app.use("/notifycation", notificationRouter);
+app.use('/favorite', favoriteRouter)
+app.use("/api/reports", reportRouter);
+
 app.use("/payment", transactionRouter);
+
 
 // Middleware xử lý lỗi
 app.use((err, req, res, next) => {

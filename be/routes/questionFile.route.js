@@ -13,6 +13,7 @@ QuestionFileRouter.patch("/update/:fileId/question/:questionId", questionFileCon
 QuestionFileRouter.patch("/updatePrivacy/:fileId", questionFileController.updatePrivacy);
 QuestionFileRouter.post("/import", upload.single("file"), questionFileController.importQuestionFile);
 QuestionFileRouter.get('/getQFadmin', questionFileController.adminGetAllQF);
+QuestionFileRouter.get("/getAll/:userId", questionFileController.getQuestionFilesByUserId);
 
 module.exports = QuestionFileRouter;
 

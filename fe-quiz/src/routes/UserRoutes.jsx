@@ -14,6 +14,7 @@ import ForgotPassword from "../components/authen/forgotPassword/ForgotPassword";
 import ResetPass from "../components/authen/forgotPassword/ResetPassword";
 import NotFoundPage from "../pages/NotFound/NotFoundPage";
 import UpgradePage from "../pages/Upgrade/UpgradePage";
+import QuestionFileByUser from "../pages/QuestionFile/findbyuser/QuestionFileByUser";
 
 
 export const userRoutes = [
@@ -33,5 +34,9 @@ export const userRoutes = [
     { path: "reset-password/:id/:token", element: <ResetPass/>},
     { path: "upgrade", element: <UpgradePage/>},
     { path: "*", element: <NotFoundPage/>},
-    { path: "reset-password/:id/:token", element: <ResetPass/>}
+    { path: "reset-password/:id/:token", element: <ResetPass/>},
+    {
+      path: "questionfile/findbyuser/:userId",
+      element: <QuestionFileByUser />,
+    }
   ];

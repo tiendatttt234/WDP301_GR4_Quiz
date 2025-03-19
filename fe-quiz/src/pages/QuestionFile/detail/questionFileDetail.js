@@ -4,6 +4,7 @@ import axios from "axios";
 import { BookMarked, AlertTriangle, BookmarkX } from "lucide-react";
 import { useParams } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
 import {
   Title,
@@ -33,6 +34,7 @@ const QuestionFileDetail = () => {
   const [isSaved, setIsSaved] = useState(false);
   const [favoriteId, setFavoriteId] = useState(null);
   const [isOwnQuestionFile, setIsOwnQuestionFile] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchQuestionFile = async () => {
@@ -56,10 +58,10 @@ const QuestionFileDetail = () => {
           const favoriteResponse = await axios.get(
             `http://localhost:9999/favorite/user/${currentUserId}`
           );
-          const existingFavorite = favoriteResponse.data.data.find(fav => 
-            fav.sharedQuestionFile.some(qf => qf._id === id)
+          const existingFavorite = favoriteResponse.data.data.find((fav) =>
+            fav.sharedQuestionFile.some((qf) => qf._id === id)
           );
-          
+
           if (existingFavorite) {
             setIsSaved(true);
             setFavoriteId(existingFavorite._id);
@@ -122,14 +124,14 @@ const QuestionFileDetail = () => {
 
       const favoriteData = {
         user: userId,
-        sharedQuestionFile: [id]
+        sharedQuestionFile: [id],
       };
 
       const response = await axios.post(
         "http://localhost:9999/favorite/create",
         favoriteData
       );
-      
+
       setIsSaved(true);
       setFavoriteId(response.data.data._id);
       toast.success("Đã lưu học phần thành công!");
@@ -181,6 +183,22 @@ const QuestionFileDetail = () => {
         </HeaderTitleWrapper>
         <Description>{questionFile.description}</Description>
         {/* <Description>Trạng thái: {questionFile.isPrivate ? 'Riêng tư' : 'Công khai'}</Description> */}
+
+        <p>
+          Người tạo:{" "}
+          <strong
+            style={{
+              cursor: "pointer",
+              color: "blue",
+              textDecoration: "underline",
+            }}
+            onClick={() =>
+              navigate(`/questionfile/findbyuser/${questionFile.createdBy._id}`)
+            }
+          >
+            {questionFile.createdBy.userName || "Không rõ"}
+          </strong>
+        </p>
       </Header>
 
       <ReportModal
@@ -224,7 +242,7 @@ const QuestionFileDetail = () => {
           </button>
         </Pagination>
       )}
-      <ToastContainer 
+      <ToastContainer
         position="top-right"
         autoClose={3000}
         hideProgressBar={false}

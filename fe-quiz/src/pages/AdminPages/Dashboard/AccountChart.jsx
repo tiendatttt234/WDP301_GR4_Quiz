@@ -57,7 +57,7 @@ export default function Chart() {
   return (
     <div className="chart-container">
       <div className="chart-header">
-        <h3>Account Statistics</h3>
+       
         <Dropdown overlay={menu}>
           <a onClick={(e) => e.preventDefault()} className="period-selector">
             <Space>
@@ -69,8 +69,8 @@ export default function Chart() {
       </div>
 
       <div className="chart-legend">
-        <LegendItem color="#8884d8" label="New Users" />
-        <LegendItem color="#4ecdc4" label="Premium Users" />
+        <LegendItem color="#8884d8" label="Tài khoản mới" />
+        <LegendItem color="#4ecdc4" label="Tài khoản trả phí" />
       </div>
 
       <div className="chart-wrapper">

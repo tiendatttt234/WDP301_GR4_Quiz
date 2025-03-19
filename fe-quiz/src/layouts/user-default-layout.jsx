@@ -3,7 +3,7 @@ import React from "react";
 import { Outlet } from "react-router-dom";
 import { Layout } from "antd";
 import UserHeader from "../components/Header/Header";
-
+import UserFooter from "../components/Footer/Footer";
 
 const { Header, Content, Footer } = Layout;
 
@@ -47,8 +47,9 @@ const UserDefaultPage = () => {
           padding: "10px 0",
         }}
       >
-        {/* <UserFooter /> */}
       </Footer>
+              <UserFooter />
+
     </Layout>
   );
 };

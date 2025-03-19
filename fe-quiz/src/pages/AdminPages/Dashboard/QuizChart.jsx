@@ -63,7 +63,6 @@ export default function QuizChart() {
   return (
     <div className="chart-container">
       <div className="chart-header">
-        <h3>Quiz Statistics</h3>
         <Dropdown overlay={menu}>
           <a onClick={(e) => e.preventDefault()} className="period-selector">
             <Space>

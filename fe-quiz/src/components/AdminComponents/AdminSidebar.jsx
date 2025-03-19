@@ -17,7 +17,7 @@ const AdminSidebar = ({ collapsed }) => {
 
   return (
     <div className={`sidebar ${collapsed ? "sidebar-collapsed" : ""}`}>
-      <div className="sidebar-title">{collapsed ? "" : "Management"}</div>
+      <div className="sidebar-title">{collapsed ? "" : ""}</div>
 
       <Menu
         mode="inline"
@@ -35,12 +35,12 @@ const AdminSidebar = ({ collapsed }) => {
         <Menu.Item key="/admin/questionfile" icon={<FolderOutlined />}>
           <Link to="/admin/questionfile/list">{collapsed ? "" : "Question File"}</Link>
         </Menu.Item>
-        <Menu.Item key="/admin/users" icon={<UserOutlined />}>
-          <Link to="/admin/users">{collapsed ? "" : "Users"}</Link>
+        <Menu.Item key="/admin/accounts" icon={<UserOutlined />}>
+          <Link to="/admin/accounts">{collapsed ? "" : "Account"}</Link>
         </Menu.Item>
-        <Menu.Item key="/admin/blogs" icon={<FileTextOutlined />}>
+        {/* <Menu.Item key="/admin/blogs" icon={<FileTextOutlined />}>
           <Link to="/admin/blogs">{collapsed ? "" : "Blogs"}</Link>
-        </Menu.Item>
+        </Menu.Item> */}
         <Menu.Item key="/admin/settings" icon={< ToolOutlined />}>
           <Link to="/admin/settings">{collapsed ? "" : "Settings"}</Link>
         </Menu.Item>

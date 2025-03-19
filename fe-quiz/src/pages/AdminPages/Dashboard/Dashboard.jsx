@@ -55,25 +55,25 @@ const Dashboard = () => {
         ) : stats ? (
           <>
             <StatCard
-              title="Total Accounts"
+              title="Total Account"
               value={stats.totalUsers.count}
               change={stats.totalUsers.change}
               icon={<Users className="stat-icon" />}
             />
             <StatCard
-              title="New Accounts"
+              title="New Account"
               value={stats.newUsers.count}
               change={stats.newUsers.change}
               icon={<UserPlus className="stat-icon" />}
             />
             <StatCard
-              title="Premium Accounts"
+              title="Premium Account"
               value={stats.premiumUsers.count}
               change={stats.premiumUsers.change}
               icon={<Crown className="stat-icon" />}
             />
             <StatCard
-              title="Total Flashcards"
+              title="Question File"
               value={stats.totalQuizzes.count}
               change={stats.totalQuizzes.change}
               icon={<FileText className="stat-icon" />}
@@ -85,36 +85,21 @@ const Dashboard = () => {
       </div>
 
       <div className="tabs-container">
-        <div className="tabs-header">
-          <button
-            className={`tab-button ${activeTab === "charts" ? "active" : ""}`}
-            onClick={() => setActiveTab("charts")}
-          >
-            Charts
-          </button>
-          <button
-            className={`tab-button ${activeTab === "analytics" ? "active" : ""}`}
-            onClick={() => setActiveTab("analytics")}
-          >
-            Analytics
-          </button>
-        </div>
-
         <div className="tab-content">
           {activeTab === "charts" && (
             <div className="charts-container">
               {/* Two-column layout for Account and Quiz charts */}
               <div className="charts-grid">
-                <ChartContainer title="Account Chart" description="shows the number of new and premium accounts">
+                <ChartContainer title="Tài Khoản" description="Hiển thị số tài khoản mới và số lượng tài khoản trả phí">
                   {loading ? <ChartSkeleton /> : <Chart />}
                 </ChartContainer>
-                <ChartContainer title="Flashcard Chart" description="shows the number of new flashcards created">
+                <ChartContainer title="Bộ câu hỏi" description="Hiển thị số lượng bộ câu hỏi được tạo">
                   {loading ? <ChartSkeleton /> : <QuizChart />}
                 </ChartContainer>
               </div>
 
               {/* Full-width container for Revenue chart */}
-              <ChartContainer title="Revenue Chart" description="shows revenue and transaction statistics">
+              <ChartContainer title="Doanh Thu" description="Hiển thị doanh thu theo thời gian">
                 <RevenueChart />
               </ChartContainer>
             </div>
@@ -123,10 +108,10 @@ const Dashboard = () => {
           {activeTab === "analytics" && (
             <div className="analytics-card">
               <div className="card-header">
-                <h3>Detailed Analytics</h3>
+                <h3>Phân Tích Chi Tiết</h3>
               </div>
               <div className="card-content">
-                <p className="coming-soon-message">Detailed analytics will be available soon</p>
+                <p className="coming-soon-message">Phân tích chi tiết đang phát triển thêm</p>
               </div>
             </div>
           )}

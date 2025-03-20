@@ -14,13 +14,13 @@ import ForgotPassword from "../components/authen/forgotPassword/ForgotPassword";
 import ResetPass from "../components/authen/forgotPassword/ResetPassword";
 import NotFoundPage from "../pages/NotFound/NotFoundPage";
 import UpgradePage from "../pages/Upgrade/UpgradePage";
+import PaymentSuccess from "../pages/Payment/PaymentSuccess";
 
 
 export const userRoutes = [
     { path: "", element: <HomePage /> },
-    { path: "flashcards", element: <FlashCards /> }, 
     { path: "attempt/:id", element: <QuizAttempt /> }, 
-    { path: "result", element: <QuizResult /> }, 
+    { path: "quiz/result", element: <QuizResult /> }, 
     { path: "profile/:id", element: <Profile /> }, 
     { path: "questionfile/create", element: <QuestionCreation /> },
     { path: "questionfile/getAll", element: <ListQuestion /> }, 
@@ -32,6 +32,7 @@ export const userRoutes = [
     { path: "forgot-password", element: <ForgotPassword/> },
     { path: "reset-password/:id/:token", element: <ResetPass/>},
     { path: "upgrade", element: <UpgradePage/>},
+    { path: "reset-password/:id/:token", element: <ResetPass/>},
+    { path: "payment/vnpay/return", element: <PaymentSuccess/> },
     { path: "*", element: <NotFoundPage/>},
-    { path: "reset-password/:id/:token", element: <ResetPass/>}
   ];

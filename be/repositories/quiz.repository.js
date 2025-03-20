@@ -11,12 +11,14 @@ async function findQuizByIdFilter(id) {
     return await Quiz.findById(id)
     .populate({
         path: "questionFile",
-        select:"_id name arrayQuestion"
+        select:"_id name arrayQuestion createdBy"
     })
         .lean();
 }
 
 async function createQuiz(quizData) {
+    console.log("quiz err", quizData);
+    
     return await Quiz.create(quizData);
 }
 

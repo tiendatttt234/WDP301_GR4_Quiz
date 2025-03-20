@@ -74,7 +74,7 @@ async function createQuiz({ name, user, questionFileId, questionCount }) {
   
   // Validate question count
   if (questionCount > questionFile.arrayQuestion.length) {
-    throw new Error("Question count exceeds the number of questions in the question file"); // Thay vì dùng res
+    throw new Error("Question count exceeds the number of questions in the question file");
   }
 
   

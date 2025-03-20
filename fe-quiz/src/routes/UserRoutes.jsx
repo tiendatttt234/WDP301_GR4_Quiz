@@ -19,7 +19,6 @@ import PaymentSuccess from "../pages/Payment/PaymentSuccess";
 
 export const userRoutes = [
     { path: "", element: <HomePage /> },
-    { path: "flashcards", element: <FlashCards /> }, 
     { path: "attempt/:id", element: <QuizAttempt /> }, 
     { path: "quiz/result", element: <QuizResult /> }, 
     { path: "profile/:id", element: <Profile /> }, 

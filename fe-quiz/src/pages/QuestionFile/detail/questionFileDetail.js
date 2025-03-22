@@ -56,10 +56,10 @@ const QuestionFileDetail = () => {
           const favoriteResponse = await axios.get(
             `http://localhost:9999/favorite/user/${currentUserId}`
           );
-          const existingFavorite = favoriteResponse.data.data.find(fav => 
-            fav.sharedQuestionFile.some(qf => qf._id === id)
+          const existingFavorite = favoriteResponse.data.data.find((fav) =>
+            fav.sharedQuestionFile.some((qf) => qf._id === id)
           );
-          
+
           if (existingFavorite) {
             setIsSaved(true);
             setFavoriteId(existingFavorite._id);
@@ -115,21 +115,26 @@ const QuestionFileDetail = () => {
   const handleSave = async () => {
     try {
       const userId = localStorage.getItem("id");
-      if (!userId) {
+      const token = localStorage.getItem("accessToken");
+      if (!userId || !token) {
         toast.error("Vui lòng đăng nhập để lưu học phần");
         return;
       }
-
       const favoriteData = {
         user: userId,
-        sharedQuestionFile: [id]
+        sharedQuestionFile: [id],
       };
 
       const response = await axios.post(
         "http://localhost:9999/favorite/create",
-        favoriteData
+        favoriteData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
-      
+
       setIsSaved(true);
       setFavoriteId(response.data.data._id);
       toast.success("Đã lưu học phần thành công!");
@@ -140,7 +145,18 @@ const QuestionFileDetail = () => {
 
   const handleUnsave = async () => {
     try {
-      await axios.delete(`http://localhost:9999/favorite/delete/${favoriteId}`);
+      const token = localStorage.getItem("accessToken");
+      if (!token) {
+        toast.error("Vui lòng đăng nhập để thực hiện thao tác này");
+        return;
+      }
+      await axios.delete(`http://localhost:9999/favorite/delete/${favoriteId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       setIsSaved(false);
       setFavoriteId(null);
       toast.success("Đã hủy lưu học phần thành công!");
@@ -224,7 +240,7 @@ const QuestionFileDetail = () => {
           </button>
         </Pagination>
       )}
-      <ToastContainer 
+      <ToastContainer
         position="top-right"
         autoClose={3000}
         hideProgressBar={false}

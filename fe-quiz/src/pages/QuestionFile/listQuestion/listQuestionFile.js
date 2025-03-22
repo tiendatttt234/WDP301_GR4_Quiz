@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { ToastContainer, toast } from "react-toastify"; // Thêm ToastContainer và toast
+import "react-toastify/dist/ReactToastify.css";
 import { Search, Trash2, Pencil } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -32,13 +34,19 @@ const ListQuestion = () => {
     const fetchQuestionFiles = async () => {
       try {
         const userId = localStorage.getItem("id");
-        if (!userId) {
+        const token = localStorage.getItem("accessToken");
+        if (!userId || !token) {
           console.error("Không tìm thấy userId trong localStorage");
           return;
         }
 
         const response = await axios.get(
-          `http://localhost:9999/questionFile/getAll/${userId}`
+          `http://localhost:9999/questionFile/getAll/${userId}`, // Sửa URL để khớp với route
+          {
+            headers: {
+              Authorization: `Bearer ${token}`, // Thêm token vào header
+            },
+          }
         );
         console.log("API Response:", response.data);
         setQuestionSets(response.data.data || []);
@@ -58,13 +66,20 @@ const ListQuestion = () => {
 
       try {
         const userId = localStorage.getItem("id");
-        if (!userId) {
+        const token = localStorage.getItem("accessToken");
+
+        if (!userId || !token) {
           console.error("Không tìm thấy userId trong localStorage");
           return;
         }
 
         const response = await axios.get(
-          `http://localhost:9999/favorite/user/${userId}`
+          `http://localhost:9999/favorite/user/${userId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`, // Thêm token vào header
+            },
+          }
         );
         console.log("Favorite Response:", response.data);
         setFavorites(response.data.data || []);
@@ -109,7 +124,16 @@ const ListQuestion = () => {
     );
     if (confirmDelete) {
       try {
-        await axios.delete(`http://localhost:9999/questionFile/delete/${id}`);
+        const token = localStorage.getItem("accessToken");
+        if (!token) {
+          toast.error("Vui lòng đăng nhập để thực hiện thao tác này");
+          return;
+        }
+        await axios.delete(`http://localhost:9999/questionFile/delete/${id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         setQuestionSets(questionSets.filter((qf) => qf._id !== id));
         alert("Xóa học phần thành công!");
       } catch (error) {
@@ -118,6 +142,14 @@ const ListQuestion = () => {
       }
     }
   };
+  const handleCreateNewQuestionSet = () => {
+    const token = localStorage.getItem("accessToken"); // Sử dụng accessToken
+    if (!token) {
+      toast.error("Bạn cần đăng nhập để tạo câu hỏi và ôn luyện"); // Chuyển hướng đến trang đăng nhập sau 2 giây
+      return;
+    }
+    navigate("/questionfile/create"); // Nếu đã đăng nhập, chuyển hướng đến trang tạo học phần
+  };
 
   const handleDeleteFavorite = async (favoriteId) => {
     const confirmDelete = window.confirm(
@@ -125,7 +157,17 @@ const ListQuestion = () => {
     );
     if (confirmDelete) {
       try {
-        await axios.delete(`http://localhost:9999/favorite/${favoriteId}`);
+        const token = localStorage.getItem("accessToken");
+        if (!token) {
+          toast.error("Vui lòng đăng nhập để thực hiện thao tác này");
+          return;
+        }
+
+        await axios.delete(`http://localhost:9999/favorite/${favoriteId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         setFavorites(favorites.filter((fav) => fav._id !== favoriteId));
         alert("Đã xóa khỏi danh sách yêu thích!");
       } catch (error) {
@@ -137,6 +179,7 @@ const ListQuestion = () => {
 
   return (
     <Container>
+      <ToastContainer />
       <Header>
         <Title>Thư viện của bạn</Title>
         <TabMenu>
@@ -176,7 +219,7 @@ const ListQuestion = () => {
           {activeTab === "hocPhan" ? (
             <>
               <p>Bạn hiện chưa có học phần, hãy tạo mới ngay!</p>
-              <CreateButton onClick={() => navigate("/questionfile/create")}>
+              <CreateButton onClick={handleCreateNewQuestionSet}>
                 Tạo học phần mới
               </CreateButton>
             </>
@@ -208,12 +251,14 @@ const ListQuestion = () => {
                   </QuestionDetails>
                   <QuestionTitle>{qf.name}</QuestionTitle>
                 </div>
-                <DeleteButton
+                {!isFavorite && (
+                  <DeleteButton
                     onClick={() => handleUpdateClick(qf._id)}
                     style={{ marginRight: "10px" }}
                   >
                     <Pencil size={20} />
-                </DeleteButton>
+                  </DeleteButton>
+                )}
                 <DeleteButton
                   onClick={() =>
                     isFavorite

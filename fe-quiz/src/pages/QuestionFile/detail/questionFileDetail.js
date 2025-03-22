@@ -1,8 +1,7 @@
-// QuestionFileDetail.jsx
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { BookMarked, AlertTriangle, BookmarkX, FileText } from "lucide-react"; // Added FileText for quiz icon
-import { useParams } from "react-router-dom";
+import { BookMarked, AlertTriangle, BookmarkX, FileText, BookOpen } from "lucide-react";
+import { useParams, useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Flashcards from "../../Quiz/FlashCard/FlashCards.jsx";
@@ -21,18 +20,19 @@ import {
   HeaderTitleWrapper,
 } from "./styles.js";
 import ReportModal from "./reportModal.js";
-import QuizCreationModal from "../../Quiz/QuizCreateModal/QuizCreationModal.jsx"
+import QuizCreationModal from "../../Quiz/QuizCreateModal/QuizCreationModal.jsx";
 
 const QUESTIONS_PER_PAGE = 30;
 
 const QuestionFileDetail = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [questionFile, setQuestionFile] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isQuizModalOpen, setIsQuizModalOpen] = useState(false); // New state for quiz modal
+  const [isQuizModalOpen, setIsQuizModalOpen] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
   const [favoriteId, setFavoriteId] = useState(null);
   const [isOwnQuestionFile, setIsOwnQuestionFile] = useState(false);
@@ -92,28 +92,6 @@ const QuestionFileDetail = () => {
     }
   };
 
-  if (loading)
-    return (
-      <Container>
-        <ErrorMessage>Đang tải...</ErrorMessage>
-      </Container>
-    );
-  if (error)
-    return (
-      <Container>
-        <ErrorMessage>{error}</ErrorMessage>
-      </Container>
-    );
-  if (!questionFile) return null;
-
-  const totalQuestions = questionFile.arrayQuestion.length;
-  const totalPages = Math.ceil(totalQuestions / QUESTIONS_PER_PAGE);
-  const startIndex = (currentPage - 1) * QUESTIONS_PER_PAGE;
-  const paginatedQuestions = questionFile.arrayQuestion.slice(
-    startIndex,
-    startIndex + QUESTIONS_PER_PAGE
-  );
-
   const handleSave = async () => {
     try {
       const userId = localStorage.getItem("id");
@@ -151,10 +129,37 @@ const QuestionFileDetail = () => {
     }
   };
 
+  const handleStartStudy = () => {
+    // Điều hướng đến trang học tập, không cần kiểm tra đăng nhập
+    navigate(`/study/${id}`);
+  };
+
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
-  const openQuizModal = () => setIsQuizModalOpen(true); // Function to open quiz modal
-  const closeQuizModal = () => setIsQuizModalOpen(false); // Function to close quiz modal
+  const openQuizModal = () => setIsQuizModalOpen(true);
+  const closeQuizModal = () => setIsQuizModalOpen(false);
+
+  if (loading)
+    return (
+      <Container>
+        <ErrorMessage>Đang tải...</ErrorMessage>
+      </Container>
+    );
+  if (error)
+    return (
+      <Container>
+        <ErrorMessage>{error}</ErrorMessage>
+      </Container>
+    );
+  if (!questionFile) return null;
+
+  const totalQuestions = questionFile.arrayQuestion.length;
+  const totalPages = Math.ceil(totalQuestions / QUESTIONS_PER_PAGE);
+  const startIndex = (currentPage - 1) * QUESTIONS_PER_PAGE;
+  const paginatedQuestions = questionFile.arrayQuestion.slice(
+    startIndex,
+    startIndex + QUESTIONS_PER_PAGE
+  );
 
   return (
     <Container>
@@ -162,6 +167,10 @@ const QuestionFileDetail = () => {
         <HeaderTitleWrapper>
           <Title>{questionFile.name}</Title>
           <HeaderActions>
+            <button onClick={handleStartStudy}>
+              <BookOpen size={20} color="rgb(96, 99, 103)" />
+              <span>Học</span>
+            </button>
             {!isOwnQuestionFile && (
               <>
                 <button onClick={isSaved ? handleUnsave : handleSave}>
@@ -182,7 +191,6 @@ const QuestionFileDetail = () => {
                   <span>Báo cáo</span>
                 </button>
               </>
-
             )}
             <button onClick={openQuizModal}>
               <FileText size={20} color="rgb(96, 99, 103)" />

@@ -8,7 +8,10 @@ const {
     Quiz,
     QuizResult,
     Role,
-    Favorite
+    Favorite,
+    StudySession,
+    Transaction,
+    Premium
 } = require("../models");
 
 //khai bao doi tuong CSDL
@@ -22,8 +25,9 @@ Db.Quiz = Quiz;
 Db.QuizResult = QuizResult;
 Db.Role = Role;
 Db.Favorite = Favorite;
-
-
+Db.StudySession = StudySession;
+Db.Transaction = Transaction;
+Db.Premium = Premium;
 Db.connectDB = async() => {
     try {
         await mongoose.connect(process.env.MONGODB_URI)

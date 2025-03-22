@@ -9,7 +9,7 @@ const { quizRouter, questionBankRouter, exportRouter,notificationRouter, reportR
 
 const accountRouter = require("./routes/account.router");
 const adminRouter = require("./routes/admin.routes");
-
+const studyRouter = require("./routes/studyRoutes");
 const app = express();
 
 // Middleware
@@ -72,7 +72,7 @@ app.use('/favorite', favoriteRouter)
 app.use("/api/reports", reportRouter);
 app.use("/package", premiumRouter);
 app.use("/transaction", transactionRouter);
-
+app.use("/learning", studyRouter);
 
 // Middleware xử lý lỗi
 app.use((err, req, res, next) => {

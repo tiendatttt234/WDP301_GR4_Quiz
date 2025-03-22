@@ -218,7 +218,7 @@ const Header = ({ onSearchResults }) => {
   );
 
   const topicsMenu = (
-    <Menu className="custom-menu">
+    <Menu className="custom-menu" style={{textDecoration: "none"}}>
       <Menu.Item key="1">
         <Link to="/user/quizHistory">Các bài quiz đã làm</Link>
       </Menu.Item>

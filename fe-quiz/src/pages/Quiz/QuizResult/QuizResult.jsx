@@ -1,54 +1,58 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
-import { Pie } from "react-chartjs-2";
-import { Button } from "react-bootstrap";
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
-
-// Register Chart.js components
-ChartJS.register(ArcElement, Tooltip, Legend);
+import { Container, Card, Button } from "react-bootstrap";
+import { useLocation, useNavigate } from "react-router-dom";
+import "./QuizResult.css";
 
 export default function QuizResult() {
+  const { state } = useLocation(); // Lấy dữ liệu từ state
   const navigate = useNavigate();
+  const { quizResult, quizData, userAnswers } = state || {};
 
-  // Dữ liệu cứng
-  const results = {
-    newQuizResult: {
-      correctAnswersCount: 7,
-      incorrectAnswersCount: 3,
-      createdAt: "2025-02-25 14:30:00",
-    },
-  };
-
-  const correctCount = results.newQuizResult.correctAnswersCount;
-  const incorrectCount = results.newQuizResult.incorrectAnswersCount;
-  const totalCount = correctCount + incorrectCount;
-
-  // Pie chart data
-  const data = {
-    labels: ["Correct", "Incorrect"],
-    datasets: [
-      {
-        data: [correctCount, incorrectCount],
-        backgroundColor: ["#36A2EB", "#FF6384"],
-      },
-    ],
-  };
+  if (!quizResult || !quizData || !userAnswers) {
+    return <p>Không có dữ liệu kết quả để hiển thị!</p>;
+  }
 
   return (
-    <div className="quiz-result-page text-center">
-      <h2>Your Quiz Results</h2>
-      <p>
-        Correct Answers: {correctCount} / {totalCount}
-      </p>
-      <p>Time taken: {results.newQuizResult.createdAt}</p>
-      <div style={{ width: "300px", margin: "auto" }}>
-        <Pie data={data} />
+    <Container>
+      <div className="result-container">
+        <h2>Kết quả bài kiểm tra</h2>
+        <p>
+          Bạn đã làm đúng {quizResult.correctCount} trên {quizData.questions.length} câu.
+        </p>
+
+        <div className="result-details">
+          {quizData.questions.map((question, index) => {
+            const userAnswer = userAnswers[index];
+            const isMAQ = question.type === "MAQ";
+            const selectedAnswers = isMAQ
+              ? (userAnswer || []).map((id) =>
+                  question.answers.find((ans) => ans.answerId === id)?.text
+                )
+              : question.answers.find((ans) => ans.answerId === userAnswer)?.text || "Không chọn";
+
+            return (
+              <Card key={question.questId} className="result-card">
+                <Card.Header>
+                  <h5>{question.content}</h5>
+                </Card.Header>
+                <Card.Body>
+                  <p>
+                    <strong>Câu trả lời của bạn:</strong>{" "}
+                    {isMAQ ? selectedAnswers.join(", ") : selectedAnswers}
+                  </p>
+                  {/* Nếu API trả về đáp án đúng, bạn có thể thêm vào đây */}
+                </Card.Body>
+              </Card>
+            );
+          })}
+        </div>
+
+        <div className="back-button">
+          <Button variant="secondary" onClick={() => navigate("/")}>
+            Quay lại trang chủ
+          </Button>
+        </div>
       </div>
-      <div className="mt-4">
-        <Button variant="primary" onClick={() => navigate(`/user/viewques`)}>
-          Go back to your folder
-        </Button>
-      </div>
-    </div>
+    </Container>
   );
 }

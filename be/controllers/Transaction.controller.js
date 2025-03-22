@@ -27,12 +27,23 @@ async function handleReturn(req, res) {
   try {
     const result = await TransactionService.verifyReturnUrl(req.query);
     if (result.success) {
-      res.send('Thanh toán thành công! Tài khoản của bạn đã được nâng cấp lên Prime.');
+      // Chuẩn bị dữ liệu để gửi về client qua query parameters
+      const amount = (parseInt(req.query.vnp_Amount) / 100).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+      const transactionDate = req.query.vnp_PayDate;
+      const formattedDate = `${transactionDate.slice(6, 8)}/${transactionDate.slice(4, 6)}/${transactionDate.slice(0, 4)} ${transactionDate.slice(8, 10)}:${transactionDate.slice(10, 12)}:${transactionDate.slice(12, 14)}`;
+      const transactionId = req.query.vnp_TransactionNo;
+      const orderId = req.query.vnp_TxnRef;
+
+      // Redirect về client với thông tin giao dịch
+      const redirectUrl = `http://localhost:3000/payment/vnpay/return?success=true&amount=${encodeURIComponent(amount)}&transactionDate=${encodeURIComponent(formattedDate)}&transactionId=${transactionId}&orderId=${orderId}`;
+      res.redirect(redirectUrl);
     } else {
-      res.send('Thanh toán thất bại! Vui lòng thử lại.');
+      // Redirect về client với thông báo lỗi
+      const redirectUrl = `http://localhost:3000/payment/vnpay/return?success=false&message=${encodeURIComponent('Thanh toán thất bại! Vui lòng thử lại.')}`;
+      res.redirect(redirectUrl);
     }
   } catch (error) {
-    res.status(500).send('Lỗi xử lý return URL');
+    res.redirect(`http://localhost:3000/payment/vnpay/return?success=false&message=${encodeURIComponent('Lỗi xử lý return URL')}`);
   }
 }
 

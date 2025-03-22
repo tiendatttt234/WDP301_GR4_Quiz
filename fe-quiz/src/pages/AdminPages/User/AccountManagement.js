@@ -34,18 +34,18 @@ function AccountManagement() {
   // Search functionality
   const filteredAccounts = accounts.filter(
     (account) =>
-      account.userName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      account.email.toLowerCase().includes(searchTerm.toLowerCase()),
+      (account?.userName?.toLowerCase() || "").includes(searchTerm.toLowerCase()) ||
+      (account?.email?.toLowerCase() || "").includes(searchTerm.toLowerCase()),
   )
 
   // Sort functionality
   const sortedAccounts = [...filteredAccounts].sort((a, b) => {
     if (sortBy === "name") {
-      return a.userName.localeCompare(b.userName)
+      return (a?.userName || "").localeCompare(b?.userName || "")
     } else if (sortBy === "date") {
-      return new Date(b.createdAt) - new Date(a.createdAt)
+      return new Date(b?.createdAt || 0) - new Date(a?.createdAt || 0)
     } else if (sortBy === "type") {
-      return (b.isPrime ? 1 : 0) - (a.isPrime ? 1 : 0)
+      return (b?.isPrime ? 1 : 0) - (a?.isPrime ? 1 : 0)
     }
     return 0
   })

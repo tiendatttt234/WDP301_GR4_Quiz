@@ -3,7 +3,7 @@ import React from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import { Layout } from "antd";
 import UserHeader from "../components/Header/Header";
-import UserFooter from "../components/Footer/Footer";
+// import UserFooter from "../components/Footer/Footer";
 
 const { Header, Content, Footer } = Layout;
 

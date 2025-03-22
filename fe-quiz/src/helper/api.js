@@ -1,8 +1,7 @@
 import axios from "axios";
 
-// Tạo instance axios với cấu hình mặc định
 const axiosInstance = axios.create({
-  baseURL: "http://localhost:9999/learning", // Điều chỉnh baseURL theo cấu hình của bạn
+  baseURL: "http://localhost:9999/learning", 
 });
 
 // Interceptor để thêm token vào header
@@ -18,14 +17,14 @@ axiosInstance.interceptors.request.use(
 );
 
 export const getStudySession = async (questionFileId, reset = false) => {
-  const response = await axiosInstance.get(`/study/${questionFileId}`, {
+  const response = await axiosInstance.get(`/${questionFileId}`, { 
     params: { reset },
   });
   return response.data;
 };
 
 export const submitAnswer = async (questionFileId, questionId, selectedAnswers) => {
-  const response = await axiosInstance.post(`/study/answer`, {
+  const response = await axiosInstance.post(`/submit`, { 
     questionFileId,
     questionId,
     selectedAnswers,
@@ -34,6 +33,11 @@ export const submitAnswer = async (questionFileId, questionId, selectedAnswers) 
 };
 
 export const endRound = async (questionFileId) => {
-  const response = await axiosInstance.post(`/study/end-round/${questionFileId}`);
+  const response = await axiosInstance.post(`/end-round/${questionFileId}`);
+  return response.data;
+};
+
+export const resetStudySession = async (questionFileId) => { // Thêm hàm reset
+  const response = await axiosInstance.post(`/reset/${questionFileId}`);
   return response.data;
 };

@@ -1,10 +1,10 @@
 const express = require("express");
-const { getStudySession, submitAnswer, endRound } = require("../controllers/studyController");
+const { getStudySession, submitAnswer, endRound, resetStudySession } = require("../controllers/studyController");
 
 const router = express.Router();
 
-router.get("/study/:questionFileId", getStudySession);
-router.post("/study/answer", submitAnswer);
-router.post("/study/end-round/:questionFileId", endRound);
-
+router.get("/:questionFileId", getStudySession);
+router.post("/submit", submitAnswer);
+router.post("/end-round/:questionFileId", endRound);
+router.post("/reset/:questionFileId", resetStudySession);
 module.exports = router;

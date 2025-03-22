@@ -74,7 +74,6 @@ app.use("/package", premiumRouter);
 app.use("/transaction", transactionRouter);
 app.use("/learning", studyRouter);
 
-
 // Middleware xử lý lỗi
 app.use((err, req, res, next) => {
   console.error(err.stack);

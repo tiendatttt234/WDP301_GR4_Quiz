@@ -20,7 +20,7 @@ exports.getStudySession = async (req, res) => {
 exports.submitAnswer = async (req, res) => {
   try {
     const { questionFileId, questionId, selectedAnswers } = req.body;
-    const userId = req.user ? req.user._id : "guest"; // Đúng: Lưu _id nếu đăng nhập, "guest" nếu không
+    const userId = req.user ? req.user._id : "guest";
 
     const result = await StudyService.submitAnswer(userId, questionFileId, questionId, selectedAnswers);
     res.status(200).json(result);
@@ -28,13 +28,24 @@ exports.submitAnswer = async (req, res) => {
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
-
 exports.endRound = async (req, res) => {
   try {
     const { questionFileId } = req.params;
-    const userId = req.user ? req.user._id : "guest"; // Đúng: Lưu _id nếu đăng nhập, "guest" nếu không
+    const userId = req.user ? req.user._id : "guest";
 
     const result = await StudyService.endRound(userId, questionFileId);
+    res.status(200).json(result);
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+exports.resetStudySession = async (req, res) => {
+  try {
+    const { questionFileId } = req.params;
+    const userId = req.user ? req.user._id : "guest";
+
+    const result = await StudyService.resetStudySession(userId, questionFileId);
     res.status(200).json(result);
   } catch (error) {
     res.status(500).json({ message: "Server error", error: error.message });

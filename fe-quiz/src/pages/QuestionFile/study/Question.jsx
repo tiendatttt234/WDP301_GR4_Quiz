@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import styled from "styled-components";
 
 const QuestionContainer = styled.div`
@@ -215,7 +215,7 @@ const SelectedAnswersPreview = styled.div`
 const CheckIcon = () => <IconContainer isCorrect={true}>✓</IconContainer>;
 const XIcon = () => <IconContainer isCorrect={false}>✗</IconContainer>;
 
-const Question = ({ question, onSubmitAnswer, onNextQuestion }) => {
+const Question = ({ question, onSubmitAnswer, onNextQuestion, onDontKnow }) => {
   const [selectedAnswers, setSelectedAnswers] = useState([]);
   const [result, setResult] = useState(null);
   const [showCorrectAnswer, setShowCorrectAnswer] = useState(false);
@@ -287,6 +287,7 @@ const Question = ({ question, onSubmitAnswer, onNextQuestion }) => {
   const handleDontKnow = () => {
     setShowCorrectAnswer(true);
     setSubmitted(true);
+    onDontKnow(question); // Gửi tín hiệu để di chuyển câu hỏi về cuối
     setTimeout(() => {
       onNextQuestion();
       resetQuestion();

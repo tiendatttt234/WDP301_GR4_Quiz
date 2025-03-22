@@ -4,7 +4,7 @@ import ListQuestion from "../pages/QuestionFile/listQuestion/listQuestionFile";
 import QuestionFileDetail from "../pages/QuestionFile/detail/questionFileDetail";
 import StudySession from "../pages/QuestionFile/study/StudySession";
 import HomePage from "../pages/Homepage/Homepage";
-import FlashCards from "../pages/Quiz/FlashCard/FlashCards";
+// import FlashCards from "../pages/Quiz/FlashCard/FlashCards";
 import QuizAttempt from "../pages/Quiz/QuizAttempt/QuizAttempt";
 import QuizResult from "../pages/Quiz/QuizResult/QuizResult";
 import Profile from "../components/authen/Profile/Profile";

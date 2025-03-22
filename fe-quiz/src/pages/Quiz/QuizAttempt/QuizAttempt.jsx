@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Card, Container, Button } from "react-bootstrap";
-import { useParams, useNavigate } from "react-router-dom"; // Thêm useNavigate
+import { useParams } from "react-router-dom"; // Thêm useNavigate
 import QuestionComponent from "../QuestionComponent/QuestionComponent";
 import "./QuizAttempt.css";
 
 export default function QuizAttempt() {
   const { id: quizId } = useParams();
-  const navigate = useNavigate(); // Khởi tạo useNavigate
+  // const navigate = useNavigate(); // Khởi tạo useNavigate
   const [quizData, setQuizData] = useState(null);
   const [userAnswers, setUserAnswers] = useState([]);
   const questionRefs = useRef([]);

@@ -1,31 +1,24 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react"; // Thêm useRef
 import { useParams, useNavigate } from "react-router-dom";
-import { getStudySession, submitAnswer, endRound } from "../../../helper/api";
+import { getStudySession, submitAnswer, endRound, resetStudySession } from "../../../helper/api";
 import ProgressBar from "./ProgressBar";
 import Question from "./Question";
 import RoundSummary from "./RoundSummary";
 import styled from "styled-components";
+import { FaCog, FaTimes, FaRedo, FaRandom } from "react-icons/fa";
 
 const PageContainer = styled.div`
   min-height: 100vh;
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  background: #ffffff;
   padding: 20px;
   position: relative;
   overflow: hidden;
 
   &::before {
     content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-image: 
-      radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.2) 0%, transparent 50%),
-      radial-gradient(circle at 75% 75%, rgba(255, 255, 255, 0.2) 0%, transparent 50%);
-    z-index: 0;
+    display: none;
   }
 `;
 
@@ -37,50 +30,104 @@ const Container = styled.div`
   z-index: 1;
 `;
 
-const Header = styled.div`
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 30px;
-  background: rgba(255, 255, 255, 0.9);
+const ContentBlock = styled.div`
+  background: #ffffff;
   padding: 20px;
   border-radius: 12px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  
-  @media (min-width: 768px) {
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
+  border-left: 4px solid #4299e1;
+`;
+
+const HeaderContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
+  position: relative;
+`;
+
+const FileName = styled.h2`
+  font-size: 24px;
+  font-weight: 700;
+  color: #2d3748;
+  cursor: pointer;
+  text-align: center;
+
+  &:hover {
+    color: #4299e1;
   }
 `;
 
-const Title = styled.h1`
-  font-size: 32px;
-  font-weight: bold;
-  margin-bottom: 16px;
-  color: #2a4365;
+const IconContainer = styled.div`
+  position: absolute;
+  right: 0;
+  display: flex;
+  gap: 10px;
+`;
+
+const IconButton = styled.button`
+  background: none;
+  border: none;
+  font-size: 16px;
+  color: #a0aec0;
+  cursor: pointer;
+  transition: color 0.2s ease;
   position: relative;
-  
-  &::after {
-    content: "";
-    position: absolute;
-    bottom: -8px;
-    left: 0;
-    width: 60px;
-    height: 4px;
-    background: linear-gradient(90deg, #4299e1, #63b3ed);
-    border-radius: 2px;
+
+  &:hover {
+    color: #4299e1;
   }
-  
-  @media (min-width: 768px) {
-    margin-bottom: 0;
+`;
+
+const SettingsMenu = styled.div`
+  position: absolute;
+  top: 30px;
+  right: 0;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+  width: 200px;
+  display: flex;
+  flex-direction: column;
+`;
+
+const MenuItem = styled.button`
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 15px;
+  background: none;
+  border: none;
+  text-align: left;
+  font-size: 14px;
+  color: #2d3748;
+  cursor: pointer;
+  transition: background 0.2s ease;
+
+  &:hover {
+    background: #edf2f7;
+  }
+
+  &:not(:last-child) {
+    border-bottom: 1px solid #e2e8f0;
+  }
+
+  svg {
+    font-size: 16px;
+    color: #4a5568;
   }
 `;
 
 const ProgressContainer = styled.div`
   width: 100%;
+  margin-bottom: 10px;
   
   @media (min-width: 768px) {
-    width: 50%;
+    width: 100%;
+    margin: 0 auto 10px auto;
   }
 `;
 
@@ -168,6 +215,11 @@ export default function StudySession() {
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isCompleted, setIsCompleted] = useState(false);
+  const [showSettingsMenu, setShowSettingsMenu] = useState(false);
+
+  // Thêm ref để tham chiếu đến dropdown và nút setting
+  const settingsMenuRef = useRef(null);
+  const settingsButtonRef = useRef(null);
 
   useEffect(() => {
     let isMounted = true;
@@ -177,15 +229,14 @@ export default function StudySession() {
 
       setIsLoading(true);
       try {
-        console.log("Fetching study session for questionFileId:", questionFileId);
         const data = await getStudySession(questionFileId);
-        console.log("Study session data:", JSON.stringify(data, null, 2));
         if (!data.questions || data.questions.length === 0) {
           throw new Error("Không có câu hỏi nào để hiển thị.");
         }
         if (isMounted) {
           setSession(data);
           setCurrentRoundQuestions(data.questions);
+          setCurrentQuestionIndex(0);
           setIsCompleted(data.completed);
           setError(null);
         }
@@ -193,7 +244,6 @@ export default function StudySession() {
         console.error("Error fetching study session:", error);
         if (isMounted) {
           setError(error.message);
-          alert(error.message);
         }
       } finally {
         if (isMounted) {
@@ -209,18 +259,36 @@ export default function StudySession() {
     };
   }, [questionFileId]);
 
+  // Thêm useEffect để xử lý click ngoài dropdown
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        settingsMenuRef.current &&
+        !settingsMenuRef.current.contains(event.target) &&
+        settingsButtonRef.current &&
+        !settingsButtonRef.current.contains(event.target)
+      ) {
+        setShowSettingsMenu(false);
+      }
+    };
+
+    if (showSettingsMenu) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showSettingsMenu]);
+
   const handleSubmitAnswer = async (questionId, selectedAnswers) => {
     try {
       const result = await submitAnswer(questionFileId, questionId, selectedAnswers);
-      console.log("Submit answer result:", JSON.stringify(result, null, 2));
-      setSession((prev) => {
-        if (!prev) return prev;
-        return {
-          ...prev,
-          progress: result.progress || { learnedCount: 0, totalQuestions: prev.totalQuestions, percentage: 0 },
-          correctAnswers: result.progress?.learnedCount || 0,
-        };
-      });
+      setSession((prev) => ({
+        ...prev,
+        progress: result.progress,
+        correctAnswers: result.progress.learnedCount,
+      }));
       return result;
     } catch (error) {
       console.error("Error submitting answer:", error);
@@ -236,30 +304,67 @@ export default function StudySession() {
       try {
         const summary = await endRound(questionFileId);
         console.log("End round summary:", JSON.stringify(summary, null, 2));
-        setRoundSummary(summary);
-        setIsCompleted(summary.allQuestionsCompleted);
+        if (!summary || !summary.roundSummary) {
+          throw new Error("Invalid round summary data");
+        }
+        const safeRoundSummary = {
+          ...summary.roundSummary,
+          questions: Array.isArray(summary.roundSummary.questions) ? summary.roundSummary.questions : [],
+        };
+        setRoundSummary(safeRoundSummary);
+        setIsCompleted(summary.allRoundsCompleted);
         setShowSummary(true);
-        setSession((prev) => {
-          if (!prev) return prev;
-          return {
-            ...prev,
-            progress: summary.progress,
-            correctAnswers: summary.progress.learnedCount,
-          };
-        });
+        setSession((prev) => ({
+          ...prev,
+          progress: summary.progress,
+          correctAnswers: summary.progress.learnedCount,
+          currentRound: summary.currentRound,
+        }));
       } catch (error) {
         console.error("Error ending round:", error);
-        alert("Có lỗi xảy ra. Vui lòng thử lại!");
+        setError("Có lỗi xảy ra khi kết thúc lượt học. Vui lòng thử lại!");
+        setShowSummary(false);
       }
     }
   };
 
-  const handleRestart = async () => {
-    console.log("Handle restart called");
+  const handleDontKnow = (question) => {
+    const updatedQuestions = [...currentRoundQuestions];
+    const currentQuestion = updatedQuestions[currentQuestionIndex];
+    updatedQuestions.splice(currentQuestionIndex, 1);
+    updatedQuestions.push(currentQuestion);
+    setCurrentRoundQuestions(updatedQuestions);
+
+    if (currentQuestionIndex >= updatedQuestions.length) {
+      handleNextQuestion();
+    }
+  };
+
+  const handleContinue = async () => {
     setIsLoading(true);
     try {
-      const data = await getStudySession(questionFileId, true);
-      console.log("Data after restart:", JSON.stringify(data, null, 2));
+      const data = await getStudySession(questionFileId);
+      if (!data.questions || data.questions.length === 0) {
+        throw new Error("Không có câu hỏi nào để hiển thị.");
+      }
+      setSession(data);
+      setCurrentRoundQuestions(data.questions);
+      setCurrentQuestionIndex(0);
+      setShowSummary(false);
+      setError(null);
+    } catch (error) {
+      console.error("Error continuing study session:", error);
+      setError(error.message);
+      alert(error.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleRestart = async () => {
+    setIsLoading(true);
+    try {
+      const data = await resetStudySession(questionFileId);
       if (!data.questions || data.questions.length === 0) {
         throw new Error("Không có câu hỏi nào để hiển thị.");
       }
@@ -269,6 +374,7 @@ export default function StudySession() {
       setShowSummary(false);
       setIsCompleted(false);
       setError(null);
+      setShowSettingsMenu(false);
     } catch (error) {
       console.error("Error restarting study session:", error);
       setError(error.message);
@@ -278,12 +384,35 @@ export default function StudySession() {
     }
   };
 
+  const handleShuffleQuestions = () => {
+    const allQuestions = [...session.questions];
+    for (let i = allQuestions.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [allQuestions[i], allQuestions[j]] = [allQuestions[j], allQuestions[i]];
+    }
+
+    setSession((prev) => ({
+      ...prev,
+      questions: allQuestions,
+    }));
+
+    const QUESTIONS_PER_ROUND = 7;
+    const startIndex = (session.currentRound - 1) * QUESTIONS_PER_ROUND;
+    const endIndex = Math.min(startIndex + QUESTIONS_PER_ROUND, allQuestions.length);
+    const shuffledRoundQuestions = allQuestions.slice(startIndex, endIndex);
+
+    setCurrentRoundQuestions(shuffledRoundQuestions);
+    setCurrentQuestionIndex(0);
+    setShowSettingsMenu(false);
+  };
+
   const handleBack = () => {
-    console.log("Handle back called");
     navigate(`/questionfile/getById/${questionFileId}`);
   };
 
-  const updateCorrectAnswers = () => {};
+  const toggleSettingsMenu = () => {
+    setShowSettingsMenu((prev) => !prev); // Toggle dropdown
+  };
 
   if (isLoading) {
     return (
@@ -302,7 +431,6 @@ export default function StudySession() {
     return (
       <PageContainer>
         <Container>
-          <Title>Học</Title>
           <Alert variant="destructive">
             <AlertTitle>Lỗi</AlertTitle>
             <AlertDescription>{error}</AlertDescription>
@@ -317,7 +445,8 @@ export default function StudySession() {
       <PageContainer>
         <RoundSummary
           roundSummary={roundSummary}
-          onRestart={handleRestart}
+          onContinue={!isCompleted ? handleContinue : null}
+          onRestart={isCompleted ? handleRestart : null}
           onBack={handleBack}
           isCompleted={isCompleted}
         />
@@ -330,28 +459,52 @@ export default function StudySession() {
   return (
     <PageContainer>
       <Container>
-        <Header>
-          <Title>Học</Title>
+        <ContentBlock>
+          <HeaderContainer>
+            <FileName onClick={handleBack}>
+              {session?.questionFileName || "Tên bộ câu hỏi"}
+            </FileName>
+            <IconContainer>
+              <IconButton ref={settingsButtonRef} onClick={toggleSettingsMenu}>
+                <FaCog />
+                {showSettingsMenu && (
+                  <SettingsMenu ref={settingsMenuRef}>
+                    <MenuItem onClick={handleRestart}>
+                      <FaRedo />
+                      Học lại từ đầu
+                    </MenuItem>
+                    <MenuItem onClick={handleShuffleQuestions}>
+                      <FaRandom />
+                      Trộn câu hỏi
+                    </MenuItem>
+                  </SettingsMenu>
+                )}
+              </IconButton>
+              <IconButton onClick={handleBack}>
+                <FaTimes />
+              </IconButton>
+            </IconContainer>
+          </HeaderContainer>
           <ProgressContainer>
             <ProgressBar
               correctAnswers={session?.progress?.learnedCount || 0}
               totalQuestions={session?.totalQuestions || 0}
             />
           </ProgressContainer>
-        </Header>
 
-        {currentQuestion ? (
-          <Question
-            question={currentQuestion}
-            onSubmitAnswer={handleSubmitAnswer}
-            onNextQuestion={handleNextQuestion}
-            updateCorrectAnswers={updateCorrectAnswers}
-          />
-        ) : (
-          <EmptyState>
-            <p>Không có câu hỏi nào để hiển thị.</p>
-          </EmptyState>
-        )}
+          {currentQuestion ? (
+            <Question
+              question={currentQuestion}
+              onSubmitAnswer={handleSubmitAnswer}
+              onNextQuestion={handleNextQuestion}
+              onDontKnow={handleDontKnow}
+            />
+          ) : (
+            <EmptyState>
+              <p>Không có câu hỏi nào để hiển thị.</p>
+            </EmptyState>
+          )}
+        </ContentBlock>
       </Container>
     </PageContainer>
   );

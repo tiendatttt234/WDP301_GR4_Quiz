@@ -3,6 +3,7 @@ import axios from "axios";
 import { BookMarked, AlertTriangle, BookmarkX, FileText, BookOpen } from "lucide-react";
 import { useParams, useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
 import Flashcards from "../../Quiz/FlashCard/FlashCards.jsx";
 import {
@@ -199,6 +200,23 @@ const QuestionFileDetail = () => {
           </HeaderActions>
         </HeaderTitleWrapper>
         <Description>{questionFile.description}</Description>
+        {/* <Description>Trạng thái: {questionFile.isPrivate ? 'Riêng tư' : 'Công khai'}</Description> */}
+
+        <p>
+          Người tạo:{" "}
+          <strong
+            style={{
+              cursor: "pointer",
+              color: "blue",
+              textDecoration: "underline",
+            }}
+            onClick={() =>
+              navigate(`/questionfile/findbyuser/${questionFile.createdBy._id}`)
+            }
+          >
+            {questionFile.createdBy.userName || "Không rõ"}
+          </strong>
+        </p>
       </Header>
 
       <Flashcards questionFile={questionFile} />

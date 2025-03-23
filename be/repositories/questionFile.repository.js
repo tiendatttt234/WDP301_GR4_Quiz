@@ -1,7 +1,7 @@
 const QuestionFile = require("../models/QuestionFile");
 
 async function findQuestionFileById(id) {
-  return await QuestionFile.findById(id);
+  return await QuestionFile.findById(id).populate("createdBy", "userName");
 }
 
 // async function findAllQFByUserId(userId){
@@ -11,10 +11,12 @@ async function findQuestionFileById(id) {
 //ex: .select("name description arrayQuestion createdAt isPrivate")
 
 async function findByIdAndUserId(id, userId) {
-  return await QuestionFile.findOne({ _id: id, createdBy: userId })
-    .populate("createdBy", "userName");
+  return await QuestionFile.findOne({ _id: id, createdBy: userId }).populate(
+    "createdBy",
+    "userName"
+  );
 }
-async function getAllWithUser(){
+async function getAllWithUser() {
   // return await QuestionFile.find({})
   //   .select("name description createdAt updatedAt isPrivate isReported reportedCount isLocked")
   return await QuestionFile.findOne({ _id: id, createdBy: userId }).populate(
@@ -87,6 +89,12 @@ async function createTxt(data) {
   });
   return await questionFile.save();
 }
+async function findAllByUserId(userId) {
+  return await QuestionFile.find({ createdBy: userId }).populate({
+    path: "createdBy",
+    select: "userName",
+  });
+}
 
 const questionFileRepository = {
   findQuestionFileById,
@@ -100,6 +108,7 @@ const questionFileRepository = {
   updatePrivacy,
   createTxt,
   getAllWithUser,
+  findAllByUserId,
 };
 
 module.exports = questionFileRepository;

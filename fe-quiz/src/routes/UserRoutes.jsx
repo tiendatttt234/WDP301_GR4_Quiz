@@ -11,7 +11,7 @@ import Profile from "../components/authen/Profile/Profile";
 import Login from "../components/authen/Login/Login";
 import Register from "../components/authen/Register/Register";
 import ForgotPassword from "../components/authen/forgotPassword/ForgotPassword";
-import ResetPass from "../components/authen/forgotPassword/ResetPassword";
+import ResetPassword from "../components/authen/forgotPassword/ResetPassword";
 import NotFoundPage from "../pages/NotFound/NotFoundPage";
 import UpgradePage from "../pages/Upgrade/UpgradePage";
 import QuestionFileByUser from "../pages/QuestionFile/findbyuser/QuestionFileByUser";
@@ -31,10 +31,10 @@ export const userRoutes = [
     { path: "login", element: <Login/> },
     { path: "register", element: <Register/> },
     { path: "forgot-password", element: <ForgotPassword/> },
-    { path: "reset-password/:id/:token", element: <ResetPass/>},
+    { path: "reset-password/:id/:token", element: <ResetPassword/>},
     { path: "upgrade", element: <UpgradePage/>},
     { path: "*", element: <NotFoundPage/>},
-    { path: "reset-password/:id/:token", element: <ResetPass/>},
+    { path: "reset-password/:id/:token", element: <ResetPassword/>},
     {
       path: "questionfile/findbyuser/:userId",
       element: <QuestionFileByUser />,

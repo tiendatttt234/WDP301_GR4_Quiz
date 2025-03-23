@@ -18,8 +18,10 @@ const Homepage = () => {
       .then((data) => {
         console.log("API response:", data);
         if (Array.isArray(data.questionFileRespone)) {
-          setQuestionFiles(data.questionFileRespone);
-          setFilteredFiles(data.questionFileRespone);
+          // Lọc ngay từ đầu chỉ lấy các file có isPrivate là false
+          const publicFiles = data.questionFileRespone.filter(file => !file.isPrivate);
+          setQuestionFiles(publicFiles);
+          setFilteredFiles(publicFiles);
         } else {
           console.error("Invalid data format");
         }
@@ -170,56 +172,56 @@ const Homepage = () => {
             >
               {currentFiles.map((file) => (
                 <Link to={`/questionfile/getById/${file._id}`} style={{ textDecoration: "none" }}>
-                <div
-                  key={file._id}
-                  style={{
-                    backgroundColor: "white",
-                    borderRadius: "8px",
-                    padding: "20px",
-                    textAlign: "left",
-                    color: "#4b5563",
-                    boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-                    transition: "transform 0.2s ease, box-shadow 0.2s ease",
-                    cursor: "pointer",
-                  }}
-                  onClick={()=> handleQuestionClick(file._id)}
-                >
-                  <h3
-                    style={{
-                      fontSize: "18px",
-                      fontWeight: "bold",
-                      color: "#3b82f6",
-                      marginBottom: "8px",
-                    }}
-                  >
-                    {file.name}
-                  </h3>
-                  <p
-                    style={{
-                      fontSize: "14px",
-                      color: "#6b7280",
-                      marginBottom: "12px",
-                      minHeight: "60px",
-                    }}
-                  >
-                    {file.description || "Không có mô tả"}
-                  </p>
                   <div
+                    key={file._id}
                     style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      fontSize: "12px",
-                      color: "#9ca3af",
-                      borderTop: "1px solid #e5e7eb",
-                      paddingTop: "12px",
+                      backgroundColor: "white",
+                      borderRadius: "8px",
+                      padding: "20px",
+                      textAlign: "left",
+                      color: "#4b5563",
+                      boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+                      transition: "transform 0.2s ease, box-shadow 0.2s ease",
+                      cursor: "pointer",
                     }}
+                    onClick={() => handleQuestionClick(file._id)}
                   >
-                    <span>{file.arrayQuestion?.length || 0} câu hỏi</span>
-                    <span>
-                      Tạo bởi: {file.createdBy?.userName || "Không xác định"}
-                    </span>
+                    <h3
+                      style={{
+                        fontSize: "18px",
+                        fontWeight: "bold",
+                        color: "#3b82f6",
+                        marginBottom: "8px",
+                      }}
+                    >
+                      {file.name}
+                    </h3>
+                    <p
+                      style={{
+                        fontSize: "14px",
+                        color: "#6b7280",
+                        marginBottom: "12px",
+                        minHeight: "60px",
+                      }}
+                    >
+                      {file.description || "Không có mô tả"}
+                    </p>
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        fontSize: "12px",
+                        color: "#9ca3af",
+                        borderTop: "1px solid #e5e7eb",
+                        paddingTop: "12px",
+                      }}
+                    >
+                      <span>{file.arrayQuestion?.length || 0} câu hỏi</span>
+                      <span>
+                        Tạo bởi: {file.createdBy?.userName || "Không xác định"}
+                      </span>
+                    </div>
                   </div>
-                </div>
                 </Link>
               ))}
             </div>

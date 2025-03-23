@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
-import { Trash2, Plus, } from "lucide-react";
+import { Trash2, Plus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -36,6 +36,7 @@ const QUESTIONS_PER_PAGE = 10;
 const QuestionCreator = () => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const fileInputRef = useRef(null);
   const [questions, setQuestions] = useState([
     {
       id: 1,
@@ -215,10 +216,11 @@ const QuestionCreator = () => {
   };
 
   const handleSubmit = async () => {
-    const userId = localStorage.getItem("id"); // Lấy đúng ID của tài khoản đang đăng nhập
+    const userId = localStorage.getItem("id");
+    const token = localStorage.getItem("accessToken"); // Lấy đúng ID của tài khoản đang đăng nhập
     console.log(userId);
 
-    if (!userId) {
+    if (!userId || !token) {
       console.error("Không tìm thấy userId trong localStorage");
       return;
     }
@@ -254,7 +256,11 @@ const QuestionCreator = () => {
     };
 
     try {
-      await axios.post("http://localhost:9999/questionFile/create", payload);
+      await axios.post("http://localhost:9999/questionFile/create", payload, {
+        headers: {
+          Authorization: `Bearer ${token}`, // Thêm accessToken vào header
+        },
+      });
       toast.success("Tạo bộ câu hỏi thành công!", { autoClose: 4000 });
       setIsDirty(false);
       setTimeout(() => navigate("/questionfile/getAll"), 4000);
@@ -262,6 +268,15 @@ const QuestionCreator = () => {
       toast.error("Lỗi khi tạo bộ câu hỏi");
       console.error(error);
     }
+  };
+
+  const handleCreateAndPractice = () => {
+    const token = localStorage.getItem("accessToken");
+    if (!token) {
+      toast.error("Bạn cần đăng nhập để tạo câu hỏi và ôn luyện"); // Chuyển hướng đến trang đăng nhập sau 2 giây
+      return;
+    }
+    handleSubmit(); // Nếu đã đăng nhập, gọi hàm handleSubmit
   };
 
   const parseTxtFile = (fileContent) => {
@@ -407,6 +422,17 @@ const QuestionCreator = () => {
     reader.readAsText(file);
   };
 
+  const handleImportClick = (event) => {
+    event.preventDefault(); // Ngăn hành vi mặc định của label/input
+    const token = localStorage.getItem("accessToken");
+    if (!token) {
+      toast.error("Bạn cần đăng nhập để tạo câu hỏi và ôn luyện"); // Chuyển hướng đến trang đăng nhập sau 2 giây
+      return;
+    }
+    // Nếu đã đăng nhập, kích hoạt input file để mở cửa sổ chọn file
+    fileInputRef.current.click();
+  };
+
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
 
@@ -442,7 +468,9 @@ const QuestionCreator = () => {
           htmlFor="file-import"
           style={{ cursor: "pointer", display: "inline-block" }}
         >
-          <PrimaryButton as="span">Import file txt</PrimaryButton>
+          <PrimaryButton onClick={handleImportClick}>
+            Import file txt
+          </PrimaryButton>
         </label>
         <PrimaryButton onClick={openModal}>Hướng dẫn</PrimaryButton>
         <input
@@ -450,6 +478,7 @@ const QuestionCreator = () => {
           type="file"
           accept=".txt"
           style={{ display: "none" }}
+          ref={fileInputRef}
           onChange={handleFileImport}
         />
       </ImportButtonContainer>
@@ -555,16 +584,22 @@ const QuestionCreator = () => {
                   type={question.type === "multiAnswer" ? "checkbox" : "radio"}
                   name={`question-${question.id}`}
                   checked={question.selectedAnswers.includes(index)}
-                  onChange={(e) => handleAnswerChange(question.id, index, e.target.checked)}
+                  onChange={(e) =>
+                    handleAnswerChange(question.id, index, e.target.checked)
+                  }
                 />
                 <InputField
                   type="text"
                   value={answer}
-                  onChange={(e) => updateAnswerText(question.id, index, e.target.value)}
+                  onChange={(e) =>
+                    updateAnswerText(question.id, index, e.target.value)
+                  }
                   placeholder={`Đáp án ${index + 1}`}
                 />
                 {question.answers.length > 2 && (
-                  <DeleteButton onClick={() => removeAnswer(question.id, index)}>
+                  <DeleteButton
+                    onClick={() => removeAnswer(question.id, index)}
+                  >
                     <Trash2 size={16} />
                   </DeleteButton>
                 )}
@@ -615,7 +650,9 @@ const QuestionCreator = () => {
       </AddButton>
       <ButtonGroup>
         <SecondaryButton>Trở lại</SecondaryButton>
-        <PrimaryButton onClick={handleSubmit}>Tạo và ôn luyện</PrimaryButton>
+        <PrimaryButton onClick={handleCreateAndPractice}>
+          Tạo và ôn luyện
+        </PrimaryButton>
       </ButtonGroup>
     </Container>
   );

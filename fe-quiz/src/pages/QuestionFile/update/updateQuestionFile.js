@@ -107,14 +107,24 @@ const UpdateQuestion = () => {
   };
 
   const handleTogglePrivacy = () => {
+    const token = localStorage.getItem("accessToken");
+    if (!token) {
+      toast.error("Bạn cần đăng nhập để thực hiện thao tác này");
+      return;
+    }
     const newPrivacy = !isPrivate;
     setIsPrivate(newPrivacy);
 
     // Gửi PATCH request để cập nhật isPrivate tức thời
     axios
-      .patch(`http://localhost:9999/questionFile/updatePrivacy/${id}`, {
-        isPrivate: newPrivacy,
-      })
+      .patch(`http://localhost:9999/questionFile/updatePrivacy/${id}`, 
+        { isPrivate: newPrivacy },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
       .then((response) => {
         console.log(
           "Response from toggle:",
@@ -235,6 +245,11 @@ const UpdateQuestion = () => {
   };
 
   const saveQuestion = (questionId) => {
+    const token = localStorage.getItem("accessToken");
+    if (!token) {
+      toast.error("Bạn cần đăng nhập để thực hiện thao tác này");
+      return;
+    }
     const error = validateForm();
     if (error) {
       toast.error(error, { autoClose: 2000 });
@@ -266,7 +281,12 @@ const UpdateQuestion = () => {
     axios
       .patch(
         `http://localhost:9999/questionFile/update/${id}/question/${questionId}`,
-        formattedQuestion
+        formattedQuestion,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       )
       .then(() => {
         const questionIndex = questions.findIndex((q) => q.id === questionId);
@@ -311,6 +331,11 @@ const UpdateQuestion = () => {
   };
 
   const handleUpdate = () => {
+    const token = localStorage.getItem("accessToken");
+    if (!token) {
+      toast.error("Bạn cần đăng nhập để thực hiện thao tác này");
+      return;
+    }
     const error = validateForm();
     if (error) {
       toast.error(error, { autoClose: 2000 });
@@ -337,7 +362,12 @@ const UpdateQuestion = () => {
     };
 
     axios
-      .put(`http://localhost:9999/questionFile/update/${id}`, formattedData)
+      .put(`http://localhost:9999/questionFile/update/${id}`, formattedData, 
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
       .then((response) => {
         const updatedQuestions = response.data.result.arrayQuestion.map(
           (q) => ({

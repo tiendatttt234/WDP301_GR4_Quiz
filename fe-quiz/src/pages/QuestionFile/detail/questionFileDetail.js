@@ -96,11 +96,11 @@ const QuestionFileDetail = () => {
   const handleSave = async () => {
     try {
       const userId = localStorage.getItem("id");
-      if (!userId) {
+      const token = localStorage.getItem("accessToken");
+      if (!userId || !token) {
         toast.error("Vui lòng đăng nhập để lưu học phần");
         return;
       }
-
       const favoriteData = {
         user: userId,
         sharedQuestionFile: [id],
@@ -108,7 +108,12 @@ const QuestionFileDetail = () => {
 
       const response = await axios.post(
         "http://localhost:9999/favorite/create",
-        favoriteData
+        favoriteData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
 
       setIsSaved(true);
@@ -121,7 +126,18 @@ const QuestionFileDetail = () => {
 
   const handleUnsave = async () => {
     try {
-      await axios.delete(`http://localhost:9999/favorite/delete/${favoriteId}`);
+      const token = localStorage.getItem("accessToken");
+      if (!token) {
+        toast.error("Vui lòng đăng nhập để thực hiện thao tác này");
+        return;
+      }
+      await axios.delete(`http://localhost:9999/favorite/delete/${favoriteId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       setIsSaved(false);
       setFavoriteId(null);
       toast.success("Đã hủy lưu học phần thành công!");

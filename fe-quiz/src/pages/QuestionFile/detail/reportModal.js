@@ -26,9 +26,14 @@ const ReportModal = ({ isOpen, onRequestClose, questionFileId }) => {
 
     const userId = localStorage.getItem("id");
     if (!userId) {
-      toast.error('Không tìm thấy thông tin người dùng!', { autoClose: 2000 });
+      toast.error('Không tìm thấy thông tin người dùng! Hoặc bạn chưa đăng nhập', { autoClose: 2000 });
       return;
     }
+    const token = localStorage.getItem("accessToken");
+        if (!token) {
+          toast.error("Vui lòng đăng nhập để thực hiện thao tác này");
+          return;
+        }
 
     const reportData = {
       reportBy: userId,
@@ -38,7 +43,15 @@ const ReportModal = ({ isOpen, onRequestClose, questionFileId }) => {
     };
 
     try {
-      await axios.post('http://localhost:9999/api/reports/create', reportData);
+      
+
+      await axios.post('http://localhost:9999/api/reports/create', reportData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       toast.success('Báo cáo đã được gửi thành công!', { autoClose: 2000 });
       onRequestClose();
       setSelectedReason(""); // Reset lý do sau khi gửi

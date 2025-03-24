@@ -3,7 +3,6 @@ import axios from "axios";
 import { BookMarked, AlertTriangle, BookmarkX, FileText, BookOpen } from "lucide-react";
 import { useParams, useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
-import { useNavigate } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
 import Flashcards from "../../Quiz/FlashCard/FlashCards.jsx";
 import {

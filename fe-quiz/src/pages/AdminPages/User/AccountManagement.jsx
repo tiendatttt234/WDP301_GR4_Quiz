@@ -16,7 +16,7 @@ function AccountManagement() {
     fetch("http://localhost:9999/admin/accounts")
       .then((response) => {
         if (!response.ok) {
-          throw new Error("Network response was not ok")
+          throw new Error("Phản hồi mạng không ổn")
         }
         return response.json()
       })
@@ -25,8 +25,8 @@ function AccountManagement() {
         setIsLoading(false)
       })
       .catch((error) => {
-        console.error("Error fetching data:", error)
-        setError("Failed to load accounts. Please try again later.")
+        console.error("Lỗi khi lấy dữ liệu:", error)
+        setError("Không thể tải danh sách tài khoản. Vui lòng thử lại sau.")
         setIsLoading(false)
       })
   }, [])
@@ -71,7 +71,7 @@ function AccountManagement() {
     })
       .then((response) => {
         if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`)
+          throw new Error(`Lỗi HTTP! Trạng thái: ${response.status}`)
         }
         return response.json()
       })
@@ -79,8 +79,8 @@ function AccountManagement() {
         setAccounts(accounts.map((account) => (account._id === id ? { ...account, isLocked: newLockStatus } : account)))
       })
       .catch((error) => {
-        console.error("Error updating lock status:", error)
-        alert("Failed to update account status. Please try again.")
+        console.error("Lỗi khi cập nhật trạng thái khóa:", error)
+        alert("Không thể cập nhật trạng thái tài khoản. Vui lòng thử lại.")
       })
   }
 
@@ -100,23 +100,23 @@ function AccountManagement() {
     <div className="account-container">
       <div className="account-header">
         <h1>
-          <i className="fas fa-users"></i> Account Management
+          <i className="fas fa-users"></i> Quản lý tài khoản
         </h1>
         <div className="account-actions">
           <div className="search-container">
             <i className="fas fa-search search-icon"></i>
             <input
               type="text"
-              placeholder="Search accounts..."
+              placeholder="Tìm kiếm tài khoản..."
               className="search-input"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
           <select className="sort-select" value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
-            <option value="name">Sort by: Name</option>
-            <option value="date">Sort by: Date</option>
-            <option value="type">Sort by: Account Type</option>
+            <option value="name">Sắp xếp theo: Tên</option>
+            <option value="date">Sắp xếp theo: Ngày tạo</option>
+            <option value="type">Sắp xếp theo: Loại tài khoản</option>
           </select>
         </div>
       </div>
@@ -125,21 +125,21 @@ function AccountManagement() {
         <table className="accounts-table">
           <thead>
             <tr>
-              <th>ID</th>
+              <th>STT</th>
               <th>
-                <i className="fas fa-user"></i> Username
+                <i className="fas fa-user"></i> Tên người dùng
               </th>
               <th>
                 <i className="fas fa-envelope"></i> Email
               </th>
               <th>
-                <i className="fas fa-calendar"></i> Created Date
+                <i className="fas fa-calendar"></i> Ngày tạo
               </th>
               <th>
-                <i className="fas fa-tag"></i> Account Type
+                <i className="fas fa-tag"></i> Loại tài khoản
               </th>
               <th>
-                <i className="fas fa-toggle-on"></i> Status
+                <i className="fas fa-toggle-on"></i> Trạng thái
               </th>
             </tr>
           </thead>
@@ -149,10 +149,10 @@ function AccountManagement() {
                 <td>{indexOfFirstAccount + index + 1}</td>
                 <td>{account.userName}</td>
                 <td>{account.email}</td>
-                <td>{new Date(account.createdAt).toLocaleDateString("en-GB")}</td>
+                <td>{new Date(account.createdAt).toLocaleDateString("vi-VN")}</td>
                 <td>
                   <span className={`account-type ${account.isPrime ? "premium" : "basic"}`}>
-                    {account.isPrime ? "Premium" : "Basic"}
+                    {account.isPrime ? "Cao cấp" : "Thường"}
                   </span>
                 </td>
                 <td>
@@ -161,7 +161,7 @@ function AccountManagement() {
                     onClick={() => toggleLock(account._id, account.isLocked)}
                   >
                     <i className={`fas ${account.isLocked ? "fa-lock" : "fa-lock-open"}`}></i>
-                    {account.isLocked ? "Inactive" : "Active"}
+                    {account.isLocked ? "Bị khóa" : "Hoạt động"}
                   </button>
                 </td>
               </tr>
@@ -172,8 +172,8 @@ function AccountManagement() {
 
       <div className="account-footer">
         <div className="pagination-info">
-          Showing {sortedAccounts.length > 0 ? indexOfFirstAccount + 1 : 0} to{" "}
-          {Math.min(indexOfLastAccount, sortedAccounts.length)} of {sortedAccounts.length} entries
+          Hiển thị {sortedAccounts.length > 0 ? indexOfFirstAccount + 1 : 0} đến{" "}
+          {Math.min(indexOfLastAccount, sortedAccounts.length)} trong số {sortedAccounts.length} mục
         </div>
         <div className="pagination-controls">
           <button
@@ -181,7 +181,7 @@ function AccountManagement() {
             onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
             disabled={currentPage === 1}
           >
-            <i className="fas fa-chevron-left"></i>
+            <i className="fas fa-chevron-left"></i> Trước
           </button>
 
           {Array.from({ length: totalPages }, (_, i) => {
@@ -216,7 +216,7 @@ function AccountManagement() {
             onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
             disabled={currentPage === totalPages || totalPages === 0}
           >
-            <i className="fas fa-chevron-right"></i>
+            <i className="fas fa-chevron-right"></i> Sau
           </button>
         </div>
       </div>
@@ -225,4 +225,3 @@ function AccountManagement() {
 }
 
 export default AccountManagement
-

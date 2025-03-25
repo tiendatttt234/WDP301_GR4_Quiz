@@ -21,8 +21,8 @@ const Dashboard = () => {
         const response = await axios.get("http://localhost:9999/admin/dashboard")
         setStats(response.data)
       } catch (err) {
-        console.error("Error fetching dashboard data:", err)
-        setError("Failed to load dashboard data")
+        console.error("Lỗi khi lấy dữ liệu dashboard:", err)
+        setError("Không thể tải dữ liệu dashboard")
       } finally {
         setLoading(false)
       }
@@ -34,12 +34,12 @@ const Dashboard = () => {
   return (
     <div className="dashboard-container">
       <div className="dashboard-header">
-        <h1 className="dashboard-title">Dashboard</h1>
+        <h1 className="dashboard-title">Thống Kê</h1>
       </div>
 
       {error && (
         <div className="error-alert">
-          <h4>Error</h4>
+          <h4>Lỗi</h4>
           <p>{error}</p>
         </div>
       )}
@@ -55,32 +55,32 @@ const Dashboard = () => {
         ) : stats ? (
           <>
             <StatCard
-              title="Total Account"
+              title="Tổng số tài khoản"
               value={stats.totalUsers.count}
               change={stats.totalUsers.change}
               icon={<Users className="stat-icon" />}
             />
             <StatCard
-              title="New Account"
+              title="Tài khoản mới"
               value={stats.newUsers.count}
               change={stats.newUsers.change}
               icon={<UserPlus className="stat-icon" />}
             />
             <StatCard
-              title="Premium Account"
+              title="Tài khoản cao cấp"
               value={stats.premiumUsers.count}
               change={stats.premiumUsers.change}
               icon={<Crown className="stat-icon" />}
             />
             <StatCard
-              title="Question File"
+              title="Tệp câu hỏi"
               value={stats.totalQuizzes.count}
               change={stats.totalQuizzes.change}
               icon={<FileText className="stat-icon" />}
             />
           </>
         ) : (
-          <p className="no-stats-message">No statistics available</p>
+          <p className="no-stats-message">Không có số liệu thống kê nào</p>
         )}
       </div>
 
@@ -179,4 +179,3 @@ const ChartSkeleton = () => {
 }
 
 export default Dashboard
-

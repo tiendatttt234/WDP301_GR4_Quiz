@@ -45,12 +45,12 @@ export default function QuizChart() {
       items={[
         {
           key: "daily",
-          label: "This Month",
+          label: "Tháng",
           onClick: () => setViewMode("daily"),
         },
         {
           key: "weekly",
-          label: "This Week",
+          label: "Tuần",
           onClick: () => setViewMode("weekly"),
         },
       ]}
@@ -66,7 +66,7 @@ export default function QuizChart() {
         <Dropdown overlay={menu}>
           <a onClick={(e) => e.preventDefault()} className="period-selector">
             <Space>
-              {viewMode === "daily" ? "This Month" : "This Week"}
+              {viewMode === "daily" ? "Tháng" : "Tuần"}
               <DownOutlined />
             </Space>
           </a>

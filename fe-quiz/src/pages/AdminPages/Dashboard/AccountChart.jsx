@@ -21,11 +21,11 @@ export default function Chart() {
         if (response.data.success) {
           setChartData(viewMode === "daily" ? response.data.dailyData : response.data.weeklyData)
         } else {
-          throw new Error("Failed to load chart data")
+          throw new Error("Không thể tải dữ liệu biểu đồ")
         }
       } catch (err) {
-        console.error("Error fetching chart data:", err)
-        setError("Failed to load chart data")
+        console.error("Lỗi khi lấy dữ liệu biểu đồ:", err)
+        setError("Không thể tải dữ liệu biểu đồ")
       } finally {
         setLoading(false)
       }
@@ -39,29 +39,28 @@ export default function Chart() {
       items={[
         {
           key: "daily",
-          label: "This Month",
+          label: "Tháng",
           onClick: () => setViewMode("daily"),
         },
         {
           key: "weekly",
-          label: "This Week",
+          label: "Tuần",
           onClick: () => setViewMode("weekly"),
         },
       ]}
     />
   )
 
-  if (loading) return <div className="chart-loading">Loading...</div>
+  if (loading) return <div className="chart-loading">Đang tải...</div>
   if (error) return <div className="chart-error">{error}</div>
 
   return (
     <div className="chart-container">
       <div className="chart-header">
-       
         <Dropdown overlay={menu}>
           <a onClick={(e) => e.preventDefault()} className="period-selector">
             <Space>
-              {viewMode === "daily" ? "This Month" : "This Week"}
+              {viewMode === "daily" ? "Tháng " : "Tuần"}
               <DownOutlined />
             </Space>
           </a>
@@ -91,7 +90,7 @@ export default function Chart() {
             </LineChart>
           </ResponsiveContainer>
         ) : (
-          <div className="chart-no-data">No data available</div>
+          <div className="chart-no-data">Không có dữ liệu</div>
         )}
       </div>
     </div>
@@ -104,4 +103,3 @@ const LegendItem = ({ color, label }) => (
     <span>{label}</span>
   </div>
 )
-

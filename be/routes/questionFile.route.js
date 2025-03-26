@@ -15,5 +15,6 @@ QuestionFileRouter.patch("/updatePrivacy/:fileId", verifyAccessToken, questionFi
 QuestionFileRouter.post("/import", verifyAccessToken, upload.single("file"), questionFileController.importQuestionFile); //
 QuestionFileRouter.get("/getQFadmin", verifyAccessToken, questionFileController.adminGetAllQF); //
 QuestionFileRouter.get("/getAll/:userId", verifyAccessToken, questionFileController.getQuestionFilesByUserId); //
+QuestionFileRouter.get("/user/:userId", questionFileController.findAllByUser);
 
 module.exports = QuestionFileRouter;

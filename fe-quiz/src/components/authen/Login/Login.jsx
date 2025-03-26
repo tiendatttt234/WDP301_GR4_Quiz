@@ -3,8 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFacebookF, faTwitter, faLinkedinIn } from "@fortawesome/free-brands-svg-icons";
 import { useAuth } from "../../../Context/AuthContext";
-import { toast, ToastContainer } from "react-toastify"; // Only import once
-import "react-toastify/dist/ReactToastify.css";
+// import { toast, ToastContainer } from "react-toastify"; // Only import once
+// import "react-toastify/dist/ReactToastify.css";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -192,21 +192,8 @@ const Login = () => {
       // Truyền thêm avatar vào hàm login
       login({ userName, id, roles, accessToken, avatar: avatar || "" });
   
-      toast.success("Đăng nhập thành công!", {
-        position: "top-right",
-        autoClose: 2000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        onClose: () => {
-          if (roles.some((role) => role.name === "admin")) {
-            navigate("/admin");
-          } else {
-            navigate("/");
-          }
-        },
-      });
+      // Điều hướng thẳng đến trang chủ
+      navigate("/");
     } catch (err) {
       setMessage({ text: "Lỗi kết nối đến server", type: "error" });
     }
@@ -295,7 +282,7 @@ const Login = () => {
           </div>
         </div>
       </div>
-      <ToastContainer /> {/* Chỉ sử dụng ToastContainer một lần */}
+      {/* <ToastContainer /> Chỉ sử dụng ToastContainer một lần */}
     </div>
   );
 };

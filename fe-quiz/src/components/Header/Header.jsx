@@ -217,7 +217,7 @@ const Header = ({ onSearchResults }) => {
             </Dropdown>
             <Dropdown overlay={userMenu}>
               <Avatar
-                src={user.avatar ? `http://localhost:9999${user.avatar}` : "https://via.placeholder.com/40"}
+                src={user.avatar ? `http://localhost:9999${user.avatar}` : ""}
                 size={40}
                 className="user-avatar"
               />

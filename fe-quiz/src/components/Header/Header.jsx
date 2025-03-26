@@ -154,10 +154,10 @@ const Header = ({ onSearchResults }) => {
   const toolsMenu = (
     <Menu className="custom-menu">
       <Menu.Item key="2">
-        <Link to="/questionfile/create">Tạo tệp câu hỏi</Link>
+        <Link to="/questionfile/create" style={{ textDecoration: 'none' }}>Tạo tệp câu hỏi</Link>
       </Menu.Item>
       <Menu.Item key="3">
-        <Link to="/questionfile/getAll">Thư viện của bạn</Link>
+        <Link to="/questionfile/getAll" style={{ textDecoration: 'none' }}>Thư viện của bạn</Link>
       </Menu.Item>
     </Menu>
   );
@@ -179,7 +179,7 @@ const Header = ({ onSearchResults }) => {
 
   return (
     <AntHeader className="custom-header">
-      <Link to="/" className="logo">
+      <Link to="/" className="logo" style={{ textDecoration: 'none' }}>
         <h1>Quiz Practice</h1>
       </Link>
 

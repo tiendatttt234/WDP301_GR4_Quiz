@@ -111,6 +111,11 @@ const SettingsPage = () => {
 
   const filteredPackages = packages.filter((pkg) => pkg.name.toLowerCase().includes(searchTerm.toLowerCase()))
 
+  // Hàm định dạng giá
+  const formatPrice = (price) => {
+    return Number(price).toLocaleString("vi-VN");
+  };
+
   return (
     <div className="settings__container">
       <div className="settings__header">
@@ -170,7 +175,7 @@ const SettingsPage = () => {
                 filteredPackages.map((pkg) => (
                   <tr key={pkg._id} className="settings__tr">
                     <td className="settings__td settings__td--name">{pkg.name}</td>
-                    <td className="settings__td">{pkg.price} $</td>
+                    <td className="settings__td">{formatPrice(pkg.price)} VND</td>
                     <td className="settings__td">{pkg.durationDays} ngày</td>
                     <td className="settings__td">
                       <span
@@ -279,7 +284,7 @@ const SettingsPage = () => {
                 <div className="settings__form-row">
                   <div className="settings__form-group">
                     <label className="settings__form-label" htmlFor="price">
-                      Giá ($)
+                      Giá (VND)
                     </label>
                     <input
                       id="price"
@@ -410,7 +415,7 @@ const SettingsPage = () => {
               <div className="settings__detail-row">
                 <div className="settings__detail-item">
                   <h4 className="settings__detail-label">Giá</h4>
-                  <p className="settings__detail-value">{selectedPackage.price} $</p>
+                  <p className="settings__detail-value">{formatPrice(selectedPackage.price)} VND</p>
                 </div>
                 <div className="settings__detail-item">
                   <h4 className="settings__detail-label">Thời hạn</h4>
@@ -482,7 +487,7 @@ const SettingsPage = () => {
                 Bạn có chắc chắn muốn xóa gói này không? Hành động này không thể hoàn tác.
               </p>
               <div className="settings__package-preview">
-                <strong>{selectedPackage?.name}</strong> - {selectedPackage?.price} $ cho {selectedPackage?.durationDays}{" "}
+                <strong>{selectedPackage?.name}</strong> - {formatPrice(selectedPackage?.price)} VND cho {selectedPackage?.durationDays}{" "}
                 ngày
               </div>
             </div>

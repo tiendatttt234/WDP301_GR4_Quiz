@@ -20,7 +20,6 @@ const exportQuestions = async (req, res) => {
         content += `Ngày tạo: ${new Date(questionFileReviced.createdAt).toLocaleString()}\n`;
         content += `Công khai: ${questionFileReviced.isPrivate ? 'Không' : 'Có'}\n\n`;
         content += 'Danh sách câu hỏi:\n';
-        content += '------------------------\n';
         
         questionFileReviced.arrayQuestion.forEach((question, index) => {
             content += `${index + 1}. ${question.content} (${question.type})\n`;

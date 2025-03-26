@@ -89,7 +89,7 @@ async function getAccountService(id) {
 //[update]profile
 async function updateAccountService(id, updateFields) {
   try {
-    const allowedFields = ["email", "phone", "userName"];
+    const allowedFields = ["email", "phone", "userName", "avatar"]; // Thêm "avatar" vào danh sách
     const keys = Object.keys(updateFields);
     const isValid = keys.every((field) => allowedFields.includes(field));
     if (!isValid) {
@@ -150,24 +150,48 @@ const sendResetEmail = async (email, accountId, token) => {
 // Xử lý quên mật khẩu
 const requestPasswordReset = async (email) => {
   const account = await AccountRepository.findByEmail(email);
-  if (!account) return { status: "User not found" };
+  if (!account) {
+    return { status: "error", message: "Email không tồn tại trong hệ thống" };
+  }
 
   const token = generateResetToken(account._id);
   await sendResetEmail(email, account._id, token);
-  return { status: "Success" };
+  return {
+    status: "success",
+    message: "Email đặt lại mật khẩu đã được gửi thành công",
+  };
 };
 
 // Xử lý đặt lại mật khẩu
 const resetPassword = async (id, token, newPassword) => {
-  const account = await AccountRepository.findById(id);
-  if (!account) return { status: "User not found" };
+  try {
+    const account = await AccountRepository.findById(id);
+    if (!account) {
+      return { status: "error", message: "Người dùng không tồn tại" };
+    }
 
-  const decoded = jwt.verify(token, JWT_SECRET);
-  if (decoded.id !== id) return { status: "Invalid token" };
+    try {
+      const decoded = jwt.verify(token, JWT_SECRET);
+      if (decoded.id !== id) {
+        return { status: "error", message: "Token không hợp lệ" };
+      }
+    } catch (jwtError) {
+      return { status: "error", message: "Token đã hết hạn hoặc không hợp lệ" };
+    }
 
-  const hashedPassword = await bcrypt.hash(newPassword, 10);
-  await AccountRepository.updatePassword(id, hashedPassword);
-  return { status: "Success" };
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    await AccountRepository.updatePassword(id, hashedPassword);
+
+    return {
+      status: "success",
+      message: "Mật khẩu đã được đặt lại thành công",
+    };
+  } catch (error) {
+    return {
+      status: "error",
+      message: "Đã xảy ra lỗi khi đặt lại mật khẩu",
+    };
+  }
 };
 
 module.exports = {

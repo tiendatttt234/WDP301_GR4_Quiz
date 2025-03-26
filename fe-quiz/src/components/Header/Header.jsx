@@ -4,10 +4,10 @@ import { SearchOutlined, BellOutlined } from "@ant-design/icons";
 import { Layout, Menu, Dropdown, Button, Input, Avatar, Space, Badge } from "antd";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import socket from "../../helper/socket"; // Đường dẫn từ src/components đến src/helper
+import socket from "../../helper/socket";
 import axios from "axios";
 import "./Header.css";
-import { useAuth } from "../../Context/AuthContext"; // Đường dẫn từ src/components đến src/context
+import { useAuth } from "../../Context/AuthContext";
 
 const { Header: AntHeader } = Layout;
 
@@ -235,7 +235,7 @@ const Header = ({ onSearchResults }) => {
             </Dropdown>
             <Dropdown overlay={userMenu}>
               <Avatar
-                src="http://pm1.aminoapps.com/7239/b508c8e2b879561f650574466b86531cc90138d9r1-768-768v2_uhq.jpg"
+                src={user.avatar ? `http://localhost:9999${user.avatar}` : "https://via.placeholder.com/40"}
                 size={40}
                 className="user-avatar"
               />

@@ -4,7 +4,6 @@ import "react-toastify/dist/ReactToastify.css";
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
-  const [message, setMessage] = useState("");
   const styles = {
     body: {
       fontFamily: "'Inter', sans-serif",
@@ -70,6 +69,12 @@ const ForgotPassword = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!email) {
+      toast.error("Vui lòng nhập email!");
+      return;
+    }
+
     try {
       const response = await fetch(
         "http://localhost:9999/auth/forgot-password",
@@ -81,17 +86,35 @@ const ForgotPassword = () => {
           body: JSON.stringify({ email }),
         }
       );
+
       const data = await response.json();
-      setMessage(data.Status);
-      // Hiển thị thông báo thành công
-      if (data.Status === "Success") {
-        toast.success("Mã đặt lại mật khẩu đã được gửi tới email của bạn!");
+
+      if (data.status === "success") {
+        toast.success(data.message, {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        });
+        setEmail(""); // Clear input after success
       } else {
-        toast.error(data.Status);
+        toast.error(data.message, {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        });
       }
     } catch (error) {
       console.error("Error:", error);
-      toast.error("Đã xảy ra lỗi, vui lòng thử lại sau.");
+      toast.error("Đã xảy ra lỗi, vui lòng thử lại sau!", {
+        position: "top-right",
+        autoClose: 3000,
+      });
     }
   };
 
@@ -132,9 +155,18 @@ const ForgotPassword = () => {
             Gửi
           </button>
         </form>
-        {message && <p>{message}</p>}
       </div>
-      <ToastContainer />
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
     </div>
   );
 };

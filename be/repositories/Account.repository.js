@@ -141,6 +141,17 @@ async function updatePrimeStatus(accountId, isPrime, primeExpiresAt) {
     { isPrime, primeExpiresAt },
     { new: true }
   );
+}
+const updateAvatar = async (id, avatarPath) => {
+  try {
+    return await Account.findByIdAndUpdate(
+      id,
+      { avatar: avatarPath },
+      { new: true }
+    );
+  } catch (error) {
+    throw error;
+  }
 };
 module.exports = {
   getAccountById,
@@ -157,5 +168,6 @@ module.exports = {
   findByEmail,
   findById,
   updatePassword,
-  updatePrimeStatus
+  updatePrimeStatus,
+  updateAvatar,
 };

@@ -166,7 +166,7 @@ const Login = () => {
       setMessage({ text: "Email và mật khẩu là bắt buộc", type: "error" });
       return;
     }
-
+  
     try {
       const response = await fetch("http://localhost:9999/auth/login", {
         method: "POST",
@@ -175,10 +175,10 @@ const Login = () => {
         },
         body: JSON.stringify({ email, password }),
       });
-
+  
       const data = await response.json();
       console.log("Dữ liệu từ API:", data);
-
+  
       if (!data.success) {
         setMessage({
           text: data.message || "Email hoặc mật khẩu không chính xác",
@@ -186,21 +186,20 @@ const Login = () => {
         });
         return;
       }
-
-      const { accessToken, userName, id, roles } = data.data;
-
-      login({ userName, id, roles, accessToken });
-
-      // Hiển thị toast khi đăng nhập thành công
+  
+      const { accessToken, userName, id, roles, avatar } = data.data;
+  
+      // Truyền thêm avatar vào hàm login
+      login({ userName, id, roles, accessToken, avatar: avatar || "" });
+  
       toast.success("Đăng nhập thành công!", {
         position: "top-right",
-        autoClose: 2000, // Toast hiển thị trong 2 giây
+        autoClose: 2000,
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: true,
         draggable: true,
         onClose: () => {
-          // Chuyển trang sau khi toast đóng
           if (roles.some((role) => role.name === "admin")) {
             navigate("/admin");
           } else {
@@ -212,7 +211,6 @@ const Login = () => {
       setMessage({ text: "Lỗi kết nối đến server", type: "error" });
     }
   };
-
   return (
     <div style={styles.body}>
       <div style={styles.container}>

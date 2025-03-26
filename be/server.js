@@ -74,7 +74,7 @@ io.on("connection", (socket) => {
 // Định nghĩa các route
 app.use("/quiz", quizRouter);
 app.use("/questionFile", questionBankRouter);
-app.use("/test", exportRouter);
+app.use("/api", exportRouter);
 app.use("/auth", accountRouter);
 app.use("/admin", adminRouter);
 app.use("/notifycation", notificationRouter);

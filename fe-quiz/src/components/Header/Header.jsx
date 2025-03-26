@@ -153,9 +153,6 @@ const Header = ({ onSearchResults }) => {
 
   const toolsMenu = (
     <Menu className="custom-menu">
-      <Menu.Item key="1">
-        <Link to="/blogList">Blog</Link>
-      </Menu.Item>
       <Menu.Item key="2">
         <Link to="/questionfile/create">Tạo tệp câu hỏi</Link>
       </Menu.Item>
@@ -165,16 +162,6 @@ const Header = ({ onSearchResults }) => {
     </Menu>
   );
 
-  const topicsMenu = (
-    <Menu className="custom-menu" style={{ textDecoration: "none" }}>
-      <Menu.Item key="1">
-        <Link to="/user/quizHistory">Các bài quiz đã làm</Link>
-      </Menu.Item>
-      <Menu.Item key="2">
-        <Link to="#">Các học phần đã thích</Link>
-      </Menu.Item>
-    </Menu>
-  );
 
   const userMenu = (
     <Menu className="custom-menu">
@@ -193,18 +180,13 @@ const Header = ({ onSearchResults }) => {
   return (
     <AntHeader className="custom-header">
       <Link to="/" className="logo">
-        <h1>Quiz</h1>
+        <h1>Quiz Practice</h1>
       </Link>
 
       <Space size="middle" className="nav-links">
         <Dropdown overlay={toolsMenu}>
           <Button type="link" className="nav-button">
             Công cụ
-          </Button>
-        </Dropdown>
-        <Dropdown overlay={topicsMenu}>
-          <Button type="link" className="nav-button">
-            Chủ đề
           </Button>
         </Dropdown>
       </Space>

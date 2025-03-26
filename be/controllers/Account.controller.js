@@ -83,7 +83,7 @@ async function updateAccountController(req, res, next) {
 
     // Nếu có file avatar được upload
     if (req.file) {
-      updateFields.avatar = `/uploads/${req.file.filename}`; // Lưu đường dẫn file
+      updateFields.avatar = `/uploads/${req.file.filename}`;
     }
 
     const updatedAccount = await AccountService.updateAccountService(

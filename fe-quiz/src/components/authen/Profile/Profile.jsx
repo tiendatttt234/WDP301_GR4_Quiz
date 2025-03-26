@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -68,14 +70,35 @@ const Profile = () => {
     setPasswordData({ ...passwordData, [e.target.name]: e.target.value });
   };
 
+  const validateFormData = () => {
+    if (formData.userName && formData.userName.length > 100) {
+      return "Tên người dùng phải dưới 100 ký tự";
+    }
+    const emailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    if (!emailRegex.test(formData.email)) {
+      return "Vui lòng nhập email đúng định dạng";
+    }
+    const phoneRegex = /^[0]\d{9}$/;
+    if (formData.phone && !phoneRegex.test(formData.phone)) {
+      return "Số điện thoại phải gồm 10 số và bắt đầu bằng 0";
+    }
+    return null;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMessage(null);
 
+    const validationError = validateFormData();
+    if (validationError) {
+      setMessage({ text: validationError, type: "error" });
+      return;
+    }
+
     try {
       const data = new FormData();
       data.append("email", formData.email);
-      data.append("phone", formData.phone);
+      data.append("phone", formData.phone || "");
       data.append("userName", formData.userName);
       if (avatarFile) {
         data.append("avatar", avatarFile);
@@ -89,20 +112,36 @@ const Profile = () => {
 
       if (response.data && response.data.data) {
         setProfile(response.data.data);
-        // Cập nhật cả userName và avatar trong AuthContext
-        updateUser({ 
-          userName: response.data.data.userName, 
-          avatar: response.data.data.avatar 
+        updateUser({
+          userName: response.data.data.userName,
+          avatar: response.data.data.avatar,
         });
-        setMessage({ text: "Cập nhật thành công!", type: "success" });
+        setMessage({ text: "Cập nhật thông tin thành công!", type: "success" });
       } else {
         throw new Error("Không nhận được phản hồi hợp lệ từ máy chủ");
       }
     } catch (error) {
-      setMessage({
-        text: "Lỗi cập nhật: " + (error.response?.data?.message || error.message),
-        type: "error",
-      });
+      const errorMessage = error.response?.data?.message || error.message;
+      let displayMessage;
+
+      switch (errorMessage) {
+        case "Invalid field name":
+          displayMessage = "Tên trường không hợp lệ";
+          break;
+        case "Username must be less than 100 characters":
+          displayMessage = "Tên người dùng phải dưới 100 ký tự";
+          break;
+        case "Please provide a valid email":
+          displayMessage = "Vui lòng nhập email đúng định dạng";
+          break;
+        case "Phone number must be exactly 10 digits and start with 0":
+          displayMessage = "Số điện thoại phải gồm 10 số và bắt đầu bằng 0";
+          break;
+        default:
+          displayMessage = "Lỗi: " + errorMessage;
+      }
+
+      setMessage({ text: displayMessage, type: "error" });
     }
   };
 
@@ -117,6 +156,15 @@ const Profile = () => {
 
     if (passwordData.newPassword !== passwordData.confirmNewPassword) {
       setMessage({ text: "Mật khẩu mới và xác nhận mật khẩu không khớp", type: "error" });
+      return;
+    }
+
+    const passwordRegex = /^(?=.*\d)(?=.*[a-zA-Z]).{8,}$/;
+    if (!passwordRegex.test(passwordData.newPassword)) {
+      setMessage({
+        text: "Mật khẩu mới phải ít nhất 8 ký tự và chứa cả chữ cái và số",
+        type: "error",
+      });
       return;
     }
 
@@ -155,80 +203,310 @@ const Profile = () => {
     }
   };
 
-  if (loading) return <p style={{ textAlign: "center", marginTop: "20px" }}>Đang tải thông tin người dùng...</p>;
-  if (error) return <p style={{ textAlign: "center", color: "red" }}>Lỗi: {error}</p>;
+  if (loading) return <p style={{ textAlign: "center", marginTop: "20px", fontSize: "16px" }}>Đang tải thông tin người dùng...</p>;
+  if (error) return <p style={{ textAlign: "center", color: "red", fontSize: "16px" }}>Lỗi: {error}</p>;
 
   return (
-    <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh", backgroundColor: "#f5f7fa" }}>
-      <div style={{ display: "flex", width: "600px", backgroundColor: "#fff", borderRadius: "10px", boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)", overflow: "hidden" }}>
-        <div style={{ background: "linear-gradient(to bottom right, #ffcc70, #ff7b7b)", padding: "30px", textAlign: "center", color: "white", flex: 1 }}>
-          <img
-            alt="Profile"
-            src={profile.avatar ? `http://localhost:9999${profile.avatar}` : "https://via.placeholder.com/150"}
-            style={{ borderRadius: "50%", width: "100px", height: "100px" }}
-          />
-          <h2>{profile.userName}</h2>
-          <p>{profile.email}</p>
-          <button onClick={() => navigate("/")} style={{ marginTop: "10px", padding: "8px", backgroundColor: "white", color: "black", border: "none", borderRadius: "5px", cursor: "pointer" }}>Trở lại</button>
+    <div
+      style={{
+        fontFamily: "'Arial', sans-serif",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        minHeight: "100vh",
+        backgroundColor: "#f5f5f5",
+        margin: 0,
+        padding: 0,
+        position: "relative",
+      }}
+    >
+      <div
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          width: "100%",
+          height: "50%",
+          background: "linear-gradient(135deg, #1e88e5, #0d47a1)",
+          borderRadius: "0 0 20px 20px",
+          zIndex: 0,
+        }}
+      ></div>
+      <div
+        style={{
+          position: "relative",
+          width: "90%",
+          maxWidth: "800px",
+          backgroundColor: "white",
+          borderRadius: "20px",
+          boxShadow: "0 10px 30px rgba(0, 0, 0, 0.1)",
+          overflow: "hidden",
+          zIndex: 1,
+          paddingBottom: "30px",
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            padding: "20px",
+            position: "relative",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              color: "#2196f3",
+              fontSize: "14px",
+              cursor: "pointer",
+              position: "absolute",
+              left: "20px",
+              top: "50%",
+              transform: "translateY(-50%)",
+            }}
+            onClick={() => navigate("/")}
+          >
+            <i
+              style={{
+                display: "inline-block",
+                width: "20px",
+                height: "20px",
+                marginRight: "5px",
+                backgroundColor: "#2196f3",
+                WebkitMaskImage:
+                  'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\'%3E%3Cpath d=\'M15 19l-7-7 7-7\'/%3E%3C/svg%3E")',
+                WebkitMaskSize: "cover",
+              }}
+            ></i>
+            Trở lại
+          </div>
+          <div
+            style={{
+              position: "relative",
+              width: "150px",
+              height: "150px",
+              margin: "0 auto",
+              zIndex: 2,
+            }}
+          >
+            <img
+              src={profile.avatar ? `http://localhost:9999${profile.avatar}` : "/placeholder.svg"}
+              alt={profile.userName}
+              style={{
+                width: "100%",
+                height: "100%",
+                borderRadius: "50%",
+                border: "5px solid white",
+                objectFit: "cover",
+                backgroundColor: "#f0f0f0",
+                boxShadow: "0 4px 10px rgba(0,0,0,0.1)",
+              }}
+            />
+          </div>
         </div>
-        <div style={{ padding: "30px", flex: 2 }}>
-          <h3>Cập nhật thông tin</h3>
+
+        <div style={{ textAlign: "center", padding: "0 20px", marginTop: "10px" }}>
+          <h1 style={{ fontSize: "28px", color: "#333", margin: "10px 0 5px" }}>{profile.userName}</h1>
+          <p style={{ color: "#777", margin: "0 0 20px" }}>{profile.email}</p>
+
+          <div style={{ margin: "20px 0" }}>
+            <p style={{ margin: "5px 0", color: "#555" }}>{profile.phone || "Chưa cập nhật số điện thoại"}</p>
+          </div>
+
           {message && (
-            <p style={{ 
-              color: message.type === "success" ? "green" : "red", 
-              marginBottom: "10px", 
-              fontWeight: "bold" 
-            }}>
+            <p
+              style={{
+                color: message.type === "success" ? "green" : "red",
+                fontWeight: "bold",
+                margin: "10px 0",
+              }}
+            >
               {message.text}
             </p>
           )}
-          <form onSubmit={handleSubmit}>
-            <input type="email" name="email" value={formData.email} onChange={handleChange} required placeholder="Email" style={{ width: "100%", padding: "8px", marginBottom: "10px" }} />
-            <input type="text" name="phone" value={formData.phone} onChange={handleChange} placeholder="Số điện thoại" style={{ width: "100%", padding: "8px", marginBottom: "10px" }} />
-            <input type="text" name="userName" value={formData.userName} onChange={handleChange} required placeholder="Tên người dùng" style={{ width: "100%", padding: "8px", marginBottom: "10px" }} />
-            <input type="file" name="avatar" accept="image/*" onChange={handleAvatarChange} style={{ width: "100%", padding: "8px", marginBottom: "10px" }} />
-            <button type="submit" style={{ padding: "10px", backgroundColor: "#ff7b7b", color: "white", border: "none", borderRadius: "5px", cursor: "pointer" }}>Lưu thay đổi</button>
+
+          <form
+            style={{ display: "flex", flexDirection: "column", gap: "10px", margin: "20px 0" }}
+            onSubmit={handleSubmit}
+          >
+            <input
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              required
+              placeholder="Email"
+              style={{
+                padding: "8px",
+                border: "1px solid #ddd",
+                borderRadius: "5px",
+                fontSize: "14px",
+              }}
+            />
+            <input
+              type="text"
+              name="phone"
+              value={formData.phone}
+              onChange={handleChange}
+              placeholder="Số điện thoại"
+              style={{
+                padding: "8px",
+                border: "1px solid #ddd",
+                borderRadius: "5px",
+                fontSize: "14px",
+              }}
+            />
+            <input
+              type="text"
+              name="userName"
+              value={formData.userName}
+              onChange={handleChange}
+              required
+              placeholder="Tên người dùng"
+              style={{
+                padding: "8px",
+                border: "1px solid #ddd",
+                borderRadius: "5px",
+                fontSize: "14px",
+              }}
+            />
+            <input
+              type="file"
+              name="avatar"
+              accept="image/*"
+              onChange={handleAvatarChange}
+              style={{
+                padding: "8px",
+                border: "1px solid #ddd",
+                borderRadius: "5px",
+                fontSize: "14px",
+              }}
+            />
+            <button
+              type="submit"
+              style={{
+                background: "linear-gradient(to right, #ff7b7b, #ffcc70)",
+                color: "white",
+                border: "none",
+                padding: "10px",
+                borderRadius: "20px",
+                fontSize: "16px",
+                cursor: "pointer",
+                transition: "all 0.3s ease",
+              }}
+              onMouseOver={(e) => (e.target.style.background = "linear-gradient(to right, #ffcc70, #ff7b7b)")}
+              onMouseOut={(e) => (e.target.style.background = "linear-gradient(to right, #ff7b7b, #ffcc70)")}
+            >
+              Lưu thay đổi
+            </button>
           </form>
-          <button onClick={() => setShowChangePassword(!showChangePassword)} style={{ marginTop: "10px", padding: "8px", backgroundColor: "#ffcc70", border: "none", borderRadius: "5px", cursor: "pointer" }}>Đổi mật khẩu</button>
+
+          <button
+            style={{
+              background: "linear-gradient(to right, #1e88e5, #42a5f5)",
+              color: "white",
+              border: "none",
+              padding: "12px 30px",
+              borderRadius: "30px",
+              fontSize: "16px",
+              cursor: "pointer",
+              transition: "all 0.3s ease",
+              boxShadow: "0 4px 10px rgba(33, 150, 243, 0.3)",
+            }}
+            onClick={() => setShowChangePassword(!showChangePassword)}
+            onMouseOver={(e) => {
+              e.target.style.background = "linear-gradient(to right, #1976d2, #1e88e5)";
+              e.target.style.boxShadow = "0 6px 15px rgba(33, 150, 243, 0.4)";
+            }}
+            onMouseOut={(e) => {
+              e.target.style.background = "linear-gradient(to right, #1e88e5, #42a5f5)";
+              e.target.style.boxShadow = "0 4px 10px rgba(33, 150, 243, 0.3)";
+            }}
+          >
+            Đổi mật khẩu
+          </button>
+
           {showChangePassword && (
-            <form onSubmit={handleChangePassword} style={{ marginTop: "10px" }}>
-              <input 
-                type="password" 
-                name="oldPassword" 
-                placeholder="Mật khẩu cũ" 
-                value={passwordData.oldPassword} 
-                onChange={handlePasswordChange} 
-                style={{ width: "100%", padding: "8px", marginBottom: "10px" }} 
+            <form
+              style={{ display: "flex", flexDirection: "column", gap: "10px", margin: "20px 0" }}
+              onSubmit={handleChangePassword}
+            >
+              <input
+                type="password"
+                name="oldPassword"
+                placeholder="Mật khẩu cũ"
+                value={passwordData.oldPassword}
+                onChange={handlePasswordChange}
+                style={{
+                  padding: "8px",
+                  border: "1px solid #ddd",
+                  borderRadius: "5px",
+                  fontSize: "14px",
+                }}
               />
-              <input 
-                type="password" 
-                name="newPassword" 
-                placeholder="Mật khẩu mới" 
-                value={passwordData.newPassword} 
-                onChange={handlePasswordChange} 
-                style={{ width: "100%", padding: "8px", marginBottom: "10px" }} 
+              <input
+                type="password"
+                name="newPassword"
+                placeholder="Mật khẩu mới"
+                value={passwordData.newPassword}
+                onChange={handlePasswordChange}
+                style={{
+                  padding: "8px",
+                  border: "1px solid #ddd",
+                  borderRadius: "5px",
+                  fontSize: "14px",
+                }}
               />
-              <input 
-                type="password" 
-                name="confirmNewPassword" 
-                placeholder="Xác nhận mật khẩu mới" 
-                value={passwordData.confirmNewPassword} 
-                onChange={handlePasswordChange} 
-                style={{ width: "100%", padding: "8px", marginBottom: "10px" }} 
+              <input
+                type="password"
+                name="confirmNewPassword"
+                placeholder="Xác nhận mật khẩu mới"
+                value={passwordData.confirmNewPassword}
+                onChange={handlePasswordChange}
+                style={{
+                  padding: "8px",
+                  border: "1px solid #ddd",
+                  borderRadius: "5px",
+                  fontSize: "14px",
+                }}
               />
-              <button 
-                type="submit" 
-                style={{ marginTop: "10px", padding: "8px", backgroundColor: "green", border: "none", borderRadius: "5px", cursor: "pointer" }}
-              >
-                Xác nhận
-              </button>
-              <button 
-                type="button" 
-                onClick={() => setShowChangePassword(false)} 
-                style={{ marginTop: "10px", padding: "8px", backgroundColor: "red", border: "none", borderRadius: "5px", cursor: "pointer", marginLeft: "10px" }}
-              >
-                Hủy
-              </button>
+              <div style={{ display: "flex", gap: "10px", justifyContent: "center" }}>
+                <button
+                  type="submit"
+                  style={{
+                    backgroundColor: "green",
+                    color: "white",
+                    border: "none",
+                    padding: "8px 20px",
+                    borderRadius: "20px",
+                    cursor: "pointer",
+                    transition: "all 0.3s ease",
+                  }}
+                  onMouseOver={(e) => (e.target.style.backgroundColor = "darkgreen")}
+                  onMouseOut={(e) => (e.target.style.backgroundColor = "green")}
+                >
+                  Xác nhận
+                </button>
+                <button
+                  type="button"
+                  style={{
+                    backgroundColor: "red",
+                    color: "white",
+                    border: "none",
+                    padding: "8px 20px",
+                    borderRadius: "20px",
+                    cursor: "pointer",
+                    transition: "all 0.3s ease",
+                  }}
+                  onClick={() => setShowChangePassword(false)}
+                  onMouseOver={(e) => (e.target.style.backgroundColor = "darkred")}
+                  onMouseOut={(e) => (e.target.style.backgroundColor = "red")}
+                >
+                  Hủy
+                </button>
+              </div>
             </form>
           )}
         </div>

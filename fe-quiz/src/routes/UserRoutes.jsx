@@ -34,7 +34,7 @@ export const userRoutes = [
     { path: "reset-password/:id/:token", element: <ResetPassword/>},
     { path: "upgrade", element: <UpgradePage/>},
     { path: "*", element: <NotFoundPage/>},
-    { path: "reset-password/:id/:token", element: <ResetPass/>},
+    { path: "reset-password/:id/:token", element: <ResetPassword/>},
     { path: "study/:questionFileId", element: <StudySession /> },
     {
       path: "questionfile/findbyuser/:userId",

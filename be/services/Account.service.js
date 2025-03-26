@@ -89,11 +89,33 @@ async function getAccountService(id) {
 //[update]profile
 async function updateAccountService(id, updateFields) {
   try {
-    const allowedFields = ["email", "phone", "userName", "avatar"]; // Thêm "avatar" vào danh sách
+    const allowedFields = ["email", "phone", "userName", "avatar"];
     const keys = Object.keys(updateFields);
     const isValid = keys.every((field) => allowedFields.includes(field));
     if (!isValid) {
       throw createError.BadRequest("Invalid field name");
+    }
+
+    // Kiểm tra các trường nếu có trong updateFields
+    if (updateFields.userName && updateFields.userName.length > 100) {
+      throw createError.BadRequest("Username must be less than 100 characters");
+    }
+
+    if (updateFields.email) {
+      const emailRegex =
+        /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+      if (!emailRegex.test(updateFields.email)) {
+        throw createError.BadRequest("Please provide a valid email");
+      }
+    }
+
+    if (updateFields.phone) {
+      const phoneRegex = /^[0]\d{9}$/;
+      if (!phoneRegex.test(updateFields.phone)) {
+        throw createError.BadRequest(
+          "Phone number must be exactly 10 digits and start with 0"
+        );
+      }
     }
 
     const updatedAccount = await AccountRepository.updateAccountById(
@@ -109,7 +131,6 @@ async function updateAccountService(id, updateFields) {
     throw error;
   }
 }
-
 async function changePasswordService(id, oldPassword, newPassword) {
   if (!id || !oldPassword || !newPassword) {
     throw new Error("Vui lòng điền đầy đủ thông tin");

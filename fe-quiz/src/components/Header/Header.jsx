@@ -1,7 +1,8 @@
+// Header.js
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { SearchOutlined, BellOutlined } from "@ant-design/icons";
-import { Layout, Menu, Dropdown, Button, Input, Avatar, Space, Badge } from "antd";
+import { BellOutlined } from "@ant-design/icons";
+import { Layout, Menu, Dropdown, Button, Avatar, Space, Badge } from "antd";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import socket from "../../helper/socket";
@@ -11,9 +12,8 @@ import { useAuth } from "../../Context/AuthContext";
 
 const { Header: AntHeader } = Layout;
 
-const Header = ({ onSearchResults }) => {
+const Header = () => { // Xóa prop onSearchResults vì không còn cần nữa
   const { user, logout } = useAuth();
-  const [searchQuery, setSearchQuery] = useState("");
   const [notificationCount, setNotificationCount] = useState(0);
   const [notifications, setNotifications] = useState([]);
   const navigate = useNavigate();
@@ -85,22 +85,6 @@ const Header = ({ onSearchResults }) => {
       draggable: true,
     });
     setTimeout(() => navigate("/login"), 1200);
-  };
-
-  const handleSearch = async () => {
-    try {
-      const response = await fetch(
-        `http://localhost:9999/questionFile/search?name=${searchQuery}`
-      );
-      if (response.ok) {
-        const data = await response.json();
-        onSearchResults(data.questionFiles);
-      } else {
-        console.error("Error searching for question files");
-      }
-    } catch (error) {
-      console.error("Error fetching search results:", error);
-    }
   };
 
   const handleGoToProfile = async () => {
@@ -209,21 +193,8 @@ const Header = ({ onSearchResults }) => {
         </Dropdown>
       </Space>
 
-      <Input
-        className="custom-search"
-        placeholder="Tìm kiếm"
-        value={searchQuery}
-        onChange={(e) => setSearchQuery(e.target.value)}
-        onPressEnter={handleSearch}
-        suffix={
-          <Button
-            icon={<SearchOutlined />}
-            onClick={handleSearch}
-            className="search-button"
-          />
-        }
-      />
-
+      {/* Xóa phần tìm kiếm ở đây */}
+      
       <Space size="middle" className="user-section">
         {user.userName ? (
           <>

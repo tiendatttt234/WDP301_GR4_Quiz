@@ -20,6 +20,7 @@ async function getAllQuestionFile(req, res, next) {
 async function getQuestionFilesByUserId(req, res) {
   try {
     const userId = req.params.userId; // Lấy userId từ params hoặc từ req.user nếu có auth
+    
     const questionFiles = await questionFileService.getQuestionFileByUserId(
       userId
     );

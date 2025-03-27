@@ -6,7 +6,7 @@
   z-index: 1000;
   background-color: #ffffff;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  padding: 0 10px;
+  padding: 0 20px; /* Tăng padding để có thêm không gian */
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -21,6 +21,12 @@
   padding-left: 10px;
 }
 
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 20px; /* Khoảng cách giữa các nút Công cụ và Chủ đề */
+}
+
 .nav-links .nav-button {
   color: #333;
   font-weight: 500;
@@ -32,46 +38,16 @@
   color: #007bff;
 }
 
-.custom-search {
-  width: 300px;
-  border: 1px solid #d9d9d9;
-  border-radius: 4px;
-  padding: 5px 10px;
-}
-
-.custom-search input {
-  border: none;
-  outline: none;
-  width: 100%;
-}
-
-.search-button {
-  background-color: #007bff;
-  border: none;
-  border-radius: 50%;
-  width: 24px;
-  height: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #fff;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-.search-button:hover {
-  background-color: #0056b3;
-}
-
 .user-section {
   display: flex;
   align-items: center;
+  gap: 15px; /* Khoảng cách giữa Xin chào, chuông và avatar */
 }
 
 .greeting {
   color: #333;
   font-size: 14px;
-  padding-right: 10px;
+  font-weight: 500;
 }
 
 .notification-badge .bell-icon {
@@ -94,51 +70,6 @@
   min-width: 16px;
   height: 16px;
   line-height: 16px;
-}
-
-/* Style cho Dropdown thông báo */
-.notification-menu {
-  width: 300px;
-  max-height: 400px;
-  overflow-y: auto;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  background-color: #fff;
-  padding: 0;
-}
-
-.notification-menu .ant-menu-item {
-  padding: 10px 15px;
-  margin: 0;
-  border-bottom: 1px solid #f0f0f0;
-  display: flex;
-  align-items: center;
-  transition: background-color 0.3s, opacity 0.3s; /* Thêm transition cho opacity */
-  font-size: 14px;
-}
-
-.notification-menu .ant-menu-item:hover {
-  background-color: #f5f7fa;
-}
-
-.notification-menu .ant-menu-item.unread {
-  background-color: #e6f7ff; /* Màu nền nhẹ cho thông báo chưa đọc */
-  font-weight: 500;
-  opacity: 1; /* Thông báo chưa đọc rõ nét */
-}
-
-.notification-menu .ant-menu-item.read {
-  color: #888;
-  font-weight: normal;
-  opacity: 0.6; /* Thông báo đã đọc mờ đi */
-}
-
-/* Style khi không có thông báo */
-.notification-menu .ant-menu-item.no-notifications {
-  text-align: center;
-  color: #888;
-  font-style: italic;
-  opacity: 0.8; /* Mờ nhẹ nhưng không quá mờ như thông báo đã đọc */
 }
 
 .user-avatar {
@@ -165,6 +96,51 @@
   color: #fff;
 }
 
+/* Style cho Dropdown thông báo */
+.notification-menu {
+  width: 300px;
+  max-height: 400px;
+  overflow-y: auto;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  background-color: #fff;
+  padding: 0;
+}
+
+.notification-menu .ant-menu-item {
+  padding: 10px 15px;
+  margin: 0;
+  border-bottom: 1px solid #f0f0f0;
+  display: flex;
+  align-items: center;
+  transition: background-color 0.3s, opacity 0.3s;
+  font-size: 14px;
+}
+
+.notification-menu .ant-menu-item:hover {
+  background-color: #f5f7fa;
+}
+
+.notification-menu .ant-menu-item.unread {
+  background-color: #e6f7ff;
+  font-weight: 500;
+  opacity: 1;
+}
+
+.notification-menu .ant-menu-item.read {
+  color: #888;
+  font-weight: normal;
+  opacity: 0.6;
+}
+
+.notification-menu .ant-menu-item.no-notifications {
+  text-align: center;
+  color: #888;
+  font-style: italic;
+  opacity: 0.8;
+}
+
+/* Style cho Dropdown menu Công cụ và Chủ đề */
 .custom-menu {
   border-radius: 4px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);

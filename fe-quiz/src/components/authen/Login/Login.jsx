@@ -1,10 +1,11 @@
+// Login.js
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFacebookF, faTwitter, faLinkedinIn } from "@fortawesome/free-brands-svg-icons";
 import { useAuth } from "../../../Context/AuthContext";
-// import { toast, ToastContainer } from "react-toastify"; // Only import once
-// import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-toastify"; // Chỉ import toast, không cần ToastContainer
+import "react-toastify/dist/ReactToastify.css";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -166,7 +167,7 @@ const Login = () => {
       setMessage({ text: "Email và mật khẩu là bắt buộc", type: "error" });
       return;
     }
-  
+
     try {
       const response = await fetch("http://localhost:9999/auth/login", {
         method: "POST",
@@ -175,10 +176,10 @@ const Login = () => {
         },
         body: JSON.stringify({ email, password }),
       });
-  
+
       const data = await response.json();
       console.log("Dữ liệu từ API:", data);
-  
+
       if (!data.success) {
         setMessage({
           text: data.message || "Email hoặc mật khẩu không chính xác",
@@ -186,18 +187,32 @@ const Login = () => {
         });
         return;
       }
-  
+
       const { accessToken, userName, id, roles, avatar } = data.data;
-  
+
       // Truyền thêm avatar vào hàm login
       login({ userName, id, roles, accessToken, avatar: avatar || "" });
-  
-      // Điều hướng thẳng đến trang chủ
-      navigate("/");
+
+      toast.success("Đăng nhập thành công!", {
+        position: "top-right",
+        autoClose: 1000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        onClose: () => {
+          if (roles.some((role) => role.name === "admin")) {
+            navigate("/admin");
+          } else {
+            navigate("/");
+          }
+        },
+      });
     } catch (err) {
       setMessage({ text: "Lỗi kết nối đến server", type: "error" });
     }
   };
+
   return (
     <div style={styles.body}>
       <div style={styles.container}>
@@ -282,7 +297,7 @@ const Login = () => {
           </div>
         </div>
       </div>
-      {/* <ToastContainer /> Chỉ sử dụng ToastContainer một lần */}
+      {/* Xóa ToastContainer ở đây */}
     </div>
   );
 };

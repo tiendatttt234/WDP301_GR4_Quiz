@@ -1,5 +1,5 @@
 
-const { quizRepository } = require("../repositories");
+const { quizRepository, quizResultRepository } = require("../repositories");
 const mongoose = require("mongoose");
 const QuestionFile = require("../models/QuestionFile");
 
@@ -217,6 +217,10 @@ async function getAllQuizResultByUserId(userId) {
       };
   });
 };
+
+async function getResultById(id) {
+  
+}
 
 const QuizService = {
   getAllQuiz,

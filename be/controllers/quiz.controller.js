@@ -79,6 +79,9 @@ async function getAllQuizResultByUserId(req, res, next) {
       res.status(400).json({ message: error.message });
   }
 }
+async function getQuizResultById(req, res,next){
+
+}
 
 const QuizController ={
     getAllQuiz,
@@ -86,7 +89,8 @@ const QuizController ={
     getQuiz,
     createQuiz,
     submitQuiz,
-    getAllQuizResultByUserId
+    getAllQuizResultByUserId,
+    getQuizResultById
 }
 
 module.exports = QuizController;

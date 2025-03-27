@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Card, Container, Button } from "react-bootstrap";
-import { useParams } from "react-router-dom"; // Thêm useNavigate
+import { useParams, useNavigate } from "react-router-dom"; // Thêm useNavigate
 import QuestionComponent from "../QuestionComponent/QuestionComponent";
 import "./QuizAttempt.css";
 
 export default function QuizAttempt() {
   const { id: quizId } = useParams();
-  // const navigate = useNavigate(); // Khởi tạo useNavigate
+  const navigate = useNavigate(); // Khởi tạo useNavigate
   const [quizData, setQuizData] = useState(null);
   const [userAnswers, setUserAnswers] = useState([]);
   const questionRefs = useRef([]);
@@ -62,8 +62,8 @@ export default function QuizAttempt() {
         selectedAnswerIds: userAnswers[index] || (question.type === "MAQ" ? [] : null),
       })),
     };
-    // console.log(submissionData);
-    
+    console.log("Submission Data:", submissionData);
+
     try {
       const response = await fetch("http://localhost:9999/quiz/submit", {
         method: "POST",
@@ -76,15 +76,16 @@ export default function QuizAttempt() {
       if (response.ok) {
         const result = await response.json();
         console.log("Quiz result:", result);
-        
+        console.log("Quiz data:", quizData);
+        console.log("Quiz user:", userAnswers);
         // Navigate đến trang kết quả và truyền dữ liệu qua state
-        // navigate("/quiz/result", {
-        //   state: {
-        //     quizResult: result,
-        //     quizData: quizData, 
-        //     userAnswers: userAnswers, 
-        //   },
-        // });
+        navigate("/quiz/result", {
+          state: {
+            quizResult: result,
+            quizData: quizData,
+            userAnswers: userAnswers,
+          },
+        });
       } else {
         console.error("Failed to submit quiz");
         alert("Gửi bài thất bại, vui lòng thử lại!");

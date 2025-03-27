@@ -1,8 +1,7 @@
-// Header.js
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { BellOutlined } from "@ant-design/icons";
-import { Layout, Menu, Dropdown, Button, Avatar, Space, Badge } from "antd";
+import { Layout, Button, Avatar, Space, Badge, Dropdown, Menu } from "antd";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import socket from "../../helper/socket";
@@ -12,7 +11,7 @@ import { useAuth } from "../../Context/AuthContext";
 
 const { Header: AntHeader } = Layout;
 
-const Header = () => { // Xóa prop onSearchResults vì không còn cần nữa
+const Header = () => {
   const { user, logout } = useAuth();
   const [notificationCount, setNotificationCount] = useState(0);
   const [notifications, setNotifications] = useState([]);
@@ -135,18 +134,6 @@ const Header = () => { // Xóa prop onSearchResults vì không còn cần nữa
     </Menu>
   );
 
-  const toolsMenu = (
-    <Menu className="custom-menu">
-      <Menu.Item key="2">
-        <Link to="/questionfile/create" style={{ textDecoration: 'none' }}>Tạo tệp câu hỏi</Link>
-      </Menu.Item>
-      <Menu.Item key="3">
-        <Link to="/questionfile/getAll" style={{ textDecoration: 'none' }}>Thư viện của bạn</Link>
-      </Menu.Item>
-    </Menu>
-  );
-
-
   const userMenu = (
     <Menu className="custom-menu">
       <Menu.Item key="1" onClick={handleGoToProfile}>
@@ -163,21 +150,23 @@ const Header = () => { // Xóa prop onSearchResults vì không còn cần nữa
 
   return (
     <AntHeader className="custom-header">
-      <Link to="/" className="logo" style={{ textDecoration: 'none' }}>
-        <h1>Quiz Practice</h1>
-      </Link>
-
-      <Space size="middle" className="nav-links">
-        <Dropdown overlay={toolsMenu}>
+      <Space size="middle" className="left-section">
+        <Link to="/" className="logo" style={{ textDecoration: "none" }}>
+          <h1>Quiz Practice</h1>
+        </Link>
+        <Link to="/questionfile/create" style={{ textDecoration: "none" }}>
           <Button type="link" className="nav-button">
-            Công cụ
+            Tạo tệp câu hỏi
           </Button>
-        </Dropdown>
+        </Link>
+        <Link to="/questionfile/getAll" style={{ textDecoration: "none" }}>
+          <Button type="link" className="nav-button">
+            Thư viện của bạn
+          </Button>
+        </Link>
       </Space>
 
-      {/* Xóa phần tìm kiếm ở đây */}
-      
-      <Space size="middle" className="user-section">
+      <Space size="middle" className="user-section" style={{ marginLeft:"400px" }}>
         {user.userName ? (
           <>
             <span className="greeting">Xin chào, {user.userName}</span>

@@ -70,7 +70,7 @@ const QuestionFileSchema = new mongoose.Schema({
 }, {
     timestamps: true  
 });
-
+QuestionFileSchema.index({ name: "text", description: "text" });
 
 const QuestionFile = mongoose.model("QuestionFile", QuestionFileSchema);
 

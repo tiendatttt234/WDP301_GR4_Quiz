@@ -6,6 +6,7 @@ const AccountSchema = new mongoose.Schema({
     required: [true, "Email is required"],
     trim: true,
     unique: true,
+    index: true,
     match: [
       /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
       "Please fill valid email",
@@ -36,6 +37,11 @@ const AccountSchema = new mongoose.Schema({
   userName: {
     type: String,
     trim: true,
+    index: true,
+  },
+  userNameNoAccents: {
+    type: String,
+    trim: true,
   },
   roles: [
     {
@@ -49,16 +55,27 @@ const AccountSchema = new mongoose.Schema({
     default: false,
   },
   primeExpiresAt: {
-    type: Date, 
+    type: Date,
   },
-  isLocked:{
+  isLocked: {
     type: Boolean,
-    default: false
+    default: false,
   },
- 
 }, { timestamps: true });
 
+// Tự động tạo userNameNoAccents trước khi lưu
+const removeAccents = (str) => {
+    return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+};
 
-// Create the Account model
+AccountSchema.pre('save', function (next) {
+    if (this.userName) {
+        this.userNameNoAccents = removeAccents(this.userName);
+    }
+    next();
+});
+
+AccountSchema.index({ userName: "text", userNameNoAccents: "text", email: "text" });
+
 const Account = mongoose.model("Account", AccountSchema);
 module.exports = Account;

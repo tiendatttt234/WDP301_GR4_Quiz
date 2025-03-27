@@ -10,6 +10,7 @@ const { quizRouter, questionBankRouter, exportRouter,notificationRouter, reportR
 const accountRouter = require("./routes/account.router");
 const adminRouter = require("./routes/admin.routes");
 const studyRouter = require("./routes/studyRoutes");
+const searchRouter = require("./routes/searchRoutes");
 const app = express();
 
 // Middleware
@@ -73,7 +74,15 @@ app.use("/api/reports", reportRouter);
 app.use("/package", premiumRouter);
 app.use("/transaction", transactionRouter);
 app.use("/learning", studyRouter);
+app.use("/search", searchRouter);
 
+// Trong index.js, sau khi định nghĩa tất cả các route
+console.log("Registered routes:");
+app._router.stack.forEach((r) => {
+  if (r.route && r.route.path) {
+    console.log(`${Object.keys(r.route.methods).join(", ")} ${r.route.path}`);
+  }
+});
 // Middleware xử lý lỗi
 app.use((err, req, res, next) => {
   console.error(err.stack);

@@ -3,7 +3,8 @@ const StudyService = require("../services/studyService");
 exports.getStudySession = async (req, res) => {
   try {
     const { questionFileId } = req.params;
-    const userId = req.payload ? req.payload.user.id : "guest";
+    const userId = req.user ? req.user._id : "guest"; // Đúng: Lưu _id nếu đăng nhập, "guest" nếu không
+
     res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
     res.set('Pragma', 'no-cache');
     res.set('Expires', '0');
@@ -19,7 +20,7 @@ exports.getStudySession = async (req, res) => {
 exports.submitAnswer = async (req, res) => {
   try {
     const { questionFileId, questionId, selectedAnswers } = req.body;
-    const userId = req.payload ? req.payload.user.id : "guest";
+    const userId = req.user ? req.user._id : "guest";
 
     const result = await StudyService.submitAnswer(userId, questionFileId, questionId, selectedAnswers);
     res.status(200).json(result);
@@ -30,7 +31,7 @@ exports.submitAnswer = async (req, res) => {
 exports.endRound = async (req, res) => {
   try {
     const { questionFileId } = req.params;
-    const userId = req.payload ? req.payload.user.id : "guest";
+    const userId = req.user ? req.user._id : "guest";
 
     const result = await StudyService.endRound(userId, questionFileId);
     res.status(200).json(result);
@@ -42,7 +43,7 @@ exports.endRound = async (req, res) => {
 exports.resetStudySession = async (req, res) => {
   try {
     const { questionFileId } = req.params;
-    const userId = req.payload ? req.payload.user.id : "guest";
+    const userId = req.user ? req.user._id : "guest";
 
     const result = await StudyService.resetStudySession(userId, questionFileId);
     res.status(200).json(result);

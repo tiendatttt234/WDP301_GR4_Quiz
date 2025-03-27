@@ -48,7 +48,6 @@ const getReportDetails = async (req, res) => {
             report_id: report._id,
             sender: report.reportBy.userName,
             senderId: report.reportBy._id,
-            createdAt: report.createdAt,
             questionFile: {
                 qf_id: report.questionFile._id,
                 qf_name: report.questionFile.name,

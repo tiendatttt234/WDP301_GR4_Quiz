@@ -1,0 +1,89 @@
+.quiz-modal {
+    top: 50%;
+    left: 50%;
+    right: auto;
+    bottom: auto;
+    margin-right: -50%;
+    transform: translate(-50%, -50%);
+    width: 450px;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    background-color: #fff;
+    border: none;
+  }
+  
+  .quiz-modal-overlay {
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+  
+  .quiz-modal h2 {
+    font-size: 24px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  
+  .quiz-modal-form .form-group {
+    margin-bottom: 20px;
+  }
+  
+  .quiz-modal-form label {
+    display: block;
+    font-size: 16px;
+    font-weight: 500;
+    color: #555;
+    margin-bottom: 8px;
+  }
+  
+  .quiz-modal-form input {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  
+  .quiz-modal-form input:focus {
+    border-color: #007bff;
+  }
+  
+  .quiz-modal-form .button-group {
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .quiz-modal-form button[type="submit"] {
+    padding: 10px 25px;
+    font-size: 16px;
+    font-weight: 500;
+    color: #fff;
+    background-color: #007bff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+  
+  .quiz-modal-form button[type="submit"]:hover {
+    background-color: #0056b3;
+  }
+  
+  .quiz-modal-form button[type="button"] {
+    padding: 10px 25px;
+    font-size: 16px;
+    font-weight: 500;
+    color: #555;
+    background-color: #f1f3f5;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+  
+  .quiz-modal-form button[type="button"]:hover {
+    background-color: #e2e6ea;
+  }

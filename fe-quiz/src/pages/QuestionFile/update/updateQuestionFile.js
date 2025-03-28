@@ -102,7 +102,10 @@ const UpdateQuestion = () => {
     for (let q of questions) {
       if (!q.question.trim())
         return "Vui lòng nhập nội dung cho tất cả câu hỏi!";
+      if (q.selectedAnswers.length === 0)
+        return "Vui lòng chọn ít nhất một đáp án đúng cho mỗi câu hỏi";
     }
+    
     return null;
   };
 

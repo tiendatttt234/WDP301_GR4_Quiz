@@ -5,6 +5,7 @@ const exportRouter = require('./Export.route');
 const notificationRouter = require('./notifycation.route');
 const reportRouter = require('./report.router');
 const transactionRouter = require("./Transaction.route");
+const premiumRouter = require("./premium.route");
 module.exports = {
   accountRouter,
   quizRouter,
@@ -12,5 +13,6 @@ module.exports = {
   exportRouter,
   notificationRouter,
   reportRouter,
-  transactionRouter
+  transactionRouter,
+  premiumRouter
 };

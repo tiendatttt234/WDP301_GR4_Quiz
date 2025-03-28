@@ -1,4 +1,6 @@
 const AccountService = require("../services/Account.service");
+const multer = require("multer");
+const path = require("path");
 
 async function registerController(req, res, next) {
   try {
@@ -63,10 +65,26 @@ async function getAccountController(req, res, next) {
     next(error);
   }
 }
+// Cấu hình multer để lưu file vào thư mục 'uploads'
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "uploads/"); // Thư mục lưu trữ file
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + path.extname(file.originalname)); // Tạo tên file duy nhất
+  },
+});
+
+const upload = multer({ storage: storage }).single("avatar");
 async function updateAccountController(req, res, next) {
   try {
     const { id } = req.params;
     const updateFields = req.body;
+
+    // Nếu có file avatar được upload
+    if (req.file) {
+      updateFields.avatar = `/uploads/${req.file.filename}`;
+    }
 
     const updatedAccount = await AccountService.updateAccountService(
       id,
@@ -104,7 +122,7 @@ async function changePasswordController(req, res, next) {
     console.error("Error changing password:", error.message);
     return res.status(500).json({
       status: false,
-      message: "Lỗi server",
+      message: "Mật khẩu hiện tại không đúng ",
       error: error.message,
     });
   }
@@ -112,11 +130,21 @@ async function changePasswordController(req, res, next) {
 const forgetPassword = async (req, res) => {
   try {
     const { email } = req.body;
+    if (!email) {
+      return res.status(400).json({
+        status: "error",
+        message: "Vui lòng nhập email",
+      });
+    }
+
     const result = await AccountService.requestPasswordReset(email);
-    res.json(result);
+    return res.status(200).json(result);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ status: "Error", error: error.message });
+    res.status(500).json({
+      status: "error",
+      message: "Đã xảy ra lỗi server",
+    });
   }
 };
 
@@ -124,11 +152,27 @@ const resetPassword = async (req, res) => {
   try {
     const { id, token } = req.params;
     const { password } = req.body;
+
+    if (!password) {
+      return res.status(400).json({
+        status: "error",
+        message: "Mật khẩu không được để trống",
+      });
+    }
+
     const result = await AccountService.resetPassword(id, token, password);
-    res.json(result);
+
+    if (result.status === "error") {
+      return res.status(400).json(result);
+    }
+
+    return res.status(200).json(result);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ status: "Error", error: error.message });
+    res.status(500).json({
+      status: "error",
+      message: "Lỗi server khi xử lý yêu cầu",
+    });
   }
 };
 
@@ -140,4 +184,5 @@ module.exports = {
   changePasswordController,
   forgetPassword,
   resetPassword,
+  upload,
 };

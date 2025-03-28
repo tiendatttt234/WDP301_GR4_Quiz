@@ -16,7 +16,7 @@ const {Transaction} = require("../models");
       { status, vnpayBankCode, vnpTransactionId },
       { new: true }
     ).populate('createBy');
-  };
+}
 
 const TransactionRepository = {
     createPayment,

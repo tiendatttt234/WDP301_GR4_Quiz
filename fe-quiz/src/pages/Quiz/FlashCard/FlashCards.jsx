@@ -1,86 +1,95 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import CardFlip from "react-card-flip";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "./Flashcard.css"; // Đảm bảo có file CSS để tùy chỉnh giao diện
+import "./Flashcard.css";
 
-const Flashcard = ({ question, answer, isFlipped, setIsFlipped, isTransitioning }) => {
+const Flashcard = ({ question, answer, isFlipped, setIsFlipped, direction, isTransitioning }) => {
   return (
     <CardFlip isFlipped={isFlipped} flipDirection="horizontal">
-      <div className={`flashcard front ${isTransitioning ? 'fade-out' : 'fade-in'}`} onClick={() => setIsFlipped(true)}>
+      <div
+        className={`flashcard front ${
+          isTransitioning
+            ? direction === "next"
+              ? "slide-out-left"
+              : "slide-out-right"
+            : direction === "next"
+            ? "slide-in-right"
+            : "slide-in-left"
+        }`}
+        onClick={() => setIsFlipped(true)}
+      >
         <p>{question}</p>
       </div>
-      <div className={`flashcard back ${isTransitioning ? 'fade-out' : 'fade-in'}`} onClick={() => setIsFlipped(false)}>
+      <div
+        className={`flashcard back ${
+          isTransitioning
+            ? direction === "next"
+              ? "slide-out-left"
+              : "slide-out-right"
+            : direction === "next"
+            ? "slide-in-right"
+            : "slide-in-left"
+        }`}
+        onClick={() => setIsFlipped(false)}
+      >
         <p>{answer}</p>
       </div>
     </CardFlip>
   );
 };
 
-const FlashcardList = () => {
-  const [flashcards, setFlashcards] = useState([]);
+const FlashcardList = ({ questionFile }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [direction, setDirection] = useState("next"); // Theo dõi hướng trượt
 
-  // Fetch dữ liệu từ API khi component mount
-  useEffect(() => {
-    fetch("http://localhost:9999/questionFile/getById/6728ebc9c0060ccd337b4348")
-      .then((response) => response.json())
-      .then((data) => {
-        // Xử lý dữ liệu từ API để tạo danh sách flashcard
-        const processedFlashcards = data.questionFile.arrayQuestion.map((q) => {
-          let answerText = "";
-          
-          if (q.type === "MCQ" || q.type === "Boolean") {
-            const correctAnswer = q.answers.find((a) => a.isCorrect);
-            answerText = correctAnswer ? correctAnswer.answerContent : "Không có đáp án đúng";
-          } else if (q.type === "MAQ") {
-            const correctAnswers = q.answers
-              .filter((a) => a.isCorrect)
-              .map((a) => a.answerContent)
-              .join(", ");
-            answerText = correctAnswers || "Không có đáp án đúng";
-          }
-
-          return {
-            question: q.content,
-            answer: answerText,
-          };
-        });
-
-        setFlashcards(processedFlashcards);
-        setLoading(false);
+  // Xử lý dữ liệu từ questionFile để tạo danh sách flashcard
+  const flashcards = questionFile
+    ? questionFile.arrayQuestion.map((q) => {
+        let answerText = "";
+        if (q.type === "MCQ" || q.type === "Boolean") {
+          const correctAnswer = q.answers.find((a) => a.isCorrect);
+          answerText = correctAnswer ? correctAnswer.answerContent : "Không có đáp án đúng";
+        } else if (q.type === "MAQ") {
+          const correctAnswers = q.answers
+            .filter((a) => a.isCorrect)
+            .map((a) => a.answerContent)
+            .join(", ");
+          answerText = correctAnswers || "Không có đáp án đúng";
+        }
+        return {
+          question: q.content,
+          answer: answerText,
+        };
       })
-      .catch((error) => {
-        console.error("Lỗi khi fetch dữ liệu:", error);
-        setLoading(false);
-      });
-  }, []);
+    : [];
 
   const nextCard = () => {
+    if (flashcards.length === 0) return;
+
+    setDirection("next");
     setIsTransitioning(true);
     setTimeout(() => {
       setIsFlipped(false);
       setCurrentIndex((prevIndex) => (prevIndex + 1) % flashcards.length);
       setIsTransitioning(false);
-    }, 300);
+    }, 400); // Đồng bộ với thời gian transition 0.4s
   };
 
   const prevCard = () => {
+    if (flashcards.length === 0) return;
+
+    setDirection("prev");
     setIsTransitioning(true);
     setTimeout(() => {
       setIsFlipped(false);
       setCurrentIndex((prevIndex) => (prevIndex - 1 + flashcards.length) % flashcards.length);
       setIsTransitioning(false);
-    }, 300);
+    }, 400);
   };
 
-  if (loading) {
-    return <div className="text-center">Đang tải dữ liệu...</div>;
-  }
-
-  if (flashcards.length === 0) {
+  if (!questionFile || flashcards.length === 0) {
     return <div className="text-center">Không có dữ liệu để hiển thị</div>;
   }
 
@@ -94,6 +103,7 @@ const FlashcardList = () => {
         answer={flashcards[currentIndex].answer}
         isFlipped={isFlipped}
         setIsFlipped={setIsFlipped}
+        direction={direction}
         isTransitioning={isTransitioning}
       />
       <button className="btn btn-primary ms-3" onClick={nextCard}>

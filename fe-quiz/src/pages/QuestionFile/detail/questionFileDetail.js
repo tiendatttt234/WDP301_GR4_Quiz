@@ -1,10 +1,10 @@
-// QuestionFileDetail.jsx
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { BookMarked, AlertTriangle, BookmarkX } from "lucide-react";
-import { useParams } from "react-router-dom";
+import { BookMarked, AlertTriangle, BookmarkX, FileText, BookOpen, Download } from "lucide-react";
+import { useParams, useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Flashcards from "../../Quiz/FlashCard/FlashCards.jsx";
 import {
   Title,
   Answer,
@@ -20,16 +20,19 @@ import {
   HeaderTitleWrapper,
 } from "./styles.js";
 import ReportModal from "./reportModal.js";
+import QuizCreationModal from "../../Quiz/QuizCreateModal/QuizCreationModal.jsx";
 
 const QUESTIONS_PER_PAGE = 30;
 
 const QuestionFileDetail = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [questionFile, setQuestionFile] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isQuizModalOpen, setIsQuizModalOpen] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
   const [favoriteId, setFavoriteId] = useState(null);
   const [isOwnQuestionFile, setIsOwnQuestionFile] = useState(false);
@@ -41,17 +44,16 @@ const QuestionFileDetail = () => {
           `http://localhost:9999/questionFile/getById/${id}`
         );
         const fetchedQuestionFile = response.data.questionFile;
-
         setQuestionFile(fetchedQuestionFile);
         setError(null);
-
+  
         const currentUserId = localStorage.getItem("id");
-        const ownId = response.data.questionFile?.createBy;
-        console.log("currentID " + currentUserId);
-        console.log(ownId);
-
-        setIsOwnQuestionFile(currentUserId === ownId ? true : false);
-
+        const ownId = response.data.questionFile.createdBy._id;
+        setIsOwnQuestionFile(currentUserId === ownId);
+  
+        console.log("currentUserId", currentUserId);
+        console.log("ownId", ownId);
+        
         if (currentUserId && !isOwnQuestionFile) {
           const favoriteResponse = await axios.get(
             `http://localhost:9999/favorite/user/${currentUserId}`
@@ -59,7 +61,7 @@ const QuestionFileDetail = () => {
           const existingFavorite = favoriteResponse.data.data.find((fav) =>
             fav.sharedQuestionFile.some((qf) => qf._id === id)
           );
-
+  
           if (existingFavorite) {
             setIsSaved(true);
             setFavoriteId(existingFavorite._id);
@@ -71,7 +73,7 @@ const QuestionFileDetail = () => {
         setLoading(false);
       }
     };
-
+  
     fetchQuestionFile();
   }, [id]);
 
@@ -87,30 +89,6 @@ const QuestionFileDetail = () => {
         return type;
     }
   };
-
-  if (loading)
-    return (
-      <Container>
-        <ErrorMessage>Đang tải...</ErrorMessage>
-      </Container>
-    );
-  if (error)
-    return (
-      <Container>
-        <ErrorMessage>{error}</ErrorMessage>
-      </Container>
-    );
-  if (!questionFile) return null;
-
-  // Logic phân trang
-  const totalQuestions = questionFile.arrayQuestion.length;
-  const totalPages = Math.ceil(totalQuestions / QUESTIONS_PER_PAGE);
-  const startIndex = (currentPage - 1) * QUESTIONS_PER_PAGE;
-  const paginatedQuestions = questionFile.arrayQuestion.slice(
-    startIndex,
-    startIndex + QUESTIONS_PER_PAGE
-  );
-  console.log(paginatedQuestions);
 
   const handleSave = async () => {
     try {
@@ -150,13 +128,11 @@ const QuestionFileDetail = () => {
         toast.error("Vui lòng đăng nhập để thực hiện thao tác này");
         return;
       }
-      await axios.delete(`http://localhost:9999/favorite/delete/${favoriteId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      await axios.delete(`http://localhost:9999/favorite/delete/${favoriteId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       setIsSaved(false);
       setFavoriteId(null);
       toast.success("Đã hủy lưu học phần thành công!");
@@ -165,43 +141,141 @@ const QuestionFileDetail = () => {
     }
   };
 
+  const handleStartStudy = () => {
+    navigate(`/study/${id}`);
+  };
+
+  const handleExport = async () => {
+    try {
+      const userId = localStorage.getItem("id");
+      const token = localStorage.getItem("accessToken");
+      if (!userId || !token) {
+        toast.error("Vui lòng đăng nhập để xuất file");
+        return;
+      }
+
+      // Gọi API export
+      const response = await axios.get(
+        `http://localhost:9999/api/export?qfId=${id}&userId=${userId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          responseType: 'blob', // Để xử lý file tải về
+        }
+      );
+
+      // Tạo URL blob và kích hoạt tải file
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `danh-sach-cau-hoi-${id}.txt`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      toast.success("Đã xuất file thành công!");
+    } catch (error) {
+      toast.error("Lỗi khi xuất file: " + error.message);
+    }
+  };
+
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
+  const openQuizModal = () => setIsQuizModalOpen(true);
+  const closeQuizModal = () => setIsQuizModalOpen(false);
+
+  if (loading)
+    return (
+      <Container>
+        <ErrorMessage>Đang tải...</ErrorMessage>
+      </Container>
+    );
+  if (error)
+    return (
+      <Container>
+        <ErrorMessage>{error}</ErrorMessage>
+      </Container>
+    );
+  if (!questionFile) return null;
+
+  const totalQuestions = questionFile.arrayQuestion.length;
+  const totalPages = Math.ceil(totalQuestions / QUESTIONS_PER_PAGE);
+  const startIndex = (currentPage - 1) * QUESTIONS_PER_PAGE;
+  const paginatedQuestions = questionFile.arrayQuestion.slice(
+    startIndex,
+    startIndex + QUESTIONS_PER_PAGE
+  );
 
   return (
     <Container>
       <Header>
         <HeaderTitleWrapper>
           <Title>{questionFile.name}</Title>
-          {!isOwnQuestionFile && (
-            <HeaderActions>
-              <button onClick={isSaved ? handleUnsave : handleSave}>
-                {isSaved ? (
-                  <>
-                    <BookmarkX size={20} color="rgb(96, 99, 103)" />
-                    <span>Hủy lưu</span>
-                  </>
-                ) : (
-                  <>
-                    <BookMarked size={20} color="rgb(96, 99, 103)" />
-                    <span>Lưu</span>
-                  </>
-                )}
-              </button>
-              <button onClick={openModal}>
-                <AlertTriangle size={20} color="#f39c12" />
-                <span>Báo cáo</span>
-              </button>
-            </HeaderActions>
-          )}
+          <HeaderActions>
+            <button onClick={handleStartStudy}>
+              <BookOpen size={20} color="rgb(96, 99, 103)" />
+              <span>Học</span>
+            </button>
+            {!isOwnQuestionFile && (
+              <>
+                <button onClick={isSaved ? handleUnsave : handleSave}>
+                  {isSaved ? (
+                    <>
+                      <BookmarkX size={20} color="rgb(96, 99, 103)" />
+                      <span>Hủy lưu</span>
+                    </>
+                  ) : (
+                    <>
+                      <BookMarked size={20} color="rgb(96, 99, 103)" />
+                      <span>Lưu</span>
+                    </>
+                  )}
+                </button>
+                <button onClick={openModal}>
+                  <AlertTriangle size={20} color="#f39c12" />
+                  <span>Báo cáo</span>
+                </button>
+              </>
+            )}
+            <button onClick={handleExport}>
+                  <Download size={20} color="rgb(96, 99, 103)" />
+                  <span>Xuất file</span>
+            </button>
+            <button onClick={openQuizModal}>
+              <FileText size={20} color="rgb(96, 99, 103)" />
+              <span>Tạo bài quiz</span>
+            </button>
+          </HeaderActions>
         </HeaderTitleWrapper>
         <Description>{questionFile.description}</Description>
-        {/* <Description>Trạng thái: {questionFile.isPrivate ? 'Riêng tư' : 'Công khai'}</Description> */}
+        <p>
+          Người tạo:{" "}
+          <strong
+            style={{
+              cursor: "pointer",
+              color: "blue",
+              textDecoration: "underline",
+            }}
+            onClick={() =>
+              navigate(`/questionfile/findbyuser/${questionFile.createdBy._id}`)
+            }
+          >
+            {questionFile.createdBy.userName || "Không rõ"}
+          </strong>
+        </p>
       </Header>
+
+      <Flashcards questionFile={questionFile} />
 
       <ReportModal
         isOpen={isModalOpen}
         onRequestClose={closeModal}
+        questionFileId={id}
+      />
+
+      <QuizCreationModal
+        isOpen={isQuizModalOpen}
+        onRequestClose={closeQuizModal}
         questionFileId={id}
       />
 

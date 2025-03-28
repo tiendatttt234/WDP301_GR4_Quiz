@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const QuizResultSchema = new mongoose.Schema({
-    creatBy: {
+    createBy: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Account',
         required: true

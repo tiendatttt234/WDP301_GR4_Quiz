@@ -1,83 +1,53 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { SearchOutlined, BellOutlined } from "@ant-design/icons";
-import {
-  Layout,
-  Menu,
-  Dropdown,
-  Button,
-  Input,
-  Avatar,
-  Space,
-  Badge,
-} from "antd";
+import { BellOutlined } from "@ant-design/icons";
+import { Layout, Button, Avatar, Space, Badge, Dropdown, Menu } from "antd";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import socket from "../../helper/socket";
 import axios from "axios";
 import "./Header.css";
+import { useAuth } from "../../Context/AuthContext";
 
 const { Header: AntHeader } = Layout;
 
-const Header = ({ onSearchResults }) => {
-  const [userName, setUserName] = useState(
-    localStorage.getItem("userName") || ""
-  );
-  const [id, setId] = useState(localStorage.getItem("id") || "");
-  const [userRole, setUserRole] = useState("");
-  const [searchQuery, setSearchQuery] = useState("");
+const Header = () => {
+  const { user, logout } = useAuth();
   const [notificationCount, setNotificationCount] = useState(0);
   const [notifications, setNotifications] = useState([]);
   const navigate = useNavigate();
 
-  console.log("userRole", id + userRole);
-
   useEffect(() => {
     const loadUserData = () => {
-      const accessToken = localStorage.getItem("accessToken");
-      const storedUserName = localStorage.getItem("userName");
-      const storedId = localStorage.getItem("id");
-
-      setUserName(storedUserName || "");
-      setId(storedId || "");
-
-      if (accessToken && storedUserName) {
-        if (storedId) {
-          console.log("Registering user with ID:", storedId);
-          socket.emit("registerUser", storedId);
-          fetchNotifications(storedId);
-        }
+      if (user.id) {
+        console.log("Registering user with ID:", user.id);
+        socket.emit("registerUser", user.id);
+        fetchNotifications(user.id);
       }
     };
 
     const fetchNotifications = async (userId) => {
       try {
-        const response = await axios.get(
-          `http://localhost:9999/notifycation/${userId}`
-        );
+        const response = await axios.get(`http://localhost:9999/notifycation/${userId}`);
         const fetchedNotifications = response.data.notifications;
         setNotifications(fetchedNotifications);
-        const unreadCount = fetchedNotifications.filter(
-          (notif) => !notif.isRead
-        ).length;
+        const unreadCount = fetchedNotifications.filter((notif) => !notif.isRead).length;
         setNotificationCount(unreadCount);
       } catch (error) {
         console.error("Error fetching notifications:", error);
       }
     };
 
-    // Kiểm tra kết nối Socket.IO
     socket.on("connect", () => {
       console.log("Socket.IO connected with ID:", socket.id);
-      if (id) {
-        socket.emit("registerUser", id); // Đăng ký lại khi reconnect
+      if (user.id) {
+        socket.emit("registerUser", user.id);
       }
     });
     socket.on("disconnect", () => {
       console.log("Socket.IO disconnected");
     });
 
-    // Lắng nghe thông báo real-time
     socket.on("newNotification", (notification) => {
       console.log("Received notification:", notification);
       setNotifications((prev) => [...prev, notification]);
@@ -94,36 +64,15 @@ const Header = ({ onSearchResults }) => {
 
     loadUserData();
 
-    // Lắng nghe thay đổi localStorage
-    const handleStorageChange = () => {
-      const updatedUserName = localStorage.getItem("userName");
-      const updatedId = localStorage.getItem("id");
-      setUserName(updatedUserName || "");
-      setId(updatedId || "");
-      if (updatedId) {
-        socket.emit("registerUser", updatedId);
-        fetchNotifications(updatedId);
-      }
-    };
-    window.addEventListener("storage", handleStorageChange);
-
-    // Dọn dẹp
     return () => {
       socket.off("connect");
       socket.off("disconnect");
       socket.off("newNotification");
-      window.removeEventListener("storage", handleStorageChange);
     };
-  }, [id]); // Thêm id vào dependency để reload khi id thay đổi
+  }, [user.id]);
 
   const handleLogout = () => {
-    localStorage.removeItem("accessToken");
-    localStorage.removeItem("userName");
-    localStorage.removeItem("id");
-    localStorage.removeItem("roles");
-    setUserName("");
-    setId("");
-    setUserRole(null);
+    logout();
     setNotifications([]);
     setNotificationCount(0);
     toast.success("Đăng xuất thành công!", {
@@ -137,28 +86,12 @@ const Header = ({ onSearchResults }) => {
     setTimeout(() => navigate("/login"), 1200);
   };
 
-  const handleSearch = async () => {
-    try {
-      const response = await fetch(
-        `http://localhost:9999/questionFile/search?name=${searchQuery}`
-      );
-      if (response.ok) {
-        const data = await response.json();
-        onSearchResults(data.questionFiles);
-      } else {
-        console.error("Error searching for question files");
-      }
-    } catch (error) {
-      console.error("Error fetching search results:", error);
-    }
-  };
-
   const handleGoToProfile = async () => {
     try {
-      const response = await fetch(`http://localhost:9999/auth/profile/${id}`);
+      const response = await fetch(`http://localhost:9999/auth/profile/${user.id}`);
       if (response.ok) {
         const profile = await response.json();
-        navigate(`/profile/${id}`, { state: { user: profile } });
+        navigate(`/profile/${user.id}`, { state: { user: profile } });
       } else {
         console.error("Lỗi khi lấy dữ liệu hồ sơ");
       }
@@ -169,9 +102,7 @@ const Header = ({ onSearchResults }) => {
 
   const markAsRead = async (notificationId) => {
     try {
-      await axios.patch(
-        `http://localhost:9999/notifycation/${notificationId}/read`
-      );
+      await axios.patch(`http://localhost:9999/notifycation/${notificationId}/read`);
       setNotifications((prev) =>
         prev.map((notif) =>
           notif._id === notificationId ? { ...notif, isRead: true } : notif
@@ -190,7 +121,7 @@ const Header = ({ onSearchResults }) => {
           <Menu.Item
             key={index}
             onClick={() => !notif.isRead && markAsRead(notif._id)}
-            className={notif.isRead ? "read" : "unread"} // Thêm class dựa trên trạng thái
+            className={notif.isRead ? "read" : "unread"}
           >
             {notif.message}
           </Menu.Item>
@@ -200,31 +131,6 @@ const Header = ({ onSearchResults }) => {
           Không có thông báo
         </Menu.Item>
       )}
-    </Menu>
-  );
-
-  const toolsMenu = (
-    <Menu className="custom-menu">
-      <Menu.Item key="1">
-        <Link to="/blogList">Blog</Link>
-      </Menu.Item>
-      <Menu.Item key="2">
-        <Link to="/questionfile/create">Tạo tệp câu hỏi</Link>
-      </Menu.Item>
-      <Menu.Item key="2">
-        <Link to="/questionfile/getAll">Thư viện của bạn</Link>
-      </Menu.Item>
-    </Menu>
-  );
-
-  const topicsMenu = (
-    <Menu className="custom-menu">
-      <Menu.Item key="1">
-        <Link to="/user/quizHistory">Các bài quiz đã làm</Link>
-      </Menu.Item>
-      <Menu.Item key="2">
-        <Link to="#">Các học phần đã thích</Link>
-      </Menu.Item>
     </Menu>
   );
 
@@ -244,42 +150,26 @@ const Header = ({ onSearchResults }) => {
 
   return (
     <AntHeader className="custom-header">
-      <Link to="/" className="logo">
-        <h1>Quiz</h1>
-      </Link>
-
-      <Space size="middle" className="nav-links">
-        <Dropdown overlay={toolsMenu}>
+      <Space size="middle" className="left-section">
+        <Link to="/" className="logo" style={{ textDecoration: "none" }}>
+          <h1>Quiz Practice</h1>
+        </Link>
+        <Link to="/questionfile/create" style={{ textDecoration: "none" }}>
           <Button type="link" className="nav-button">
-            Công cụ
+            Tạo tệp câu hỏi
           </Button>
-        </Dropdown>
-        <Dropdown overlay={topicsMenu}>
+        </Link>
+        <Link to="/questionfile/getAll" style={{ textDecoration: "none" }}>
           <Button type="link" className="nav-button">
-            Chủ đề
+            Thư viện của bạn
           </Button>
-        </Dropdown>
+        </Link>
       </Space>
 
-      <Input
-        className="custom-search"
-        placeholder="Tìm kiếm"
-        value={searchQuery}
-        onChange={(e) => setSearchQuery(e.target.value)}
-        onPressEnter={handleSearch}
-        suffix={
-          <Button
-            icon={<SearchOutlined />}
-            onClick={handleSearch}
-            className="search-button"
-          />
-        }
-      />
-
-      <Space size="middle" className="user-section">
-        {userName ? (
+      <Space size="middle" className="user-section" style={{ marginLeft:"400px" }}>
+        {user.userName ? (
           <>
-            <span className="greeting">Xin chào, {userName}</span>
+            <span className="greeting">Xin chào, {user.userName}</span>
             <Dropdown overlay={notificationMenu}>
               <Badge count={notificationCount} className="notification-badge">
                 <BellOutlined className="bell-icon" />
@@ -287,7 +177,7 @@ const Header = ({ onSearchResults }) => {
             </Dropdown>
             <Dropdown overlay={userMenu}>
               <Avatar
-                src="http://pm1.aminoapps.com/7239/b508c8e2b879561f650574466b86531cc90138d9r1-768-768v2_uhq.jpg"
+                src={user.avatar ? `http://localhost:9999${user.avatar}` : ""}
                 size={40}
                 className="user-avatar"
               />

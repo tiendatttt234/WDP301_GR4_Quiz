@@ -1,5 +1,5 @@
 
-const { quizRepository } = require("../repositories");
+const { quizRepository, quizResultRepository } = require("../repositories");
 const mongoose = require("mongoose");
 const QuestionFile = require("../models/QuestionFile");
 
@@ -12,15 +12,11 @@ async function getQuizByUserId(userId) {
   if (!userId) {
     throw new Error("userId is required");
   }
-
-  //TH userId khong ton tai
-
   return await quizRepository.getQuizByUserId(userId);
 }
 
 async function getQuizById(id) {
   const quiz = await quizRepository.findQuizByIdFilter(id);
-  console.log("quiz service", quiz);
 
   if (!quiz) {
     throw new Error("Quiz not found");
@@ -62,23 +58,26 @@ async function getQuizById(id) {
   };
 };
 
-async function createQuiz({ quizName, userId, questionFileId, questionCount }) {
+async function createQuiz({ name, user, questionFileId, questionCount }) {
+  
   // Validate ObjectId
-  if (!mongoose.Types.ObjectId.isValid(userId) || !mongoose.Types.ObjectId.isValid(questionFileId)) {
-    throw new Error("Invalid userId or questionFileId");
+  if (!mongoose.Types.ObjectId.isValid(user) || !mongoose.Types.ObjectId.isValid(questionFileId)) {
+    throw new Error("Invalid userId or questionFileId"); // Thay vì dùng res
   }
-
+  
   // Fetch question file
   const questionFile = await QuestionFile.findById(questionFileId);
+  
   if (!questionFile) {
     throw new Error("Question file not found");
   }
-
+  
   // Validate question count
   if (questionCount > questionFile.arrayQuestion.length) {
     throw new Error("Question count exceeds the number of questions in the question file");
   }
 
+  
   // Select random questions
   const allQuestions = questionFile.arrayQuestion.map(q => q._id);
   const getRandomQuestions = (questions, count) => {
@@ -91,62 +90,98 @@ async function createQuiz({ quizName, userId, questionFileId, questionCount }) {
   };
 
   const randomListQuestions = getRandomQuestions(allQuestions, questionCount);
-
+  
   // Create quiz object
   const quizData = {
-    quizName,
-    duration: 30, // Default duration
+    quizName: name,
+    duration: 30,
     questionFile: questionFileId,
     selectedQuestions: randomListQuestions,
-    createdBy: userId,
+    createdBy: user,
   };
 
+  
   return await quizRepository.createQuiz(quizData);
 };
 
 
-async function submitQuiz({ userId, quizId, questionFileId, userAnswers, startTime }) {
+async function submitQuiz({ quizId, answers }) {
   if (!mongoose.Types.ObjectId.isValid(quizId)) {
-      throw new Error('Invalid quiz ID');
+    throw new Error("Invalid quiz ID");
   }
 
-  // Lấy danh sách câu hỏi từ questionFile
+  const quiz = await quizRepository.findQuizByIdFilter(quizId);
+  if (!quiz) {
+    throw new Error("Quiz not found");
+  }
+
+  const questionFileId = quiz.questionFile?._id;
+  const userId = quiz.createdBy;
+
+  if (!questionFileId) {
+    throw new Error("Question file not found in quiz data");
+  }
+
+  if (!userId || !mongoose.Types.ObjectId.isValid(userId)) {
+    throw new Error("Invalid user ID");
+  }
+
   const questionFile = await QuestionFile.findById(questionFileId);
   if (!questionFile) {
-      throw new Error('Question file not found');
+    throw new Error("Question file not found");
   }
 
-  // Tính số câu đúng
-  let correctAnswersCount = 0;
-  const evaluatedAnswers = userAnswers.map(userAnswer => {
-      const question = questionFile.arrayQuestion.find(q => q._id.toString() === userAnswer.questionId);
-      const isCorrect = question ? isAnswerCorrect(question, userAnswer) : false;
-      if (isCorrect) correctAnswersCount++;
+  if (!answers || !Array.isArray(answers)) {
+    throw new Error("Answers must be a valid array");
+  }
 
-      return { ...userAnswer, isCorrect };
+  let correctAnswersCount = 0;
+
+  answers.forEach(userAnswer => {
+    const question = questionFile.arrayQuestion.find(file => file?._id.toString() === userAnswer.questId);
+    console.log("question", question);
+    
+    const isCorrect = isAnswerCorrect(question, userAnswer);
+    if (isCorrect) correctAnswersCount++;
   });
 
-  // Tính thời gian làm bài (nếu `startTime` được truyền từ frontend)
-  const duration = startTime ? Math.round((Date.now() - new Date(startTime)) / 1000) : null;
-
-  // Lưu kết quả bài làm
   const quizResultData = {
-      creatBy: userId,
-      quizId,
-      correctAnswersCount,
-      duration
+    createBy: userId,
+    quizId,
+    correctAnswersCount
   };
 
-  return await quizRepository.saveQuizResult(quizResultData);
-};
+  const result = await quizRepository.saveQuizResult(quizResultData);
 
-// Hàm kiểm tra đáp án đúng/sai (Cải tiến để hỗ trợ MAQ, MCQ, BOOLEAN)
+  return {
+    statusCode: 200,
+    data: {
+      quizId: result.quizId,
+      correctAnswersCount: result.correctAnswersCount
+    }
+  };
+}
+
+// Hàm isAnswerCorrect giữ nguyên từ yêu cầu của bạn
 function isAnswerCorrect(question, userAnswer) {
-  const correctSet = new Set(question.correctAnswers.map(a => a.toString())); // Đáp án đúng
-  const userSet = new Set(userAnswer.answers.map(a => a.toString())); // Đáp án người dùng
+  if (!question || !userAnswer.selectedAnswerIds) return false;
 
-  return correctSet.size === userSet.size && [...correctSet].every(a => userSet.has(a));
-};
+  // Chuyển selectedAnswerIds thành mảng nếu nó là chuỗi
+  const userSelectedIds = Array.isArray(userAnswer.selectedAnswerIds) 
+    ? userAnswer.selectedAnswerIds 
+    : [userAnswer.selectedAnswerIds];
+
+  if (question.type === "MAQ") {
+    const correctAnswerIds = question.answers.filter(a => a.isCorrect).map(a => a._id.toString());
+    return (
+      userSelectedIds.length === correctAnswerIds.length &&
+      userSelectedIds.every(id => correctAnswerIds.includes(id))
+    );
+  } else {
+    const correctAnswerId = question.answers.find(a => a.isCorrect)?._id.toString();
+    return userSelectedIds[0] === correctAnswerId;
+  }
+}
 
 async function getAllQuizResultByUserId(userId) {
   if (!mongoose.Types.ObjectId.isValid(userId)) {
@@ -182,6 +217,10 @@ async function getAllQuizResultByUserId(userId) {
       };
   });
 };
+
+async function getResultById(id) {
+  
+}
 
 const QuizService = {
   getAllQuiz,

@@ -89,11 +89,33 @@ async function getAccountService(id) {
 //[update]profile
 async function updateAccountService(id, updateFields) {
   try {
-    const allowedFields = ["email", "phone", "userName"];
+    const allowedFields = ["email", "phone", "userName", "avatar"];
     const keys = Object.keys(updateFields);
     const isValid = keys.every((field) => allowedFields.includes(field));
     if (!isValid) {
       throw createError.BadRequest("Invalid field name");
+    }
+
+    // Kiểm tra các trường nếu có trong updateFields
+    if (updateFields.userName && updateFields.userName.length > 100) {
+      throw createError.BadRequest("Username must be less than 100 characters");
+    }
+
+    if (updateFields.email) {
+      const emailRegex =
+        /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+      if (!emailRegex.test(updateFields.email)) {
+        throw createError.BadRequest("Please provide a valid email");
+      }
+    }
+
+    if (updateFields.phone) {
+      const phoneRegex = /^[0]\d{9}$/;
+      if (!phoneRegex.test(updateFields.phone)) {
+        throw createError.BadRequest(
+          "Phone number must be exactly 10 digits and start with 0"
+        );
+      }
     }
 
     const updatedAccount = await AccountRepository.updateAccountById(
@@ -109,7 +131,6 @@ async function updateAccountService(id, updateFields) {
     throw error;
   }
 }
-
 async function changePasswordService(id, oldPassword, newPassword) {
   if (!id || !oldPassword || !newPassword) {
     throw new Error("Vui lòng điền đầy đủ thông tin");
@@ -150,24 +171,48 @@ const sendResetEmail = async (email, accountId, token) => {
 // Xử lý quên mật khẩu
 const requestPasswordReset = async (email) => {
   const account = await AccountRepository.findByEmail(email);
-  if (!account) return { status: "User not found" };
+  if (!account) {
+    return { status: "error", message: "Email không tồn tại trong hệ thống" };
+  }
 
   const token = generateResetToken(account._id);
   await sendResetEmail(email, account._id, token);
-  return { status: "Success" };
+  return {
+    status: "success",
+    message: "Email đặt lại mật khẩu đã được gửi thành công",
+  };
 };
 
 // Xử lý đặt lại mật khẩu
 const resetPassword = async (id, token, newPassword) => {
-  const account = await AccountRepository.findById(id);
-  if (!account) return { status: "User not found" };
+  try {
+    const account = await AccountRepository.findById(id);
+    if (!account) {
+      return { status: "error", message: "Người dùng không tồn tại" };
+    }
 
-  const decoded = jwt.verify(token, JWT_SECRET);
-  if (decoded.id !== id) return { status: "Invalid token" };
+    try {
+      const decoded = jwt.verify(token, JWT_SECRET);
+      if (decoded.id !== id) {
+        return { status: "error", message: "Token không hợp lệ" };
+      }
+    } catch (jwtError) {
+      return { status: "error", message: "Token đã hết hạn hoặc không hợp lệ" };
+    }
 
-  const hashedPassword = await bcrypt.hash(newPassword, 10);
-  await AccountRepository.updatePassword(id, hashedPassword);
-  return { status: "Success" };
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    await AccountRepository.updatePassword(id, hashedPassword);
+
+    return {
+      status: "success",
+      message: "Mật khẩu đã được đặt lại thành công",
+    };
+  } catch (error) {
+    return {
+      status: "error",
+      message: "Đã xảy ra lỗi khi đặt lại mật khẩu",
+    };
+  }
 };
 
 module.exports = {

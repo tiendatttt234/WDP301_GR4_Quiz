@@ -66,7 +66,7 @@ const UpdateQuestion = () => {
           question: q.content,
           type:
             q.type === "MCQ"
-              ? "multiAnswer"
+              ? "singleAnswer"
               : q.type === "MAQ"
               ? "multiAnswer"
               : q.type,
@@ -294,7 +294,7 @@ const UpdateQuestion = () => {
       .then(() => {
         const questionIndex = questions.findIndex((q) => q.id === questionId);
         toast.success(
-          `Đã lưu câu hỏi ${questionIndex + 1} vào cơ sở dữ liệu!`,
+          `Đã lưu câu hỏi ${questionIndex + 1}!`,
           { autoClose: 2000 }
         );
         setDirtyQuestions((prev) => ({ ...prev, [questionId]: false }));

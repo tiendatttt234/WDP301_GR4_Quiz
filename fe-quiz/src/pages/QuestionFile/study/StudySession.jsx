@@ -11,47 +11,46 @@ import { FaCog, FaTimes, FaRedo, FaRandom } from "react-icons/fa";
 
 const PageContainer = styled.div`
   min-height: 100vh;
-  background: #ffffff;
-  padding: 20px;
-  position: relative;
-  overflow: hidden;
-
-  &::before {
-    content: "";
-    display: none;
-  }
+  background: #f8fafc;
+  padding: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
 
 const Container = styled.div`
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 25px;
+  max-width: 960px;
+  width: 100%;
+  padding: 40px;
   position: relative;
   z-index: 1;
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+  border-radius: 16px;
 `;
 
 const ContentBlock = styled.div`
   background: #ffffff;
-  padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  border-left: 4px solid #4299e1;
+  padding: 30px;
+  border-radius: 16px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.1);
+  border-left: 6px solid #4299e1;
 `;
 
 const HeaderContainer = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 30px;
   position: relative;
 `;
 
 const FileName = styled.h2`
-  font-size: 24px;
+  font-size: 32px;
   font-weight: 700;
-  color: #2d3748;
+  color: #1a202c;
   cursor: pointer;
   text-align: center;
+  transition: color 0.3s ease;
 
   &:hover {
     color: #4299e1;
@@ -62,33 +61,35 @@ const IconContainer = styled.div`
   position: absolute;
   right: 0;
   display: flex;
-  gap: 10px;
+  gap: 15px;
 `;
 
 const IconButton = styled.button`
   background: none;
   border: none;
-  font-size: 16px;
-  color: #a0aec0;
+  font-size: 20px;
+  color: #718096;
   cursor: pointer;
-  transition: color 0.2s ease;
-  position: relative;
+  padding: 8px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
 
   &:hover {
     color: #4299e1;
+    background: #edf2f7;
   }
 `;
 
 const SettingsMenu = styled.div`
   position: absolute;
-  top: 30px;
+  top: 40px;
   right: 0;
   background: #ffffff;
   border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
   z-index: 10;
-  width: 200px;
+  width: 240px;
   display: flex;
   flex-direction: column;
 `;
@@ -96,19 +97,19 @@ const SettingsMenu = styled.div`
 const MenuItem = styled.button`
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   width: 100%;
-  padding: 10px 15px;
+  padding: 14px 20px;
   background: none;
   border: none;
   text-align: left;
-  font-size: 14px;
+  font-size: 16px;
   color: #2d3748;
   cursor: pointer;
   transition: background 0.2s ease;
 
   &:hover {
-    background: #edf2f7;
+    background: #f7fafc;
   }
 
   &:not(:last-child) {
@@ -116,41 +117,42 @@ const MenuItem = styled.button`
   }
 
   svg {
-    font-size: 16px;
+    font-size: 20px;
     color: #4a5568;
   }
 `;
 
 const ProgressContainer = styled.div`
   width: 100%;
-  margin-bottom: 10px;
+  margin-bottom: 20px;
   
   @media (min-width: 768px) {
-    width: 100%;
-    margin: 0 auto 10px auto;
+    width: 80%;
+    margin: 0 auto 20px auto;
   }
 `;
 
 const Alert = styled.div`
-  padding: 20px;
-  border-radius: 12px;
-  background-color: ${(props) => (props.variant === "destructive" ? "#fff5f5" : "#f7fafc")};
-  border: 1px solid ${(props) => (props.variant === "destructive" ? "#fed7d7" : "#e2e8f0")};
+  padding: 25px;
+  border-radius: 16px;
+  background-color: ${(props) => (props.variant === "destructive" ? "#fef2f2" : "#f7fafc")};
+  border: 1px solid ${(props) => (props.variant === "destructive" ? "#fecaca" : "#e2e8f0")};
   color: ${(props) => (props.variant === "destructive" ? "#c53030" : "#2d3748")};
-  margin-bottom: 20px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  margin-bottom: 30px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.06);
 `;
 
 const AlertTitle = styled.h5`
   font-weight: 600;
-  font-size: 18px;
-  margin-bottom: 8px;
+  font-size: 22px;
+  margin-bottom: 12px;
   color: ${(props) => (props.variant === "destructive" ? "#c53030" : "#2d3748")};
 `;
 
 const AlertDescription = styled.p`
   color: ${(props) => (props.variant === "destructive" ? "#c53030" : "#4a5568")};
-  font-size: 16px;
+  font-size: 18px;
+  line-height: 1.5;
 `;
 
 const LoadingContainer = styled.div`
@@ -159,20 +161,20 @@ const LoadingContainer = styled.div`
   align-items: center;
   justify-content: center;
   min-height: 70vh;
-  padding: 24px;
-  background: rgba(255, 255, 255, 0.8);
-  border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  padding: 40px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 16px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
 `;
 
 const LoadingSpinner = styled.div`
-  border: 4px solid rgba(0, 0, 0, 0.1);
-  width: 60px;
-  height: 60px;
+  border: 6px solid rgba(0, 0, 0, 0.1);
+  width: 80px;
+  height: 80px;
   border-radius: 50%;
   border-left-color: #4299e1;
   animation: spin 1s linear infinite;
-  margin-bottom: 20px;
+  margin-bottom: 30px;
 
   @keyframes spin {
     0% {
@@ -185,22 +187,24 @@ const LoadingSpinner = styled.div`
 `;
 
 const LoadingText = styled.p`
-  font-size: 18px;
+  font-size: 22px;
   color: #4a5568;
   font-weight: 500;
+  letter-spacing: 0.5px;
 `;
 
 const EmptyState = styled.div`
   text-align: center;
-  padding: 40px 0;
+  padding: 60px 0;
   color: #4a5568;
-  background: rgba(255, 255, 247, 0.8);
-  border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 16px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.1);
   
   p {
-    font-size: 18px;
+    font-size: 22px;
     margin-bottom: 0;
+    line-height: 1.5;
   }
 `;
 

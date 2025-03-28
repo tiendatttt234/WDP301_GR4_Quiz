@@ -10,9 +10,9 @@ async function getAccountById(id) {
     throw error;
   }
 }
-async function getAccountByUserName(userName) {
+async function getAccountByUserName(email) {
   try {
-    return await Account.findOne({ userName }).populate("roles").exec();
+    return await Account.findOne({ email }).populate("roles").exec();
   } catch (error) {
     throw error;
   }

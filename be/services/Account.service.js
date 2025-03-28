@@ -10,11 +10,9 @@ const JWT_SECRET = "jwt_secret_key";
 const bcrypt = require("bcrypt");
 async function registerService(email, password, userName) {
   try {
-    const existingAccount = await AccountRepository.getAccountByUserName(
-      userName
-    );
+    const existingAccount = await AccountRepository.getAccountByUserName(email);
     if (existingAccount) {
-      throw createError.Conflict("User already exists");
+      throw createError.Conflict("Email của bạn đã tồn tại");
     }
 
     const hashPass = await AccountRepository.hashPassword(password);

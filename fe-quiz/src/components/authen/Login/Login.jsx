@@ -224,23 +224,8 @@ const Login = () => {
           />
         </div>
         <div style={styles.formSection}>
-          <h2 style={styles.heading}>Đăng nhập với</h2>
-          <div style={styles.socialLogin}>
-            <a href="#" style={{ ...styles.socialIcon, ...styles.facebookIcon }}>
-              <FontAwesomeIcon icon={faFacebookF} />
-            </a>
-            <a href="#" style={{ ...styles.socialIcon, ...styles.twitterIcon }}>
-              <FontAwesomeIcon icon={faTwitter} />
-            </a>
-            <a href="#" style={{ ...styles.socialIcon, ...styles.linkedinIcon }}>
-              <FontAwesomeIcon icon={faLinkedinIn} />
-            </a>
-          </div>
-          <div style={styles.divider}>
-            <div style={styles.dividerBeforeAfter}></div>
-            <span style={styles.dividerSpan}>Hoặc</span>
-            <div style={styles.dividerBeforeAfter}></div>
-          </div>
+          <h2 style={styles.heading}>Đăng nhập</h2>
+          
 
           {message.text && (
             <p

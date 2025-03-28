@@ -140,7 +140,7 @@ const Header = () => {
         Hồ sơ
       </Menu.Item>
       <Menu.Item key="2">
-        <Link to="/upgrade">Nâng cấp</Link>
+        <Link to="/upgrade" style={{textDecoration: "none"}}>Nâng cấp</Link>
       </Menu.Item>
       <Menu.Item key="3" onClick={handleLogout}>
         Đăng xuất

@@ -66,12 +66,18 @@ async function updateFavorite(req, res) {
 
 async function deleteFavorite(req, res) {
     try {
-        const result = await favoriteService.deleteFavorite(req.params.id);
-        res.status(200).json(result);
+        const favoriteId = req.params.id; // Lấy từ URL params
+        const { questionFileId } = req.body; // Lấy từ body
+        const result = await favoriteService.deleteFavorite(favoriteId, questionFileId);
+        res.status(200).json({
+            success: true,
+            data: result
+        });
     } catch (error) {
-        res.status(404).json({
+        const status = error.message === 'Favorite not found' ? 404 : 400;
+        res.status(status).json({
             success: false,
-            message: error.message
+            error: error.message
         });
     }
 }

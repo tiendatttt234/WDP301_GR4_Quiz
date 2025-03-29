@@ -16,7 +16,8 @@ export const CloseButton = styled.button`
   color: #7f8c8d;
 
   &:hover {
-    color: #2c3e50;
+    color: #7f8c8d;
+    background-color:rgb(230, 237, 238);
   }
 `;
 

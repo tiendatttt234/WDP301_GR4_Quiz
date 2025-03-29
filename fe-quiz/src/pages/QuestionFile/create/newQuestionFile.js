@@ -261,9 +261,9 @@ const QuestionCreator = () => {
           Authorization: `Bearer ${token}`, // Thêm accessToken vào header
         },
       });
-      toast.success("Tạo bộ câu hỏi thành công!", { autoClose: 2000 });
+      toast.success("Tạo bộ câu hỏi thành công!", { autoClose: 1000 });
       setIsDirty(false);
-      setTimeout(() => navigate("/questionfile/getAll"), 2000);
+      setTimeout(() => navigate("/questionfile/getAll"), 1000);
     } catch (error) {
       toast.error("Lỗi khi tạo bộ câu hỏi");
       console.error(error);

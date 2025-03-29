@@ -100,16 +100,17 @@ export default function ReportManagement() {
           setIsSubmitting(false)
           return
         }
-
+        console.log("Selected report:", selectedReport.report_id);
+        
         // Handle lock or delete question file
-        await axios.put(`http://localhost:9999/admin/reports/${selectedReport?._id}/action`, {
+        await axios.put(`http://localhost:9999/admin/reports/${selectedReport.report_id}/action`, {
           action: actionType.toLowerCase(),
         })
 
         // Send notification to the creator
         await axios.post("http://localhost:9999/notifycation/notify", {
           recipientId: selectedReport?.questionFile?.qf_createdById,
-          type: "Cảnh báo",
+          type: "Alert",
           message: `Tệp câu hỏi của bạn "${selectedReport?.questionFile?.qf_name}" đã bị ${
             actionType === "lock" ? "khóa" : "xóa"
           }. Lý do: ${handleMessage}`,
@@ -117,7 +118,7 @@ export default function ReportManagement() {
       }
 
       // Update report status
-      await axios.put(`http://localhost:9999/admin/reports/${selectedReport?._id}/status`, {
+      await axios.put(`http://localhost:9999/admin/reports/${selectedReport.report_id}/status`, {
         status: handleStatus,
       })
 

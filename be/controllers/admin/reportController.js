@@ -109,8 +109,10 @@ const updateReportStatus = async (req, res) => {
 };
 
 const lockOrDeleteQuestionFile = async (req, res) => {
+    console.log(req.params);
+    
     const { reportId } = req.params;
-    const { action } = req.body; // 'lock' hoặc 'delete'
+    const { action } = req.body; 
 
     try {
         // Tìm report

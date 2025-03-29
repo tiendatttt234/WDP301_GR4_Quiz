@@ -3,6 +3,10 @@ const NotificationService = require("../services/notification.service");
 async function notifyQuestionViolation(req, res, next) {
   try {
     const { recipientId, type, message } = req.body;
+    console.log("recipientId", recipientId);
+    console.log("type", type);  
+    console.log("message", message);
+    
     
     const notification = await NotificationService.sendNotification(recipientId, type, message);
 

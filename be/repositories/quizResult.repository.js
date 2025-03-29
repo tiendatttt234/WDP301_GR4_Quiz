@@ -5,9 +5,16 @@ async function saveQuizResult(data){
     return await QuizResult.create(quizResult);
 }
 
-async function findQuizResultByUserId(userId){s
+async function findQuizResultByUserId(userId){
+    const result =  await QuizResult.find({createdBy: userId})
+    .populate({
+        path: 'quizId',
+        select: 'quizName' 
+    });
+    return result;
     
-    return await QuizResult.find({createBy: userId});
+    
+
 }
 
 const quizResultRepository = {

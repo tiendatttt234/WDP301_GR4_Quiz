@@ -143,7 +143,7 @@ const Homepage = () => {
             </button>
           </div>
 
-          <button
+          {/* <button
             style={{
               backgroundColor: "#f97316",
               color: "white",
@@ -157,7 +157,7 @@ const Homepage = () => {
             }}
           >
             Khám phá các môn học
-          </button>
+          </button> */}
         </div>
 
         {filteredFiles.length > 0 ? (

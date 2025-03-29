@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../../Context/AuthContext";
@@ -9,6 +9,7 @@ const Profile = () => {
   const navigate = useNavigate();
   const { updateUser } = useAuth();
   const id = localStorage.getItem("id");
+  const fileInputRef = useRef(null);
   const [profile, setProfile] = useState({
     userName: localStorage.getItem("userName") || "",
     email: "",
@@ -17,6 +18,7 @@ const Profile = () => {
   });
   const [formData, setFormData] = useState({});
   const [avatarFile, setAvatarFile] = useState(null);
+  const [avatarPreview, setAvatarPreview] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showChangePassword, setShowChangePassword] = useState(false);
@@ -62,8 +64,27 @@ const Profile = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const handleAvatarClick = () => {
+    fileInputRef.current.click();
+  };
+
   const handleAvatarChange = (e) => {
-    setAvatarFile(e.target.files[0]);
+    const file = e.target.files[0];
+    if (file) {
+      setAvatarFile(file);
+      
+      // Create a preview URL for the selected image
+      const previewUrl = URL.createObjectURL(file);
+      setAvatarPreview(previewUrl);
+    }
+  };
+
+  const handleRemoveAvatar = () => {
+    setAvatarFile(null);
+    setAvatarPreview(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
   };
 
   const handlePasswordChange = (e) => {
@@ -116,6 +137,14 @@ const Profile = () => {
           userName: response.data.data.userName,
           avatar: response.data.data.avatar,
         });
+        
+        // Clear the avatar preview after successful upload
+        setAvatarPreview(null);
+        setAvatarFile(null);
+        if (fileInputRef.current) {
+          fileInputRef.current.value = "";
+        }
+        
         setMessage({ text: "Cập nhật thông tin thành công!", type: "success" });
       } else {
         throw new Error("Không nhận được phản hồi hợp lệ từ máy chủ");
@@ -282,6 +311,8 @@ const Profile = () => {
             ></i>
             Trở lại
           </div>
+          
+          {/* Updated Avatar Section with interactive features */}
           <div
             style={{
               position: "relative",
@@ -289,10 +320,18 @@ const Profile = () => {
               height: "150px",
               margin: "0 auto",
               zIndex: 2,
+              cursor: "pointer",
             }}
+            onClick={handleAvatarClick}
           >
             <img
-              src={profile.avatar ? `http://localhost:9999${profile.avatar}` : "/placeholder.svg"}
+              src={
+                avatarPreview 
+                  ? avatarPreview 
+                  : profile.avatar 
+                    ? `http://localhost:9999${profile.avatar}` 
+                    : "/assets/img/user1.png"
+              }
               alt={profile.userName}
               style={{
                 width: "100%",
@@ -304,8 +343,96 @@ const Profile = () => {
                 boxShadow: "0 4px 10px rgba(0,0,0,0.1)",
               }}
             />
+            
+            {/* Camera icon overlay */}
+            <div
+              style={{
+                position: "absolute",
+                bottom: "10px",
+                right: "10px",
+                width: "40px",
+                height: "40px",
+                borderRadius: "50%",
+                backgroundColor: "#2196f3",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                boxShadow: "0 2px 5px rgba(0,0,0,0.2)",
+              }}
+            >
+              <svg 
+                width="20" 
+                height="20" 
+                viewBox="0 0 24 24" 
+                fill="none" 
+                stroke="white" 
+                strokeWidth="2" 
+                strokeLinecap="round" 
+                strokeLinejoin="round"
+              >
+                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                <circle cx="12" cy="13" r="4"></circle>
+              </svg>
+            </div>
+            
+            {/* Hidden file input */}
+            <input
+              type="file"
+              ref={fileInputRef}
+              style={{ display: "none" }}
+              name="avatar"
+              accept="image/*"
+              onChange={handleAvatarChange}
+            />
           </div>
         </div>
+
+        {/* Avatar preview actions */}
+        {avatarPreview && (
+          <div style={{ 
+            display: "flex", 
+            justifyContent: "center", 
+            marginTop: "10px",
+            gap: "10px"
+          }}>
+            <span style={{ 
+              color: "#666", 
+              fontSize: "14px",
+              display: "flex",
+              alignItems: "center"
+            }}>
+              Ảnh đại diện mới đã được chọn
+            </span>
+            <button
+              onClick={handleRemoveAvatar}
+              style={{
+                background: "none",
+                border: "none",
+                color: "#f44336",
+                cursor: "pointer",
+                fontSize: "14px",
+                display: "flex",
+                alignItems: "center"
+              }}
+            >
+              <svg 
+                width="16" 
+                height="16" 
+                viewBox="0 0 24 24" 
+                fill="none" 
+                stroke="currentColor" 
+                strokeWidth="2" 
+                strokeLinecap="round" 
+                strokeLinejoin="round"
+                style={{marginRight: "5px"}}
+              >
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+              Hủy
+            </button>
+          </div>
+        )}
 
         <div style={{ textAlign: "center", padding: "0 20px", marginTop: "10px" }}>
           <h1 style={{ fontSize: "28px", color: "#333", margin: "10px 0 5px" }}>{profile.userName}</h1>
@@ -365,18 +492,6 @@ const Profile = () => {
               onChange={handleChange}
               required
               placeholder="Tên người dùng"
-              style={{
-                padding: "8px",
-                border: "1px solid #ddd",
-                borderRadius: "5px",
-                fontSize: "14px",
-              }}
-            />
-            <input
-              type="file"
-              name="avatar"
-              accept="image/*"
-              onChange={handleAvatarChange}
               style={{
                 padding: "8px",
                 border: "1px solid #ddd",

@@ -346,11 +346,11 @@ const Question = ({ question, onSubmitAnswer, onNextQuestion, onDontKnow }) => {
             Gửi đáp án
           </Button>
         )}
-        {!result && !showCorrectAnswer && (
+        {/* {!result && !showCorrectAnswer && (
           <DontKnowButton onClick={handleDontKnow}>
             Tôi không biết?
           </DontKnowButton>
-        )}
+        )} */}
       </ButtonContainer>
 
       {result && (

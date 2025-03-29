@@ -17,7 +17,9 @@ export const Header = styled.div`
   gap: 1.5rem;
   padding-bottom: 1rem;
 `;
-
+export const Trophy = styled.div`
+  width: 50px;
+  `;
 export const Title = styled.h2`
   font-size: 2rem;
   font-weight: 700;

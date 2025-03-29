@@ -236,7 +236,7 @@
 //             const isFavorite = activeTab === "luuhocphan";
 //             const qf = isFavorite ? item.sharedQuestionFile : item;
 //             console.log(qf);
-            
+
 //             return (
 //               <QuestionItem key={qf._id}>
 //                 <div
@@ -292,6 +292,7 @@ import {
   Title,
   TabMenu,
   Tab,
+  Trophy,
   SearchBox,
   SearchInput,
   SearchIcon,
@@ -308,6 +309,7 @@ const ListQuestion = () => {
   const [activeTab, setActiveTab] = useState("hocPhan");
   const [search, setSearch] = useState("");
   const [questionSets, setQuestionSets] = useState([]);
+  const [quizResults, setQuizResults] = useState([]);
   const [favorites, setFavorites] = useState([]);
   const navigate = useNavigate();
 
@@ -374,20 +376,59 @@ const ListQuestion = () => {
     fetchFavorites();
   }, [activeTab]);
 
-  // Filter based on active tab
-  const filteredItems =
-    activeTab === "luuhocphan"
-      ? favorites.filter((favorite) =>
-          favorite.sharedQuestionFile.some((qf) =>
-            qf.name.toLowerCase().includes(search.toLowerCase())
-          )
-        )
-      : questionSets.filter(
-          (file) =>
-            file.name.toLowerCase().includes(search.toLowerCase()) ||
-            (file.createdBy?.userName || file.createdBy)?.toLowerCase().includes(search.toLowerCase())
-        );
+  //fetch quiz results
+  useEffect(() => {
+    const fetchQuizResults = async () => {
+      if (activeTab !== "ketQuaQuiz") return;
 
+      try {
+        const userId = localStorage.getItem("id");
+        const token = localStorage.getItem("accessToken");
+
+        if (!userId || !token) {
+          console.error("Không tìm thấy userId trong localStorage");
+          return;
+        }
+
+        const response = await axios.get(
+          `http://localhost:9999/quiz/result/${userId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        console.log("Quiz Results Response:", response.data);
+        setQuizResults(response.data || []);
+      } catch (error) {
+        console.error("Lỗi khi lấy kết quả quiz", error);
+        setQuizResults([]);
+      }
+    };
+
+    fetchQuizResults();
+  }, [activeTab]);
+
+  // Filter based on active tab
+  const filteredItems = () => {
+    if (activeTab === "luuhocphan") {
+      return favorites.filter((favorite) =>
+        favorite.sharedQuestionFile.some((qf) =>
+          qf.name.toLowerCase().includes(search.toLowerCase())
+        )
+      );
+    } else if (activeTab === "ketQuaQuiz") {
+      return quizResults.filter((result) =>
+        result.quizId.toLowerCase().includes(search.toLowerCase())
+      );
+    } else {
+      return questionSets.filter(
+        (file) =>
+          file.name.toLowerCase().includes(search.toLowerCase()) ||
+          (file.createdBy?.userName || file.createdBy)?.toLowerCase().includes(search.toLowerCase())
+      );
+    }
+  };
   const handleQuestionClick = (id) => {
     navigate(`/questionfile/getById/${id}`);
   };
@@ -452,11 +493,11 @@ const ListQuestion = () => {
           prevFavorites.map((fav) =>
             fav._id === favoriteId
               ? {
-                  ...fav,
-                  sharedQuestionFile: fav.sharedQuestionFile.filter(
-                    (qf) => qf._id !== questionFileId
-                  ),
-                }
+                ...fav,
+                sharedQuestionFile: fav.sharedQuestionFile.filter(
+                  (qf) => qf._id !== questionFileId
+                ),
+              }
               : fav
           ).filter((fav) => fav.sharedQuestionFile.length > 0)
         );
@@ -468,6 +509,27 @@ const ListQuestion = () => {
     }
   };
 
+  // Format date for quiz results
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('vi-VN', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
+
+  // Group quiz results by quizId
+  const groupedQuizResults = quizResults.reduce((acc, result) => {
+    if (!acc[result.quizId]) {
+      acc[result.quizId] = [];
+    }
+    acc[result.quizId].push(result);
+    return acc;
+  }, {});
+
   return (
     <Container>
       <ToastContainer />
@@ -477,7 +539,7 @@ const ListQuestion = () => {
           <Tab active={activeTab === "hocPhan"} onClick={() => setActiveTab("hocPhan")}>
             Học phần
           </Tab>
-          <Tab active={activeTab === "baiKiemTra"} onClick={() => setActiveTab("baiKiemTra")}>
+          <Tab active={activeTab === "ketQuaQuiz"} onClick={() => setActiveTab("ketQuaQuiz")}>
             Bài kiểm tra thử
           </Tab>
           <Tab active={activeTab === "luuhocphan"} onClick={() => setActiveTab("luuhocphan")}>
@@ -496,7 +558,44 @@ const ListQuestion = () => {
           </SearchIcon>
         </SearchBox>
       </Header>
-      {filteredItems.length === 0 ? (
+      {activeTab === "ketQuaQuiz" ? (
+        <QuestionList>
+          {quizResults.length === 0 ? (
+            <div style={{ textAlign: "center", marginTop: "20px" }}>
+              <p>Bạn chưa thực hiện bài kiểm tra nào!</p>
+            </div>
+          ) : (
+            Object.entries(
+              quizResults.reduce((acc, result) => {
+                const quizId = result.quizId._id;
+                if (!acc[quizId]) {
+                  acc[quizId] = {
+                    quizName: result.quizId.quizName,
+                    results: []
+                  };
+                }
+                acc[quizId].results.push(result);
+                return acc;
+              }, {})
+            ).map(([quizId, { quizName, results }]) => (
+              <QuestionItem key={quizId}>
+                <div style={{ flex: 1 }}>
+                  <QuestionTitle>Bài kiểm tra: {quizName}</QuestionTitle>
+                  <QuestionDetails>
+                    <QuestionCount>
+                      <Trophy size={16} style={{ marginRight: "5px", color: "#FFD700" }} />
+                      {results.length} lần thực hiện | Điểm cao nhất: {
+                        Math.max(...results.map(r => r.correctAnswersCount))
+                      } câu đúng
+                    </QuestionCount>
+                    <div>Thực hiện gần nhất: {formatDate(results[results.length - 1].createdAt)}</div>
+                  </QuestionDetails>
+                </div>
+              </QuestionItem>
+            ))
+          )}
+        </QuestionList>
+      ) : filteredItems().length === 0 ? (
         <div style={{ textAlign: "center", marginTop: "20px" }}>
           {activeTab === "hocPhan" ? (
             <>
@@ -505,15 +604,13 @@ const ListQuestion = () => {
                 Tạo học phần mới
               </CreateButton>
             </>
-          ) : activeTab === "luuhocphan" ? (
-            <p>Bạn hiện chưa có học phần nào được lưu!</p>
           ) : (
-            <p>Chưa có bài kiểm tra thử nào!</p>
+            <p>Bạn hiện chưa có học phần nào được lưu!</p>
           )}
         </div>
       ) : (
         <QuestionList>
-          {filteredItems.map((item) => {
+          {filteredItems().map((item) => {
             const isFavorite = activeTab === "luuhocphan";
             if (isFavorite) {
               // Lặp qua tất cả sharedQuestionFile trong favorite

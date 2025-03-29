@@ -46,9 +46,15 @@ async function loginController(req, res, next) {
       success: true,
       data: accountData,
     });
-  } catch (error) {
+  }  catch (error) {
     console.error("Error in login:", error.message);
-    next(error);
+
+    // Nếu lỗi có statusCode thì dùng, ngược lại mặc định 500
+    const statusCode = error.statusCode || 500;
+    return res.status(statusCode).json({
+      success: false,
+      message: error.message || "Đã có lỗi xảy ra",
+    });
   }
 }
 async function getAccountController(req, res, next) {

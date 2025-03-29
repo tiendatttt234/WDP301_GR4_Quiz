@@ -2,13 +2,14 @@
 import { Avatar, Dropdown, Menu } from 'antd';
 import { UserOutlined, BellOutlined,MenuOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../Context/AuthContext';
 import './Header.css';
 
 const AdminHeader = ({ onToggleSidebar }) => {
     const navigate = useNavigate();
-
+    const { logout } = useAuth();
     const handleLogout = () => {
-        localStorage.removeItem('token');
+        logout();
         navigate('/login');
     };
 
@@ -27,7 +28,6 @@ const AdminHeader = ({ onToggleSidebar }) => {
                 Admin Dashboard
             </div>
             <div className="header-actions">
-                <BellOutlined className="header-icon" />
                 <Dropdown overlay={menu} placement="bottomRight" arrow>
                     <Avatar className="header-avatar" icon={<UserOutlined />} />
                 </Dropdown>

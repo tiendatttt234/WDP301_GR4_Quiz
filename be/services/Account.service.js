@@ -40,7 +40,7 @@ async function loginService(email, password) {
     }
     if (account.isLocked) {
       throw createError.Forbidden(
-        "Tài khoản của bạn đã bị khóa. Vui lòng liên hệ hỗ trợ."
+        "Tài khoản của bạn đã bị khóa."
       );
     }
     const isMatch = await AccountRepository.validatePassword(

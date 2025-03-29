@@ -4,7 +4,6 @@ import ListQuestion from "../pages/QuestionFile/listQuestion/listQuestionFile";
 import QuestionFileDetail from "../pages/QuestionFile/detail/questionFileDetail";
 import StudySession from "../pages/QuestionFile/study/StudySession";
 import HomePage from "../pages/Homepage/Homepage";
-// import FlashCards from "../pages/Quiz/FlashCard/FlashCards";
 import QuizAttempt from "../pages/Quiz/QuizAttempt/QuizAttempt";
 import QuizResult from "../pages/Quiz/QuizResult/QuizResult";
 import Profile from "../components/authen/Profile/Profile";
@@ -16,29 +15,32 @@ import NotFoundPage from "../pages/NotFound/NotFoundPage";
 import UpgradePage from "../pages/Upgrade/UpgradePage";
 import QuestionFileByUser from "../pages/QuestionFile/findbyuser/QuestionFileByUser";
 import PaymentSuccess from "../pages/Payment/PaymentSuccess";
+import UnauthorizedPage from "../pages/NotFound/UnauthorizedPage";
 
-
+// Define routes with authentication requirements
 export const userRoutes = [
-    { path: "", element: <HomePage /> },
-    { path: "attempt/:id", element: <QuizAttempt /> }, 
-    { path: "quiz/result", element: <QuizResult /> }, 
-    { path: "profile/:id", element: <Profile /> }, 
-    { path: "questionfile/create", element: <QuestionCreation /> },
-    { path: "questionfile/getAll", element: <ListQuestion /> }, 
-    { path: "questionfile/getById/:id", element: <QuestionFileDetail /> },
-    { path: "questionfile/update/:id", element: <UpdateQuestion /> },
-    { path: "questionfile/update", element: <UpdateQuestion /> }, 
-    { path: "login", element: <Login/> },
-    { path: "register", element: <Register/> },
-    { path: "forgot-password", element: <ForgotPassword/> },
-    { path: "reset-password/:id/:token", element: <ResetPassword/>},
-    { path: "upgrade", element: <UpgradePage/>},
-    { path: "*", element: <NotFoundPage/>},
-    { path: "reset-password/:id/:token", element: <ResetPassword/>},
-    { path: "study/:questionFileId", element: <StudySession /> },
-    {
-      path: "questionfile/findbyuser/:userId",
-      element: <QuestionFileByUser />,
-    },
-    { path: "payment/vnpay/return", element: <PaymentSuccess /> },
-  ];
+    // Public routes (no authentication required)
+    { path: "", element: <HomePage />, requiresAuth: false },
+    { path: "login", element: <Login/>, requiresAuth: false },
+    { path: "register", element: <Register/>, requiresAuth: false },
+    { path: "forgot-password", element: <ForgotPassword/>, requiresAuth: false },
+    { path: "reset-password/:id/:token", element: <ResetPassword/>, requiresAuth: false },
+    
+    // Protected routes (authentication required)
+    { path: "attempt/:id", element: <QuizAttempt />, requiresAuth: true }, 
+    { path: "quiz/result", element: <QuizResult />, requiresAuth: true }, 
+    { path: "profile/:id", element: <Profile />, requiresAuth: true }, 
+    { path: "questionfile/create", element: <QuestionCreation />, requiresAuth: true },
+    { path: "questionfile/getAll", element: <ListQuestion />, requiresAuth: true }, 
+    { path: "questionfile/getById/:id", element: <QuestionFileDetail />, requiresAuth: true },
+    { path: "questionfile/update/:id", element: <UpdateQuestion />, requiresAuth: true },
+    { path: "questionfile/update", element: <UpdateQuestion />, requiresAuth: true }, 
+    { path: "upgrade", element: <UpgradePage/>, requiresAuth: true },
+    { path: "study/:questionFileId", element: <StudySession />, requiresAuth: true },
+    { path: "questionfile/findbyuser/:userId", element: <QuestionFileByUser />, requiresAuth: true },
+    { path: "payment/vnpay/return", element: <PaymentSuccess />, requiresAuth: true },
+    
+    // Error pages
+    { path: "unauthorized", element: <UnauthorizedPage />, requiresAuth: false },
+    { path: "*", element: <NotFoundPage/>, requiresAuth: false },
+];

@@ -3,7 +3,7 @@ import React from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import { Layout } from "antd";
 import UserHeader from "../components/Header/Header";
-// import UserFooter from "../components/Footer/Footer";
+import UserFooter from "../components/Footer/Footer";
 
 const { Header, Content, Footer } = Layout;
 
@@ -43,20 +43,11 @@ const UserDefaultPage = () => {
 
       {/* Footer cố định */}
       {!isStudyPage && (
-        <Footer
-          style={{
-            position: "fixed",
-            bottom: 0,
-            width: "100%",
-            background: "#fff",
-            textAlign: "center",
-            padding: "10px 0",
-          }}
-        >
-         
-        </Footer>
+
+      <UserFooter/>
+
       )}
-       {/* <UserFooter /> */}
+      
     </Layout>
   );
 };

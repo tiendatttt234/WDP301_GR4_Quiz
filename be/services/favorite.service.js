@@ -68,19 +68,15 @@ async function updateFavorite(id, favoriteData) {
     }
 }
 
-async function deleteFavorite(id) {
-    try {
-        const favorite = await favoriteRepository.deleteFavorite(id);
-        if (!favorite) {
-            throw new Error('Favorite not found');
-        }
-        return {
-            success: true,
-            message: 'Favorite deleted successfully'
-        };
-    } catch (error) {
-        throw new Error(`Failed to delete favorite: ${error.message}`);
+async function deleteFavorite(favoriteId, questionFileId) {
+    if (!favoriteId || !questionFileId) {
+        throw new Error('Missing required fields: favoriteId and questionFileId are required');
     }
+    const updatedFavorite = await favoriteRepository.deleteFavorite(favoriteId, questionFileId);
+    if (!updatedFavorite) {
+        throw new Error('Favorite not found');
+    }
+    return updatedFavorite;
 }
 
 module.exports = {

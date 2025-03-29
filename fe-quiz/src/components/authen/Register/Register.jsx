@@ -36,8 +36,11 @@ const Register = () => {
       setSuccess("Đăng ký thành công!");
       setFormData({ userName: "", email: "", password: "", repeatPassword: "" });
     } catch (err) {
-      setError(err.response?.data?.message || "Thông tin người dùng đã tồn tại");
+      setError(err.response?.data?.error || "Thông tin người dùng đã tồn tại");
+     
     }
+   
+    
   };
 
   return (

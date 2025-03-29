@@ -59,7 +59,7 @@ export const Tab = styled.button`
   }
 
   &:hover {
-    color: white;
+    color:rgb(227, 229, 234);
   }
 `;
 

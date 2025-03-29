@@ -35,12 +35,12 @@ QuestionFileRouter.patch(
   verifyAccessToken,
   questionFileController.updatePrivacy
 ); //
-QuestionFileRouter.post(
-  "/import",
-  verifyAccessToken,
-  upload.single("file"),
-  questionFileController.importQuestionFile
-); //
+// QuestionFileRouter.post(
+//   "/import",
+//   verifyAccessToken,
+//   upload.single("file"),
+//   questionFileController.importQuestionFile
+// ); //
 QuestionFileRouter.get(
   "/getQFadmin",
   verifyAccessToken,
@@ -52,5 +52,6 @@ QuestionFileRouter.get(
   questionFileController.getQuestionFilesByUserId
 ); //
 QuestionFileRouter.get("/user/:userId", questionFileController.findAllByUser);
-
+QuestionFileRouter.post('/addQuestion/:id', questionFileController.addQuestion);
+QuestionFileRouter.delete('/deleteQuestion/:id/:questionId', questionFileController.deleteQuestion);
 module.exports = QuestionFileRouter;

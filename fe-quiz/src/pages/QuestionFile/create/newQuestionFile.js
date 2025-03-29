@@ -261,9 +261,9 @@ const QuestionCreator = () => {
           Authorization: `Bearer ${token}`, // Thêm accessToken vào header
         },
       });
-      toast.success("Tạo bộ câu hỏi thành công!", { autoClose: 4000 });
+      toast.success("Tạo bộ câu hỏi thành công!", { autoClose: 2000 });
       setIsDirty(false);
-      setTimeout(() => navigate("/questionfile/getAll"), 4000);
+      setTimeout(() => navigate("/questionfile/getAll"), 2000);
     } catch (error) {
       toast.error("Lỗi khi tạo bộ câu hỏi");
       console.error(error);
@@ -432,6 +432,9 @@ const QuestionCreator = () => {
     // Nếu đã đăng nhập, kích hoạt input file để mở cửa sổ chọn file
     fileInputRef.current.click();
   };
+  const handleBack = () => {
+    navigate("/");
+  };
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
@@ -539,17 +542,7 @@ const QuestionCreator = () => {
           c. Nga (Đúng) <br></br>
           d. Trung Quốc (Sai) <br></br>
           .....
-          <p>
-            <strong>Ví dụ định dạng linh hoạt:</strong>
-          </p>
-          Chủ đề: Chủ đề địa lý thế giới <br></br>
-          Mô tả: Các câu hỏi về địa lý trên toàn thế giới <br></br>
-          Đâu là quốc gia có diện tích lớn nhất thế giới? (MCQ) <br></br>
-          Hoa Kỳ<br></br>
-          Canada <br></br>
-          Nga <br></br>
-          Trung Quốc <br></br>
-          .....
+          
           <p>
             <strong>Lưu file với định dạng .txt và import để sử dụng!</strong>
           </p>
@@ -649,7 +642,7 @@ const QuestionCreator = () => {
         <span>Thêm câu hỏi</span>
       </AddButton>
       <ButtonGroup>
-        <SecondaryButton>Trở lại</SecondaryButton>
+        <SecondaryButton onClick={handleBack}>Trở lại</SecondaryButton>
         <PrimaryButton onClick={handleCreateAndPractice}>
           Tạo và ôn luyện
         </PrimaryButton>

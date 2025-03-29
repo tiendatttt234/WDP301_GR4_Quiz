@@ -65,11 +65,7 @@ const UpdateQuestion = () => {
           id: q.questionId, // Dùng _id từ embedded document
           question: q.content,
           type:
-            q.type === "MCQ"
-              ? "singleAnswer"
-              : q.type === "MAQ"
-              ? "multiAnswer"
-              : q.type,
+            q.type === "MCQ" ? "singleAnswer": q.type === "MAQ"? "multiAnswer": q.type,
           answers: q.answers.map((a) => a.answerContent),
           selectedAnswers: q.answers
             .map((a, index) => (a.isCorrect ? index : null))
@@ -312,27 +308,100 @@ const UpdateQuestion = () => {
       });
   };
 
+  // const addQuestion = () => {
+  //   const error = validateForm();
+  //   if (error) {
+  //     toast.error(error, { autoClose: 2000 });
+  //     return;
+  //   }
+  //   const newId = `temp-${Date.now()}`; // ID tạm cho câu hỏi mới
+  //   const newQuestion = {
+  //     id: newId,
+  //     question: "Câu hỏi mới",
+  //     type: "trueFalse",
+  //     answers: ["Đúng", "Sai"],
+  //     selectedAnswers: [],
+  //   };
+  //   setQuestions([...questions, newQuestion]);
+  //   setIsDirty(true);
+  //   toast.success("Đã thêm câu hỏi mới! Nhấn 'Cập nhật toàn bộ' để lưu.", {
+  //     autoClose: 2000,
+  //   });
+  // };
+
+
   const addQuestion = () => {
     const error = validateForm();
     if (error) {
       toast.error(error, { autoClose: 2000 });
       return;
     }
-    const newId = `temp-${Date.now()}`; // ID tạm cho câu hỏi mới
+  
+    const token = localStorage.getItem("accessToken");
+    if (!token) {
+      toast.error("Bạn cần đăng nhập để thực hiện thao tác này");
+      return;
+    }
+  
+    // Tạo câu hỏi mới để gửi lên server
     const newQuestion = {
-      id: newId,
-      question: "Câu hỏi mới",
-      type: "trueFalse",
-      answers: ["Đúng", "Sai"],
-      selectedAnswers: [],
+      content: "Câu hỏi mới",
+      type: "Boolean", // trueFalse tương ứng với "Boolean" ở backend
+      answers: [
+        { answerContent: "Đúng", isCorrect: false },
+        { answerContent: "Sai", isCorrect: false },
+      ],
     };
-    setQuestions([...questions, newQuestion]);
-    setIsDirty(true);
-    toast.success("Đã thêm câu hỏi mới! Nhấn 'Cập nhật toàn bộ' để lưu.", {
-      autoClose: 2000,
-    });
+  
+    // Gửi POST request đến route /questionFile/addQuestion/:id
+    axios
+      .post(
+        `http://localhost:9999/questionFile/addQuestion/${id}`,
+        newQuestion,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
+      .then((response) => {
+        // Giả sử response trả về câu hỏi mới với questionId từ server
+        const addedQuestion = response.data.result; // Điều chỉnh dựa trên cấu trúc response thực tế
+  
+        // Định dạng câu hỏi mới để thêm vào state
+        const formattedQuestion = {
+          id: addedQuestion.questionId, // Sử dụng questionId từ server
+          question: addedQuestion.content,
+          type:
+            addedQuestion.type === "MAQ"
+              ? "multiAnswer"
+              : addedQuestion.type === "Boolean"
+              ? "trueFalse"
+              : "singleAnswer",
+          answers: addedQuestion.answers.map((a) => a.answerContent),
+          selectedAnswers: addedQuestion.answers
+            .map((a, index) => (a.isCorrect ? index : null))
+            .filter((i) => i !== null),
+        };
+  
+        // Cập nhật state questions
+        setQuestions([...questions, formattedQuestion]);
+        setIsDirty(true); // Đánh dấu là có thay đổi
+        setDirtyQuestions((prev) => ({
+          ...prev,
+          [formattedQuestion.id]: true, // Đánh dấu câu hỏi mới là "dirty"
+        }));
+  
+        toast.success("Đã thêm câu hỏi mới thành công!", {
+          autoClose: 2000,
+        });
+      })
+      .catch((error) => {
+        console.error("Lỗi khi thêm câu hỏi:", error.response?.data || error.message);
+        toast.error("Thêm câu hỏi thất bại!");
+      });
   };
-
+  
   const handleUpdate = () => {
     const token = localStorage.getItem("accessToken");
     if (!token) {
@@ -417,7 +486,44 @@ const UpdateQuestion = () => {
     }
   };
   const removeQuestion = (questionId) => {
-    setQuestions(questions.filter((q) => q.id !== questionId));
+    const token = localStorage.getItem("accessToken");
+    if (!token) {
+      toast.error("Bạn cần đăng nhập để thực hiện thao tác này");
+      return;
+    }
+  
+    // Kiểm tra xem câu hỏi có phải là câu hỏi mới (chưa lưu trên server) không
+    if (questionId.startsWith("temp-")) {
+      // Nếu là câu hỏi mới, chỉ xóa khỏi state
+      setQuestions(questions.filter((q) => q.id !== questionId));
+      toast.success("Đã xóa câu hỏi mới!", { autoClose: 2000 });
+      return;
+    }
+  
+    // Gửi DELETE request đến route /questionFile/deleteQuestion/:id/:questionId
+    axios
+      .delete(`http://localhost:9999/questionFile/deleteQuestion/${id}/${questionId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((response) => {
+        // Xóa câu hỏi khỏi state
+        setQuestions(questions.filter((q) => q.id !== questionId));
+        // Cập nhật dirtyQuestions và isDirty
+        setDirtyQuestions((prev) => {
+          const newDirty = { ...prev };
+          delete newDirty[questionId]; // Xóa trạng thái dirty của câu hỏi
+          return newDirty;
+        });
+        setIsDirty(Object.values(dirtyQuestions).some((v) => v)); // Cập nhật isDirty
+  
+        toast.success("Đã xóa câu hỏi thành công!", { autoClose: 2000 });
+      })
+      .catch((error) => {
+        console.error("Lỗi khi xóa câu hỏi:", error.response?.data || error.message);
+        toast.error("Xóa câu hỏi thất bại!");
+      });
   };
 
   const totalQuestions = questions.length;

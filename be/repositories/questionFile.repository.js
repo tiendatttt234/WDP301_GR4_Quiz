@@ -72,6 +72,35 @@ async function updateQuestionInFile(fileId, questionId, updatedQuestion) {
     { new: true }
   );
 }
+async function addQuestion(questionFileId, questionData) {
+  const questionFile = await QuestionFile.findById(questionFileId);
+  if (!questionFile) {
+    throw new Error('Không tìm thấy học phần');
+  }
+
+  questionFile.arrayQuestion.push(questionData);
+  await questionFile.save();
+  const newQuestion = questionFile.arrayQuestion[questionFile.arrayQuestion.length - 1];
+  return newQuestion;
+}
+
+async function deleteQuestion(questionFileId, questionId) {
+  const questionFile = await QuestionFile.findById(questionFileId);
+  if (!questionFile) {
+    throw new Error('QuestionFile not found');
+  }
+
+  const questionIndex = questionFile.arrayQuestion.findIndex(
+    (q) => q._id.toString() === questionId
+  );
+  if (questionIndex === -1) {
+    throw new Error('Question not found');
+  }
+
+  questionFile.arrayQuestion.splice(questionIndex, 1);
+  await questionFile.save();
+  return questionFile;
+}
 
 async function updatePrivacy(fileId, isPrivate) {
   return await QuestionFile.findByIdAndUpdate(
@@ -81,14 +110,14 @@ async function updatePrivacy(fileId, isPrivate) {
   );
 }
 
-async function createTxt(data) {
-  const questionFile = new QuestionFile({
-    ...data,
-    reportedCount: 0,
-    isReported: false,
-  });
-  return await questionFile.save();
-}
+// async function createTxt(data) {
+//   const questionFile = new QuestionFile({
+//     ...data,
+//     reportedCount: 0,
+//     isReported: false,
+//   });
+//   return await questionFile.save();
+// }
 async function findAllByUserId(userId) {
   return await QuestionFile.find({ createdBy: userId }).populate({
     path: "createdBy",
@@ -106,9 +135,11 @@ const questionFileRepository = {
   getAll,
   updateQuestionInFile,
   updatePrivacy,
-  createTxt,
+  // createTxt,
   getAllWithUser,
   findAllByUserId,
+  addQuestion,
+  deleteQuestion
 };
 
 module.exports = questionFileRepository;

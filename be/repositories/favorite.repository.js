@@ -42,7 +42,7 @@ async function createFavorite(favoriteData) {
                     populate: {
                         path: 'createdBy', // Populate trường createdBy trong QuestionFile
                         model: 'Account',
-                        select: 'username' // Đảm bảo tên field đúng với schema Account
+                        select: 'userName' // Đảm bảo tên field đúng với schema Account
                     }
                 });
 

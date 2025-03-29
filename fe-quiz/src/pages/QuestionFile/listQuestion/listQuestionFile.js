@@ -623,7 +623,7 @@ const ListQuestion = () => {
                     <QuestionDetails>
                       <QuestionCount>
                         {qf.arrayQuestion?.length || 0} câu hỏi
-                        {qf.createdBy?.username && ` - ${qf.createdBy.username}`}
+                        {qf.createdBy?.userName && ` - ${qf.createdBy.userName}`}
                       </QuestionCount>
                     </QuestionDetails>
                     <QuestionTitle>{qf.name}</QuestionTitle>

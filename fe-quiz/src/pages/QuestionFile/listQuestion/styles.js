@@ -175,7 +175,8 @@ export const DeleteButton = styled.button`
   transition: all 0.3s ease;
 
   &:hover {
-    color: #ef4444; /* Đỏ khi hover */
+    color: #6b7280;
+    background-color:rgb(234, 236, 242);
     transform: scale(1.1);
   }
 `;

@@ -70,17 +70,14 @@ async function submitQuiz(req, res, next) {
 
 async function getAllQuizResultByUserId(req, res, next) {
   try {
-      const { userId } = req.body;
+      const { userId } = req.params;
       console.log("Received data from client:", userId);
 
-      const results = await QuizService.getAllQuizResultByUserId(userId);
+      const results = await QuizService.getQuizResultByUserId(userId);
       res.status(200).json(results);
   } catch (error) {
       res.status(400).json({ message: error.message });
   }
-}
-async function getQuizResultById(req, res,next){
-
 }
 
 const QuizController ={
@@ -89,8 +86,7 @@ const QuizController ={
     getQuiz,
     createQuiz,
     submitQuiz,
-    getAllQuizResultByUserId,
-    getQuizResultById
+    getAllQuizResultByUserId
 }
 
 module.exports = QuizController;

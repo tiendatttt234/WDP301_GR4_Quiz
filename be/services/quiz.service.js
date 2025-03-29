@@ -183,44 +183,28 @@ function isAnswerCorrect(question, userAnswer) {
   }
 }
 
-async function getAllQuizResultByUserId(userId) {
+async function getQuizResultByUserId(userId) {
   if (!mongoose.Types.ObjectId.isValid(userId)) {
-      throw new Error("Invalid user ID");
+    throw new Error("Invalid user ID");
   }
 
-  const quizResults = await quizRepository.findQuizResultsByUserId(userId);
+  const quizResults = await quizResultRepository.findQuizResultByUserId(userId);
 
   if (!quizResults || quizResults.length === 0) {
-      throw new Error("No quiz results found for this user.");
+    return []; // Return empty array instead of throwing error
   }
 
-  return quizResults.map(result => {
-      const evaluatedAnswers = result.userAnswers.map(userAnswer => {
-          const question = result.questionFile.arrayQuestion.find(q => q._id.toString() === userAnswer.questionId);
-          return {
-              questionId: userAnswer.questionId,
-              answers: userAnswer.answers,
-              isCorrect: question ? isAnswerCorrect(question, userAnswer) : false
-          };
-      });
+  // Map the results to desired format
+  const formattedResults = quizResults.map(result => ({
+    quizId: result.quizId,
+    correctAnswersCount: result.correctAnswersCount,
+    createdAt: result.createdAt,
+    updatedAt: result.updatedAt
+  }));
 
-      return {
-          quizId: result.quiz._id,
-          quizName: result.quiz.quizName,
-          duration: result.quiz.duration,
-          questionFileId: result.questionFile._id,
-          questionFileName: result.questionFile.name,
-          correctAnswersCount: result.correctAnswersCount,
-          evaluatedAnswers,
-          createdAt: result.createdAt,
-          updatedAt: result.updatedAt
-      };
-  });
-};
-
-async function getResultById(id) {
-  
+  return formattedResults;
 }
+
 
 const QuizService = {
   getAllQuiz,
@@ -228,7 +212,7 @@ const QuizService = {
   getQuizById,
   createQuiz,
   submitQuiz,
-  getAllQuizResultByUserId
+  getQuizResultByUserId
 }
 
 module.exports = QuizService;

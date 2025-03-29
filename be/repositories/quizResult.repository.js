@@ -6,7 +6,9 @@ async function saveQuizResult(data){
 }
 
 async function findQuizResultByUserId(userId){
-    return await QuizResult.find({createdBy: userId});
+    console.log("findQuizResultByUserId", userId);
+    
+    return await QuizResult.find({createBy: userId});
 }
 
 const quizResultRepository = {

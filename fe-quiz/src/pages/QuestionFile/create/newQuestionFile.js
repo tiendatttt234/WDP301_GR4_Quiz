@@ -84,17 +84,18 @@ const QuestionCreator = () => {
   const validateForm = () => {
     if (!title.trim()) return "Vui lòng nhập tiêu đề";
     if (!description.trim()) return "Vui lòng nhập mô tả";
-    for (let q of questions) {
-      if (!q.question.trim()) return "Mỗi câu hỏi cần có nội dung";
+  
+    for (let i = 0; i < questions.length; i++) {
+      const q = questions[i];
+      if (!q.question.trim()) return `Câu hỏi ${i + 1}: Vui lòng nhập nội dung câu hỏi;`
       for (let ans of q.answers) {
-        if (!ans.trim()) return "Mỗi đáp án cần có nội dung";
+        if (!ans.trim()) return` Câu hỏi ${i + 1}: Mỗi đáp án cần có nội dung;`
       }
       if (q.selectedAnswers.length === 0)
-        return "Vui lòng chọn ít nhất một đáp án đúng cho mỗi câu hỏi";
+        return `Câu hỏi ${i + 1}: Vui lòng chọn ít nhất một đáp án đúng;`
     }
     return null;
   };
-
   const questionTypes = [
     { value: "trueFalse", label: "Đúng/Sai" },
     { value: "multiAnswer", label: "Nhiều đáp án" },
@@ -279,98 +280,198 @@ const QuestionCreator = () => {
     handleSubmit(); // Nếu đã đăng nhập, gọi hàm handleSubmit
   };
 
+  // const parseTxtFile = (fileContent) => {
+  //   const lines = fileContent.split("\n").map((line) => line.trim());
+  //   if (lines.length === 0 || lines.every((line) => !line)) {
+  //     throw new Error("File .txt rỗng, vui lòng nhập nội dung.");
+  //   }
+
+  //   let name = "";
+  //   let description = "";
+  //   let isPrivate = false;
+  //   const questions = [];
+  //   let currentQuestion = null;
+  //   const warnings = [];
+
+  //   lines.forEach((line, index) => {
+  //     if (line.startsWith("Chủ đề:")) {
+  //       name = line.replace("Chủ đề:", "").trim();
+  //     } else if (line.startsWith("Mô tả:")) {
+  //       description = line.replace("Mô tả:", "").trim();
+  //     } else if (line.startsWith("Công khai:")) {
+  //       isPrivate = line.replace("Công khai:", "").trim() === "Không";
+  //     } else if (
+  //       line &&
+  //       (line.match(/^\d+\./) || (!line.match(/^[a-e]\./) && line.length > 0))
+  //     ) {
+  //       if (currentQuestion) {
+  //         if (currentQuestion.answers.length === 0) {
+  //           warnings.push(
+  //             `Câu hỏi "${currentQuestion.content}" không có đáp án.`
+  //           );
+  //         }
+  //         questions.push(currentQuestion);
+  //       }
+  //       let cleanedLine = line.replace(/[@#$%]+/g, "").trim();
+  //       if (!cleanedLine) {
+  //         warnings.push(
+  //           `Dòng ${
+  //             index + 1
+  //           }: Nội dung không hợp lệ (chỉ chứa ký tự đặc biệt).`
+  //         );
+  //         return;
+  //       }
+  //       const [questionText, type] = cleanedLine
+  //         .split("(")
+  //         .map((part) => part.trim());
+  //       currentQuestion = {
+  //         content:
+  //           questionText.replace(/^\d+\.\s*/, "").trim() || cleanedLine.trim(),
+  //         type:
+  //           type && type.includes(")")
+  //             ? type.replace(")", "").trim() === "Boolean"
+  //               ? "Boolean"
+  //               : type.replace(")", "").trim() === "MAQ"
+  //               ? "MAQ"
+  //               : "MCQ"
+  //             : "MCQ",
+  //         answers: [],
+  //       };
+  //     } else if (currentQuestion && line.match(/^[a-e]\./)) {
+  //       let cleanedLine = line.replace(/[@#$%]+/g, "").trim();
+  //       if (!cleanedLine) {
+  //         warnings.push(
+  //           `Dòng ${index + 1}: Đáp án không hợp lệ (chỉ chứa ký tự đặc biệt).`
+  //         );
+  //         return;
+  //       }
+  //       const [answerText, correctText] = cleanedLine
+  //         .split("(")
+  //         .map((part) => part.trim());
+  //       const answerContent =
+  //         answerText.replace(/^[a-e]\.\s*/, "").trim() || cleanedLine.trim();
+  //       const isCorrect =
+  //         correctText && correctText.includes(")")
+  //           ? correctText.replace(")", "").trim() === "Đúng"
+  //           : false;
+  //       currentQuestion.answers.push({ answerContent, isCorrect });
+  //     }
+  //   });
+
+  //   if (currentQuestion) {
+  //     if (currentQuestion.answers.length === 0) {
+  //       warnings.push(`Câu hỏi "${currentQuestion.content}" không có đáp án.`);
+  //     }
+  //     questions.push(currentQuestion);
+  //   }
+
+  //   if (!name) warnings.push("Thiếu trường 'Chủ đề'");
+  //   if (!description) warnings.push("Thiếu trường 'Mô tả'");
+  //   if (questions.length === 0)
+  //     throw new Error("File .txt không chứa câu hỏi nào");
+
+  //   return { name, description, isPrivate, arrayQuestion: questions, warnings };
+  // };
   const parseTxtFile = (fileContent) => {
-    const lines = fileContent.split("\n").map((line) => line.trim());
-    if (lines.length === 0 || lines.every((line) => !line)) {
-      throw new Error("File .txt rỗng, vui lòng nhập nội dung.");
-    }
+  const lines = fileContent.split("\n").map((line) => line.trim());
+  if (lines.length === 0 || lines.every((line) => !line)) {
+    throw new Error("File .txt rỗng, vui lòng nhập nội dung.");
+  }
 
-    let name = "";
-    let description = "";
-    let isPrivate = false;
-    const questions = [];
-    let currentQuestion = null;
-    const warnings = [];
+  let name = "";
+  let description = "";
+  let isPrivate = false;
+  const questions = [];
+  let currentQuestion = null;
+  const warnings = [];
 
-    lines.forEach((line, index) => {
-      if (line.startsWith("Chủ đề:")) {
-        name = line.replace("Chủ đề:", "").trim();
-      } else if (line.startsWith("Mô tả:")) {
-        description = line.replace("Mô tả:", "").trim();
-      } else if (line.startsWith("Công khai:")) {
-        isPrivate = line.replace("Công khai:", "").trim() === "Không";
-      } else if (
-        line &&
-        (line.match(/^\d+\./) || (!line.match(/^[a-e]\./) && line.length > 0))
-      ) {
-        if (currentQuestion) {
-          if (currentQuestion.answers.length === 0) {
-            warnings.push(
-              `Câu hỏi "${currentQuestion.content}" không có đáp án.`
-            );
-          }
-          questions.push(currentQuestion);
-        }
-        let cleanedLine = line.replace(/[@#$%]+/g, "").trim();
-        if (!cleanedLine) {
+  lines.forEach((line, index) => {
+    if (line.startsWith("Chủ đề:")) {
+      name = line.replace("Chủ đề:", "").trim();
+    } else if (line.startsWith("Mô tả:")) {
+      description = line.replace("Mô tả:", "").trim();
+    } else if (line.startsWith("Công khai:")) {
+      isPrivate = line.replace("Công khai:", "").trim() === "Không";
+    } else if (
+      line &&
+      (line.match(/^\d+\./) || (!line.match(/^[a-e]\./) && line.length > 0))
+    ) {
+      if (currentQuestion) {
+        if (currentQuestion.answers.length === 0) {
           warnings.push(
-            `Dòng ${
-              index + 1
-            }: Nội dung không hợp lệ (chỉ chứa ký tự đặc biệt).`
+            `Câu hỏi "${currentQuestion.content}" không có đáp án.`
           );
-          return;
         }
-        const [questionText, type] = cleanedLine
-          .split("(")
-          .map((part) => part.trim());
-        currentQuestion = {
-          content:
-            questionText.replace(/^\d+\.\s*/, "").trim() || cleanedLine.trim(),
-          type:
-            type && type.includes(")")
-              ? type.replace(")", "").trim() === "Boolean"
-                ? "Boolean"
-                : type.replace(")", "").trim() === "MAQ"
-                ? "MAQ"
-                : "MCQ"
-              : "MCQ",
-          answers: [],
-        };
-      } else if (currentQuestion && line.match(/^[a-e]\./)) {
-        let cleanedLine = line.replace(/[@#$%]+/g, "").trim();
-        if (!cleanedLine) {
-          warnings.push(
-            `Dòng ${index + 1}: Đáp án không hợp lệ (chỉ chứa ký tự đặc biệt).`
-          );
-          return;
-        }
-        const [answerText, correctText] = cleanedLine
-          .split("(")
-          .map((part) => part.trim());
-        const answerContent =
-          answerText.replace(/^[a-e]\.\s*/, "").trim() || cleanedLine.trim();
-        const isCorrect =
-          correctText && correctText.includes(")")
-            ? correctText.replace(")", "").trim() === "Đúng"
-            : false;
-        currentQuestion.answers.push({ answerContent, isCorrect });
+        questions.push(currentQuestion);
       }
-    });
-
-    if (currentQuestion) {
-      if (currentQuestion.answers.length === 0) {
-        warnings.push(`Câu hỏi "${currentQuestion.content}" không có đáp án.`);
+      let cleanedLine = line.replace(/[@#$%]+/g, "").trim();
+      if (!cleanedLine) {
+        warnings.push(
+          `Dòng ${index + 1}: Nội dung không hợp lệ (chỉ chứa ký tự đặc biệt).`
+        );
+        return;
       }
-      questions.push(currentQuestion);
+      const [questionText, type] = cleanedLine
+        .split("(")
+        .map((part) => part.trim());
+      currentQuestion = {
+        content:
+          questionText.replace(/^\d+\.\s*/, "").trim() || cleanedLine.trim(),
+        type:
+          type && type.includes(")")
+            ? type.replace(")", "").trim() === "Boolean"
+              ? "Boolean"
+              : type.replace(")", "").trim() === "MAQ"
+              ? "MAQ"
+              : "MCQ"
+            : "MCQ",
+        answers: [],
+      };
+    } else if (currentQuestion && line.match(/^[a-e]\./)) {
+      let cleanedLine = line.replace(/[@#$%]+/g, "").trim();
+      if (!cleanedLine) {
+        warnings.push(
+          `Dòng ${index + 1}: Đáp án không hợp lệ (chỉ chứa ký tự đặc biệt).`
+        );
+        return;
+      }
+      const [answerText, correctText] = cleanedLine
+        .split("(")
+        .map((part) => part.trim());
+      const answerContent =
+        answerText.replace(/^[a-e]\.\s*/, "").trim() || cleanedLine.trim();
+      const isCorrect =
+        correctText && correctText.includes(")")
+          ? correctText.replace(")", "").trim() === "Đúng"
+          : false;
+      currentQuestion.answers.push({ answerContent, isCorrect });
     }
+  });
 
-    if (!name) warnings.push("Thiếu trường 'Chủ đề'");
-    if (!description) warnings.push("Thiếu trường 'Mô tả'");
-    if (questions.length === 0)
-      throw new Error("File .txt không chứa câu hỏi nào");
+  if (currentQuestion) {
+    if (currentQuestion.answers.length === 0) {
+      warnings.push(`Câu hỏi "${currentQuestion.content}" không có đáp án.`);
+    }
+    questions.push(currentQuestion);
+  }
 
-    return { name, description, isPrivate, arrayQuestion: questions, warnings };
-  };
+  // Kiểm tra từng câu hỏi xem có đáp án đúng hay không
+  questions.forEach((question, index) => {
+    const hasCorrectAnswer = question.answers.some((ans) => ans.isCorrect);
+    if (!hasCorrectAnswer) {
+      warnings.push(
+        `Câu hỏi ${index + 1}: "${question.content}" chưa chọn đáp án đúng.`
+      );
+    }
+  });
+
+  if (!name) warnings.push("Thiếu trường 'Chủ đề'");
+  if (!description) warnings.push("Thiếu trường 'Mô tả'");
+  if (questions.length === 0)
+    throw new Error("File .txt không chứa câu hỏi nào");
+
+  return { name, description, isPrivate, arrayQuestion: questions, warnings };
+};
 
   const handleFileImport = (event) => {
     const file = event.target.files[0];

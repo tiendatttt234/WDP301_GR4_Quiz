@@ -33,7 +33,7 @@ async function getAllWithUser() {
 }
 async function getAll() {
   return await QuestionFile.find({})
-    .sort({ createdAt: 1 })
+    .sort({ createdAt: -1 })
     .select("name description arrayQuestion createdAt isPrivate")
     .populate("createdBy", "userName");
 }
